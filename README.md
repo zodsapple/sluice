@@ -94,7 +94,7 @@ Read [the five-minute example](docs/quickstart.md) and [the workflow guide](docs
 
 ## Browser playground
 
-`sites/playground/` runs the same Python engine in a browser Worker using Pyodide. It supports local CSV/XLSX files, editable YAML, schema-based drafting, validation evidence and reviewed conversion with downloads. Files stay in browser memory. The first run loads about 22 MB of runtime assets. The playground caps each file at 5 MB and raw input at 20,000 rows; use the CLI for larger jobs or custom Python hooks.
+`sites/playground/` runs the same Python engine in a browser Worker using Pyodide. Upload an input plus a CSV/XLSX expected result or template to draft YAML automatically; a JSON schema is optional. A complete expected result checks every output row and blocks mismatches. Review unresolved questions and mappings before conversion. Files stay in browser memory. The first run loads about 22 MB of runtime assets. The playground caps each file at 5 MB and raw input at 20,000 rows; use the CLI for larger jobs or custom Python hooks.
 
 With Python 3.11+ and Node.js, run `python scripts/serve_playground.py` and open http://127.0.0.1:8766/.
 Initial setup downloads the runtime; later launches and conversions work offline with the verified cached assets.

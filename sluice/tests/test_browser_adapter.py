@@ -64,3 +64,69 @@ def test_browser_large_input_uses_local_cli(browser, action):
 def test_browser_disables_hooks_and_external_sources(browser, fragment):
     with pytest.raises(ValueError):
         browser.safe_spec(request()["spec"] + "\n" + fragment)
+
+
+@pytest.mark.parametrize('extension', ['csv', 'xlsx'])
+def test_browser_drafts_from_target_without_json(browser, extension):
+    import pandas as pd
+    target = pd.DataFrame({'delivery_id': ['A001', 'A002', 'A003'], 'amount': [100.125, 50.25, 15.125]})
+    path = browser.SESSION / f'expected.{extension}'
+    if extension == 'xlsx':
+        target.to_excel(path, index=False)
+    else:
+        target.to_csv(path, index=False)
+    draft = json.loads(browser.execute(json.dumps(request(action='draft', schema='', template=path.name,
+                                                          targetRole='expected'))))
+    assert 'delivery_id:' in draft['spec'] and 'amount:' in draft['spec']
+    assert 'complete expected result' in draft['review']
+    preview = json.loads(browser.execute(json.dumps(request(spec=draft['spec'], template=path.name,
+                                                            targetRole='expected'))))
+    assert preview['ok'], preview['report']['diagnosis']
+    assert preview['report']['controls'][-1]['kind'] == 'expected_rows'
+
+
+def test_expected_checks_values_duplicates_and_never_writes_failed_output(browser):
+    import pandas as pd
+    reference = json.loads(browser.execute(json.dumps(request())))['outputPreview']
+    frame = pd.DataFrame(reference['rows'], columns=reference['columns'])
+    frame.iloc[::-1].to_csv(browser.SESSION / 'expected.csv', index=False)
+    req = request(action='convert', template='expected.csv', targetRole='expected')
+    good = json.loads(browser.execute(json.dumps(req)))
+    assert good['ok'] and Path(good['output']).exists()
+    # A different ID with identical row counts and money totals must still fail.
+    frame.iloc[0, 0] = 'WRONG'
+    frame.to_csv(browser.SESSION / 'expected.csv', index=False)
+    existing = {p: p.read_bytes() for p in (browser.SESSION / 'out').glob('*.csv')}
+    bad = json.loads(browser.execute(json.dumps(req)))
+    assert not bad['ok'] and bad['output'] is None
+    assert bad['report']['diagnosis']['code'] == 'expected_mismatch'
+    assert {p: p.read_bytes() for p in (browser.SESSION / 'out').glob('*.csv')} == existing
+    duplicate = pd.DataFrame({'id': ['001', '001'], 'amount': ['1.00', '2.00']})
+    assert not browser.expected_control(duplicate, duplicate.iloc[[0, 0]])['passed']
+    assert browser.expected_control(duplicate, duplicate.iloc[::-1])['passed']
+    assert not browser.expected_control(duplicate, duplicate.assign(id=['1', '1']))['passed']
+
+
+def test_target_headers_and_header_only_template(browser):
+    (browser.SESSION / 'target.csv').write_text('id,id\n1,2\n')
+    with pytest.raises(ValueError, match='unique'):
+        browser.execute(json.dumps(request(action='draft', template='target.csv', schema='')))
+    (browser.SESSION / 'target.csv').write_text('delivery_id,amount\n')
+    with pytest.raises(ValueError, match='needs data rows'):
+        browser.execute(json.dumps(request(action='draft', template='target.csv', schema='', targetRole='expected')))
+    draft = json.loads(browser.execute(json.dumps(request(action='draft', template='target.csv', schema='', targetRole='template'))))
+    assert 'delivery_id:' in draft['spec']
+
+
+def test_expected_sheet_provenance_limits_draft_scope(browser):
+    import pandas as pd
+    import yaml
+    with pd.ExcelWriter(browser.SESSION / 'input.xlsx') as writer:
+        pd.DataFrame({'id': ['001'], 'amount': [1]}).to_excel(writer, sheet_name='Data', index=False)
+        pd.DataFrame({'notes': ['Do not extract me']}).to_excel(writer, sheet_name='Notes', index=False)
+    (browser.SESSION / 'expected.csv').write_text('id,amount,source_sheet\n001,1,Data\n')
+    draft = json.loads(browser.execute(json.dumps(request(action='draft', input='input.xlsx', template='expected.csv',
+                                                          targetRole='expected', schema=''))))
+    spec = yaml.safe_load(draft['spec'])
+    assert spec['locate']['sheet']['name'] == 'Data' and not spec['sources']
+    assert 'Draft source sheets: Data' in draft['review']

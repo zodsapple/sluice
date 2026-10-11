@@ -1,15 +1,19 @@
 const $ = id => document.getElementById(id);
 let inputFile, templateFile, schemaText = '', worker, busy = false, pending, requestId = 0;
 let evidence, validated = false, activeTab = 'output', prompts = [], downloadUrls = [];
+let generatedSpec = false, exampleLoaded = false;
 const MAX_FILE = 5 * 1024 * 1024;
 
-function status(text, kind = '') { $('status-text').textContent = text; $('status').className = `status ${kind}`; }
+function status(text, kind = '') {
+  $('status-text').textContent = text; $('status').className = `status ${kind}`;
+  $('upload-note').textContent = text; $('upload-note').className = `upload-note ${kind}`;
+}
 function updateButtons() {
   $('preview').disabled = busy || !inputFile || !$('spec').value.trim();
   $('convert').disabled = busy || !validated || !$('reviewed').checked;
-  $('draft').disabled = busy || !inputFile || !schemaText;
+  $('draft').disabled = busy || !inputFile || !(schemaText || templateFile);
   $('download-spec').disabled = busy || !$('spec').value.trim();
-  for (const element of document.querySelectorAll('input[type=file], .demo, #spec, #sheet-names, #reviewed')) element.disabled = busy;
+  for (const element of document.querySelectorAll('input[type=file], .demo, #spec, #sheet-names, #target-role, #target-layout, #reviewed')) element.disabled = busy;
   $('cancel').hidden = !busy;
 }
 function invalidate() {
@@ -17,20 +21,31 @@ function invalidate() {
   validated = false; evidence = null; $('reviewed').checked = false;
   $('results').hidden = true; $('downloads').replaceChildren(); updateButtons();
 }
-function acceptFile(kind, file) {
+async function acceptFile(kind, file) {
   if (!file) return;
   if (file.size > MAX_FILE) throw new Error('Choose a file of 5 MB or less. Use the local CLI for larger files.');
   const extension = file.name.split('.').pop().toLowerCase();
   if (kind === 'schema' && extension !== 'json') throw new Error('Choose a JSON target schema.');
   if (kind !== 'schema' && !['csv', 'xlsx'].includes(extension)) throw new Error('Choose a CSV or XLSX file.');
-  invalidate();
+  if (exampleLoaded) {
+    inputFile = templateFile = undefined; schemaText = ''; exampleLoaded = false;
+    $('input-label').textContent = 'Choose or drop an input file';
+    $('template-label').textContent = 'Choose an expected result or template';
+    $('schema-label').textContent = 'Choose target schema'; $('sheet-names').value = '';
+    $('target-role').value = 'expected';
+    for (const demo of document.querySelectorAll('.demo')) demo.classList.remove('selected');
+  }
+  if (generatedSpec) { $('spec').value = ''; generatedSpec = false; }
+  $('draft-review').hidden = true; prompts = []; invalidate();
   if (kind === 'input') { inputFile = file; $('input-label').textContent = file.name; }
   if (kind === 'template') { templateFile = file; $('template-label').textContent = file.name; }
   if (kind === 'schema') {
     schemaText = ''; $('schema-label').textContent = 'Choose target schema'; updateButtons();
-    return file.text().then(text => { JSON.parse(text); schemaText = text; $('schema-label').textContent = file.name; updateButtons(); });
+    const text = await file.text(); JSON.parse(text); schemaText = text; $('schema-label').textContent = file.name;
   }
-  status('File selected. Review the spec, then preview and validate.'); updateButtons();
+  updateButtons();
+  if (inputFile && (templateFile || schemaText) && !$('spec').value.trim()) await execute('draft');
+  else status(!inputFile ? 'Target selected. Choose the input file to generate rules.' : !$('spec').value.trim() ? 'Input selected. Add an expected result, a template or a JSON schema to generate rules.' : 'File selected. Review the existing YAML, or draft new rules from the target.');
 }
 for (const kind of ['input', 'template', 'schema']) {
   $(`${kind}-file`).addEventListener('change', async event => {
@@ -45,11 +60,12 @@ for (const kind of ['input', 'template', 'schema']) {
   });
 }
 $('spec-file').addEventListener('change', async event => {
-  try { const file = event.target.files[0]; if (!file) return; if (file.size > 256 * 1024) throw new Error('Spec is too large.'); $('spec').value = await file.text(); invalidate(); }
+  try { const file = event.target.files[0]; if (!file) return; if (file.size > 256 * 1024) throw new Error('Spec is too large.'); $('spec').value = await file.text(); generatedSpec = false; exampleLoaded = false; invalidate(); status('Spec loaded. Preview & validate to check your files.'); }
   catch (error) { status(error.message, 'bad'); }
 });
-$('spec').addEventListener('input', invalidate);
+$('spec').addEventListener('input', () => { generatedSpec = false; invalidate(); });
 $('sheet-names').addEventListener('input', invalidate);
+for (const id of ['target-role', 'target-layout']) $(id).addEventListener('change', () => { invalidate(); status('Target options changed. Draft again if the layout changed, then preview & validate.'); });
 $('reviewed').addEventListener('change', updateButtons);
 
 async function asset(name) { const response = await fetch(`assets/${name}`); if (!response.ok) throw new Error(`Could not load ${name}`); return response; }
@@ -68,6 +84,7 @@ for (const button of document.querySelectorAll('.demo')) button.addEventListener
     $('input-label').textContent = inputFile.name; $('template-label').textContent = templateFile.name;
     $('schema-label').textContent = schemaText ? 'Included delivery schema' : 'Choose target schema';
     $('spec').value = await spec.text(); $('sheet-names').value = '';
+    generatedSpec = exampleLoaded = true; $('target-role').value = 'template'; $('target-layout').value = 'auto';
     $('draft-review').hidden = true; prompts = [];
     for (const demo of document.querySelectorAll('.demo')) demo.classList.toggle('selected', demo === button);
     invalidate(); status('Example ready. Inspect the YAML, then preview & validate.');
@@ -84,7 +101,10 @@ function getWorker() {
     const { resolve, reject } = pending; pending = null;
     if (data.error) reject(new Error(data.error)); else resolve(data.result);
   };
-  worker.onerror = error => { if (pending) { pending.reject(new Error(error.message || 'Browser Python could not start.')); pending = null; } };
+  worker.onerror = error => {
+    worker.terminate(); worker = null;
+    if (pending) { pending.reject(new Error(error.message || 'Browser Python could not start.')); pending = null; }
+  };
   return worker;
 }
 async function execute(action) {
@@ -98,18 +118,19 @@ async function execute(action) {
       files.push({ name: templateName, bytes: await templateFile.arrayBuffer() });
     }
     const request = { action, input: files[0].name, template: templateName, spec: $('spec').value,
-                      schema: schemaText, sheets: $('sheet-names').value.split('\n').map(s => s.trim()).filter(Boolean) };
+                      schema: schemaText, targetRole: $('target-role').value, targetLayout: $('target-layout').value,
+                      sheets: $('sheet-names').value.split('\n').map(s => s.trim()).filter(Boolean) };
     const id = ++requestId;
     const result = await new Promise((resolve, reject) => {
       pending = { id, resolve, reject };
       getWorker().postMessage({ id, files, request }, files.map(f => f.bytes));
     });
     if (action === 'draft') {
-      $('spec').value = result.spec; invalidate(); prompts = result.prompts;
+      $('spec').value = result.spec; generatedSpec = true; invalidate(); prompts = result.prompts;
       $('draft-notes').textContent = result.review;
       $('draft-review').hidden = false; $('draft-review').open = true;
       $('download-prompts').hidden = !prompts.length;
-      status(`Draft ready: ${result.questions.length} open question(s). Review scope, mappings and controls.`, 'good');
+      status(`Draft ready: ${result.questions.length} open question(s). Review the YAML and draft notes, then Preview & validate.`, result.questions.length ? '' : 'good');
     } else {
       evidence = result; validated = result.ok && result.report.controls.some(c => c.on_fail === 'halt' && !c.kind.startsWith('rule:'));
       if (action === 'convert') result.report.browser_review = { confirmed: true, at: new Date().toISOString() };
@@ -157,7 +178,7 @@ function renderEvidence(result, action) {
   for (const c of report.controls) {
     const row = node('div', undefined, `control ${c.passed ? '' : 'fail'}`);
     row.append(node('span', c.passed ? 'PASS' : c.on_fail === 'halt' ? 'FAIL' : 'WARN', 'pill'), node('strong', c.name),
-               node('code', `source ${c.source} − removed ${c.dropped} → output ${c.output}${c.expected == null ? '' : ` · declared ${c.expected}`}`));
+               node('code', c.kind === 'expected_rows' ? `expected ${c.expected} rows · output ${c.output} rows` : `source ${c.source} − removed ${c.dropped} → output ${c.output}${c.expected == null ? '' : ` · declared ${c.expected}`}`));
     if (c.reasons.length) row.append(node('small', c.reasons.join('; '))); $('controls').append(row);
   }
   if (!report.controls.length) $('controls').append(node('p', 'No controls declared. Review and add reconciliation checks to the spec.', 'empty'));
