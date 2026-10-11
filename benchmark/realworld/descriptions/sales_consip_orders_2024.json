@@ -1,0 +1,12 @@
+{
+ "buyer_province_code": "two-letter abbreviation of the buyer's province",
+ "supplier_region": "region where the supplier is located",
+ "agreement": "name of the framework agreement the orders were placed under",
+ "good_service": "whether the line concerns goods or services, as printed in the source",
+ "record_type": "'master' for an aggregated order record, which carries the CPV code NA; 'detail' for a line with a real CPV code or ND, which carries only an amount",
+ "order_count": "number of orders; filled on master records only, empty on detail records",
+ "ordered_amount_eur": "ordered amount in euro (the source writes decimals with a comma); filled on detail records only, empty on master records",
+ "buyer_count": "number of buying administrations; master records only",
+ "supplier_count": "number of suppliers; master records only",
+ "ordering_point_count": "number of ordering points; master records only"
+}

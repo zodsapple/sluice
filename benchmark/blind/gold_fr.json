@@ -1,0 +1,184 @@
+{
+ "Figure 1": [
+  {
+   "kind": "grid_scope",
+   "args": {
+    "dimension": "dim1",
+    "include": [
+     "2022",
+     "2023"
+    ]
+   }
+  },
+  {
+   "kind": "column",
+   "target": "measure",
+   "args": {
+    "source": "g1",
+    "mapping": {
+     "Effectif au 31 décembre1": "headcount",
+     "Volume de travail en équivalent temps plein2": "fte"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "unit",
+   "args": {
+    "source": "g1",
+    "mapping": {
+     "Effectif au 31 décembre1": "persons",
+     "Volume de travail en équivalent temps plein2": "fte"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "period_basis",
+   "args": {
+    "source": "g1",
+    "mapping": {
+     "Effectif au 31 décembre1": "point_in_time",
+     "Volume de travail en équivalent temps plein2": "annual_work_volume"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "population_scope",
+   "args": {
+    "source": "dim2",
+    "mapping": {
+     "Y compris contrats aidés": "FR_excluding_Mayotte__including_supported_contracts",
+     "Hors contrats aidés": "FR_excluding_Mayotte__excluding_supported_contracts"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "reference_date",
+   "args": {
+    "template": "{dim1}-12-31",
+    "where": {
+     "g1": "Effectif au 31 décembre1"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "period_start",
+   "args": {
+    "template": "{dim1}-12-31",
+    "where": {
+     "g1": "Effectif au 31 décembre1"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "period_start",
+   "args": {
+    "template": "{dim1}-01-01",
+    "where": {
+     "g1": "Volume de travail en équivalent temps plein2"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "period_end",
+   "args": {
+    "template": "{dim1}-12-31"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "breakdown_dimension",
+   "args": {
+    "value": "public_service_branch"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "sex",
+   "args": {
+    "value": "all"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "category",
+   "args": {
+    "source": "versant_de_la_fonction_publique"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "category_code",
+   "args": {
+    "source": "versant_de_la_fonction_publique",
+    "mapping": {
+     "Fonction publique de l'État (FPE)": "FPE",
+     "Fonction publique territoriale (FPT)": "FPT",
+     "Fonction publique hospitalière (FPH)": "FPH",
+     "Ensemble de la fonction publique": "ALL"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "category_level",
+   "args": {
+    "source": "versant_de_la_fonction_publique",
+    "mapping": {
+     "Fonction publique de l'État (FPE)": "branch",
+     "Fonction publique territoriale (FPT)": "branch",
+     "Fonction publique hospitalière (FPH)": "branch",
+     "Ensemble de la fonction publique": "total"
+    }
+   }
+  },
+  {
+   "kind": "unknown",
+   "target": "employment_area",
+   "args": {
+    "reason": "the source has no such dimension"
+   }
+  },
+  {
+   "kind": "unknown",
+   "target": "employment_relationship",
+   "args": {
+    "reason": "the source has no such dimension"
+   }
+  },
+  {
+   "kind": "unknown",
+   "target": "entity_level",
+   "args": {
+    "reason": "the source has no such dimension"
+   }
+  },
+  {
+   "kind": "unknown",
+   "target": "entity_code",
+   "args": {
+    "reason": "the source has no such dimension"
+   }
+  },
+  {
+   "kind": "unknown",
+   "target": "entity_name",
+   "args": {
+    "reason": "the source has no such dimension"
+   }
+  },
+  {
+   "kind": "unknown",
+   "target": "aggregation_level",
+   "args": {
+    "reason": "the source has no such dimension"
+   }
+  }
+ ]
+}

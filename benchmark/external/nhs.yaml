@@ -1,0 +1,290 @@
+name: nhs_hchs_core
+workflow: generic
+description: Three tables, two layouts -> one observation table. Region headcounts exceed England by 714 and stay that way.
+locate:
+  sheet:
+    name: '2'
+  header: 5
+map: &id001
+  Data month:
+    to: data_month
+    required: true
+  Data type:
+    to: data_type
+    required: true
+  NHS England region code:
+    to: region_code
+    required: true
+  NHS England region name:
+    to: region_name
+    required: true
+  ICS code:
+    to: ics_code
+    required: true
+  Organisation code:
+    to: org_code
+    required: true
+  All staff groups:
+    to: value
+    required: true
+const:
+  source_id: nhs_hchs_core_2026_06
+  population_scope: Paid substantive HCHS staff directly employed in NHS trusts and other core organisations in England; excludes primary care
+    and bank/agency staff
+  country_code: GB
+  value_status: reported_numeric
+sources:
+- name: table3
+  locate:
+    sheet:
+      name: '3'
+    header: 5
+  map: *id001
+  shape:
+  - &id006
+    op: filter
+    col: ics_code
+    equals: All ICS areas
+    reason: nested ICS rows are outside the extraction scope
+  - &id007
+    op: filter
+    col: org_code
+    equals: All organisations
+    reason: organisation rows are outside the extraction scope
+  - &id008
+    op: cell_ref
+    header: All staff groups
+    out: source_cell
+  - &id002
+    op: parse_date
+    cols:
+    - data_month
+    as_text: true
+  - &id003
+    op: map_values
+    col: data_type
+    into: measure
+    mapping:
+      FTE: fte
+      Headcount: headcount
+  - &id004
+    op: map_values
+    col: measure
+    into: unit
+    mapping:
+      fte: full_time_equivalents
+      headcount: persons
+  - &id005
+    op: rename
+    columns:
+      data_month: reference_date
+  - &id009
+    op: derive
+    col: breakdown_dimension
+    template: region
+  - &id010
+    op: derive
+    col: sex
+    template: all
+  - &id011
+    op: derive
+    col: category
+    template: '{region_name}'
+  - &id012
+    op: derive
+    col: entity_code
+    template: '{region_code}'
+  - &id013
+    op: derive
+    col: entity_name
+    template: '{region_name}'
+  - &id014
+    op: derive
+    col: entity_level
+    template: nhs_england_region
+  - &id015
+    op: derive
+    col: entity_level
+    template: country
+    where:
+      region_code: England
+  - &id016
+    op: derive
+    col: aggregation_level
+    template: regional_total
+  - &id017
+    op: derive
+    col: aggregation_level
+    template: national_total
+    where:
+      region_code: England
+- name: table15
+  locate:
+    sheet:
+      name: '15'
+    header: 4
+  map:
+    Data month:
+      to: data_month
+      required: true
+    Data type:
+      to: data_type
+      required: true
+    Main staff group:
+      to: category
+      required: true
+    Staff group 1:
+      to: staff_group
+      required: true
+    Grade:
+      to: grade
+      required: true
+  shape:
+  - op: flag
+    out: is_group_total
+    any_of:
+    - staff_group: All staff groups
+    - staff_group:
+        same_as: category
+  - op: filter
+    col: is_group_total
+    equals: 'True'
+    reason: sub-groups are outside the extraction scope
+  - op: filter
+    col: grade
+    equals: All grades
+    reason: grades are outside the extraction scope
+  - op: melt_families
+    families:
+    - pattern: ^(All genders|Female|Male)$
+      value: value
+    id:
+    - data_month
+    - data_type
+    - category
+    index: gender
+    cell_col: source_cell
+  - op: map_values
+    col: gender
+    into: sex
+    mapping:
+      All genders: all
+      Female: female
+      Male: male
+  - *id002
+  - *id003
+  - *id004
+  - *id005
+  - op: derive
+    col: breakdown_dimension
+    template: main_staff_group
+  - op: derive
+    col: entity_level
+    template: country
+  - op: derive
+    col: entity_code
+    template: England
+  - op: derive
+    col: entity_name
+    template: England
+  - op: derive
+    col: aggregation_level
+    template: main_staff_group_total
+  - op: derive
+    col: aggregation_level
+    template: national_total
+    where:
+      category: All staff groups
+shape:
+- *id006
+- *id007
+- *id008
+- *id002
+- *id003
+- *id004
+- *id005
+- *id009
+- *id010
+- *id011
+- *id012
+- *id013
+- *id014
+- *id015
+- *id016
+- *id017
+- op: concat_source
+  source: table3
+- op: concat_source
+  source: table15
+keys:
+  cols: &id018
+  - breakdown_dimension
+  - category
+  - sex
+  - measure
+  - entity_code
+template:
+  filename: nhs_out.csv
+  columns:
+    source_id: source_id
+    reference_date: reference_date
+    population_scope: population_scope
+    breakdown_dimension: breakdown_dimension
+    category: category
+    sex: sex
+    measure: measure
+    value: value
+    unit: unit
+    value_status: value_status
+    country_code: country_code
+    entity_level: entity_level
+    entity_code: entity_code
+    entity_name: entity_name
+    aggregation_level: aggregation_level
+    source_sheet: _src_sheet
+    source_cell: source_cell
+controls:
+- name: rows
+  output:
+    count_rows: true
+  expected:
+    value: 46
+- name: england_headcount
+  expected:
+    value: 1536637
+  output:
+    sum:
+    - value
+    where:
+      entity_level: country
+      measure: headcount
+      breakdown_dimension: region
+- name: fte_regions_sum_to_england
+  expected:
+    value: 1370441.13073
+  tol: 1.0e-05
+  output:
+    sum:
+    - value
+    where:
+      entity_level: nhs_england_region
+      measure: fte
+- name: headcount_regions_sum_kept_as_published
+  expected:
+    value: 1537351
+  output:
+    sum:
+    - value
+    where:
+      entity_level: nhs_england_region
+      measure: headcount
+rules:
+- type: unique
+  cols: *id018
+  on_fail: halt
+- type: not_null
+  cols:
+  - reference_date
+  - value
+  - source_cell
+  on_fail: halt

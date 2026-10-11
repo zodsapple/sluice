@@ -1,0 +1,954 @@
+name: pharmacy_monthly_landing
+workflow: generic
+description: NHSBSA monthly prescription cost analysis. IDs stay text; quantity is only meaningful with its unit.
+locate:
+  header: 0
+map:
+  YEAR_MONTH:
+    to: YEAR_MONTH
+    required: true
+  BNF_PRESENTATION_CODE:
+    to: BNF_PRESENTATION_CODE
+    required: true
+shape: []
+keys:
+  cols:
+  - YEAR_MONTH
+  - REGION_NAME
+  - REGION_CODE
+  - ICB_NAME
+  - ICB_CODE
+  - DISPENSER_ACCOUNT_TYPE
+  - BNF_PRESENTATION_CODE
+  - BNF_PRESENTATION_NAME
+  - SNOMED_CODE
+  - SUPPLIER_NAME
+  - UNIT_OF_MEASURE
+  - GENERIC_BNF_EQUIVALENT_CODE
+  - GENERIC_BNF_EQUIVALENT_NAME
+  - BNF_CHEMICAL_SUBSTANCE_CODE
+  - BNF_CHEMICAL_SUBSTANCE
+  - BNF_PARAGRAPH_CODE
+  - BNF_PARAGRAPH
+  - BNF_SECTION_CODE
+  - BNF_SECTION
+  - BNF_CHAPTER_CODE
+  - BNF_CHAPTER
+  - PREP_CLASS
+  - PRESCRIBED_PREP_CLASS
+  - PHARMACY_ADVANCED_SERVICE
+  nullable:
+  - SNOMED_CODE
+  - SUPPLIER_NAME
+template:
+  filename: 03_pharmacy_landing.csv
+  columns:
+    YEAR_MONTH: YEAR_MONTH
+    REGION_NAME: REGION_NAME
+    REGION_CODE: REGION_CODE
+    ICB_NAME: ICB_NAME
+    ICB_CODE: ICB_CODE
+    DISPENSER_ACCOUNT_TYPE: DISPENSER_ACCOUNT_TYPE
+    BNF_PRESENTATION_CODE: BNF_PRESENTATION_CODE
+    BNF_PRESENTATION_NAME: BNF_PRESENTATION_NAME
+    SNOMED_CODE: SNOMED_CODE
+    SUPPLIER_NAME: SUPPLIER_NAME
+    UNIT_OF_MEASURE: UNIT_OF_MEASURE
+    GENERIC_BNF_EQUIVALENT_CODE: GENERIC_BNF_EQUIVALENT_CODE
+    GENERIC_BNF_EQUIVALENT_NAME: GENERIC_BNF_EQUIVALENT_NAME
+    BNF_CHEMICAL_SUBSTANCE_CODE: BNF_CHEMICAL_SUBSTANCE_CODE
+    BNF_CHEMICAL_SUBSTANCE: BNF_CHEMICAL_SUBSTANCE
+    BNF_PARAGRAPH_CODE: BNF_PARAGRAPH_CODE
+    BNF_PARAGRAPH: BNF_PARAGRAPH
+    BNF_SECTION_CODE: BNF_SECTION_CODE
+    BNF_SECTION: BNF_SECTION
+    BNF_CHAPTER_CODE: BNF_CHAPTER_CODE
+    BNF_CHAPTER: BNF_CHAPTER
+    PREP_CLASS: PREP_CLASS
+    PRESCRIBED_PREP_CLASS: PRESCRIBED_PREP_CLASS
+    PHARMACY_ADVANCED_SERVICE: PHARMACY_ADVANCED_SERVICE
+    ITEMS:
+      col: ITEMS
+      type: int
+    TOTAL_QUANTITY:
+      col: TOTAL_QUANTITY
+      type: number
+    NIC:
+      col: NIC
+      type: number
+controls:
+- name: rows
+  output:
+    count_rows: true
+  expected:
+    value: 19756
+- name: 202606_rows
+  output:
+    count_rows: true
+    where: &id001
+      YEAR_MONTH: '202606'
+  expected:
+    value: 9834
+- name: 202606_items
+  output:
+    sum:
+    - ITEMS
+    where: *id001
+  expected:
+    value: 2371769
+- name: 202606_nic_gbp
+  output:
+    sum:
+    - NIC
+    where: *id001
+  expected:
+    value: 23461878.47
+- name: 202606_null_snomed
+  output:
+    count_rows: true
+    where:
+      YEAR_MONTH: '202606'
+      SNOMED_CODE:
+        isnull: true
+  expected:
+    value: 3
+- name: 202606_null_supplier
+  output:
+    count_rows: true
+    where:
+      YEAR_MONTH: '202606'
+      SUPPLIER_NAME:
+        isnull: true
+  expected:
+    value: 1905
+- name: 202606_qty_actuation
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202606'
+      UNIT_OF_MEASURE: actuation
+  expected:
+    value: 1512.0
+- name: 202606_qty_ampoule
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202606'
+      UNIT_OF_MEASURE: ampoule
+  expected:
+    value: 49890.0
+- name: 202606_qty_applicator
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202606'
+      UNIT_OF_MEASURE: applicator
+  expected:
+    value: 1591.0
+- name: 202606_qty_bandage
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202606'
+      UNIT_OF_MEASURE: bandage
+  expected:
+    value: 14055.0
+- name: 202606_qty_bottle
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202606'
+      UNIT_OF_MEASURE: bottle
+  expected:
+    value: 20542.0
+- name: 202606_qty_capsule
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202606'
+      UNIT_OF_MEASURE: capsule
+  expected:
+    value: 18033257.0
+- name: 202606_qty_cartridge
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202606'
+      UNIT_OF_MEASURE: cartridge
+  expected:
+    value: 25778.0
+- name: 202606_qty_catheter
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202606'
+      UNIT_OF_MEASURE: catheter
+  expected:
+    value: 15306.0
+- name: 202606_qty_cm
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202606'
+      UNIT_OF_MEASURE: cm
+  expected:
+    value: 248.0
+- name: 202606_qty_device
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202606'
+      UNIT_OF_MEASURE: device
+  expected:
+    value: 57309.0
+- name: 202606_qty_dose
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202606'
+      UNIT_OF_MEASURE: dose
+  expected:
+    value: 154921.0
+- name: 202606_qty_dressing
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202606'
+      UNIT_OF_MEASURE: dressing
+  expected:
+    value: 138381.0
+- name: 202606_qty_enema
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202606'
+      UNIT_OF_MEASURE: enema
+  expected:
+    value: 3758.0
+- name: 202606_qty_film
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202606'
+      UNIT_OF_MEASURE: film
+  expected:
+    value: 439.0
+- name: 202606_qty_glove
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202606'
+      UNIT_OF_MEASURE: glove
+  expected:
+    value: 6658.0
+- name: 202606_qty_gram
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202606'
+      UNIT_OF_MEASURE: gram
+  expected:
+    value: 37270504.5
+- name: 202606_qty_kit
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202606'
+      UNIT_OF_MEASURE: kit
+  expected:
+    value: 20380.0
+- name: 202606_qty_lancet
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202606'
+      UNIT_OF_MEASURE: lancet
+  expected:
+    value: 1016469.0
+- name: 202606_qty_lozenge
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202606'
+      UNIT_OF_MEASURE: lozenge
+  expected:
+    value: 1565.0
+- name: 202606_qty_m
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202606'
+      UNIT_OF_MEASURE: m
+  expected:
+    value: 17925.0
+- name: 202606_qty_ml
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202606'
+      UNIT_OF_MEASURE: ml
+  expected:
+    value: 107769999.3
+- name: 202606_qty_needle
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202606'
+      UNIT_OF_MEASURE: needle
+  expected:
+    value: 1122368.0
+- name: 202606_qty_no value
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202606'
+      UNIT_OF_MEASURE: no value
+  expected:
+    value: 227066.0
+- name: 202606_qty_pack
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202606'
+      UNIT_OF_MEASURE: pack
+  expected:
+    value: 24690.0
+- name: 202606_qty_pad
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202606'
+      UNIT_OF_MEASURE: pad
+  expected:
+    value: 5215.0
+- name: 202606_qty_pastille
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202606'
+      UNIT_OF_MEASURE: pastille
+  expected:
+    value: 24785.0
+- name: 202606_qty_patch
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202606'
+      UNIT_OF_MEASURE: patch
+  expected:
+    value: 177270.0
+- name: 202606_qty_pessary
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202606'
+      UNIT_OF_MEASURE: pessary
+  expected:
+    value: 51730.0
+- name: 202606_qty_piece
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202606'
+      UNIT_OF_MEASURE: piece
+  expected:
+    value: 2503.0
+- name: 202606_qty_plaster
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202606'
+      UNIT_OF_MEASURE: plaster
+  expected:
+    value: 10548.0
+- name: 202606_qty_pot
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202606'
+      UNIT_OF_MEASURE: pot
+  expected:
+    value: 64.0
+- name: 202606_qty_pre-filled disposable injection
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202606'
+      UNIT_OF_MEASURE: pre-filled disposable injection
+  expected:
+    value: 124997.0
+- name: 202606_qty_sachet
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202606'
+      UNIT_OF_MEASURE: sachet
+  expected:
+    value: 1146933.0
+- name: 202606_qty_stocking
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202606'
+      UNIT_OF_MEASURE: stocking
+  expected:
+    value: 1789.0
+- name: 202606_qty_strip
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202606'
+      UNIT_OF_MEASURE: strip
+  expected:
+    value: 1135601.0
+- name: 202606_qty_suppository
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202606'
+      UNIT_OF_MEASURE: suppository
+  expected:
+    value: 30071.0
+- name: 202606_qty_swab
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202606'
+      UNIT_OF_MEASURE: swab
+  expected:
+    value: 44715.0
+- name: 202606_qty_syringe
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202606'
+      UNIT_OF_MEASURE: syringe
+  expected:
+    value: 3127.0
+- name: 202606_qty_system
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202606'
+      UNIT_OF_MEASURE: system
+  expected:
+    value: 5.0
+- name: 202606_qty_tablet
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202606'
+      UNIT_OF_MEASURE: tablet
+  expected:
+    value: 68646111.0
+- name: 202606_qty_tube
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202606'
+      UNIT_OF_MEASURE: tube
+  expected:
+    value: 73.0
+- name: 202606_qty_unit dose
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202606'
+      UNIT_OF_MEASURE: unit dose
+  expected:
+    value: 814947.0
+- name: 202606_qty_vial
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202606'
+      UNIT_OF_MEASURE: vial
+  expected:
+    value: 17649.0
+- name: 202607_rows
+  output:
+    count_rows: true
+    where: &id002
+      YEAR_MONTH: '202607'
+  expected:
+    value: 9922
+- name: 202607_items
+  output:
+    sum:
+    - ITEMS
+    where: *id002
+  expected:
+    value: 2455639
+- name: 202607_nic_gbp
+  output:
+    sum:
+    - NIC
+    where: *id002
+  expected:
+    value: 24445881.09
+- name: 202607_null_snomed
+  output:
+    count_rows: true
+    where:
+      YEAR_MONTH: '202607'
+      SNOMED_CODE:
+        isnull: true
+  expected:
+    value: 3
+- name: 202607_null_supplier
+  output:
+    count_rows: true
+    where:
+      YEAR_MONTH: '202607'
+      SUPPLIER_NAME:
+        isnull: true
+  expected:
+    value: 1905
+- name: 202607_qty_actuation
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202607'
+      UNIT_OF_MEASURE: actuation
+  expected:
+    value: 1820.0
+- name: 202607_qty_ampoule
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202607'
+      UNIT_OF_MEASURE: ampoule
+  expected:
+    value: 51710.0
+- name: 202607_qty_applicator
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202607'
+      UNIT_OF_MEASURE: applicator
+  expected:
+    value: 1517.0
+- name: 202607_qty_bag
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202607'
+      UNIT_OF_MEASURE: bag
+  expected:
+    value: 15.0
+- name: 202607_qty_bandage
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202607'
+      UNIT_OF_MEASURE: bandage
+  expected:
+    value: 11011.0
+- name: 202607_qty_bottle
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202607'
+      UNIT_OF_MEASURE: bottle
+  expected:
+    value: 23340.0
+- name: 202607_qty_capsule
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202607'
+      UNIT_OF_MEASURE: capsule
+  expected:
+    value: 18703744.0
+- name: 202607_qty_cartridge
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202607'
+      UNIT_OF_MEASURE: cartridge
+  expected:
+    value: 26276.0
+- name: 202607_qty_catheter
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202607'
+      UNIT_OF_MEASURE: catheter
+  expected:
+    value: 19335.0
+- name: 202607_qty_cm
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202607'
+      UNIT_OF_MEASURE: cm
+  expected:
+    value: 243.0
+- name: 202607_qty_device
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202607'
+      UNIT_OF_MEASURE: device
+  expected:
+    value: 62568.0
+- name: 202607_qty_dose
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202607'
+      UNIT_OF_MEASURE: dose
+  expected:
+    value: 156086.0
+- name: 202607_qty_dressing
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202607'
+      UNIT_OF_MEASURE: dressing
+  expected:
+    value: 146553.0
+- name: 202607_qty_enema
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202607'
+      UNIT_OF_MEASURE: enema
+  expected:
+    value: 3964.0
+- name: 202607_qty_film
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202607'
+      UNIT_OF_MEASURE: film
+  expected:
+    value: 418.0
+- name: 202607_qty_glove
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202607'
+      UNIT_OF_MEASURE: glove
+  expected:
+    value: 5875.0
+- name: 202607_qty_gram
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202607'
+      UNIT_OF_MEASURE: gram
+  expected:
+    value: 38552527.3
+- name: 202607_qty_kit
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202607'
+      UNIT_OF_MEASURE: kit
+  expected:
+    value: 21693.0
+- name: 202607_qty_lancet
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202607'
+      UNIT_OF_MEASURE: lancet
+  expected:
+    value: 1016005.0
+- name: 202607_qty_litre
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202607'
+      UNIT_OF_MEASURE: litre
+  expected:
+    value: 30000.0
+- name: 202607_qty_lozenge
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202607'
+      UNIT_OF_MEASURE: lozenge
+  expected:
+    value: 1894.0
+- name: 202607_qty_m
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202607'
+      UNIT_OF_MEASURE: m
+  expected:
+    value: 18180.5
+- name: 202607_qty_ml
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202607'
+      UNIT_OF_MEASURE: ml
+  expected:
+    value: 112869172.4
+- name: 202607_qty_needle
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202607'
+      UNIT_OF_MEASURE: needle
+  expected:
+    value: 1163594.0
+- name: 202607_qty_no value
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202607'
+      UNIT_OF_MEASURE: no value
+  expected:
+    value: 173935.0
+- name: 202607_qty_pack
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202607'
+      UNIT_OF_MEASURE: pack
+  expected:
+    value: 24143.0
+- name: 202607_qty_pad
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202607'
+      UNIT_OF_MEASURE: pad
+  expected:
+    value: 5668.0
+- name: 202607_qty_pastille
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202607'
+      UNIT_OF_MEASURE: pastille
+  expected:
+    value: 24436.0
+- name: 202607_qty_patch
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202607'
+      UNIT_OF_MEASURE: patch
+  expected:
+    value: 183131.0
+- name: 202607_qty_pessary
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202607'
+      UNIT_OF_MEASURE: pessary
+  expected:
+    value: 55091.0
+- name: 202607_qty_piece
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202607'
+      UNIT_OF_MEASURE: piece
+  expected:
+    value: 1803.0
+- name: 202607_qty_plaster
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202607'
+      UNIT_OF_MEASURE: plaster
+  expected:
+    value: 11204.0
+- name: 202607_qty_pot
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202607'
+      UNIT_OF_MEASURE: pot
+  expected:
+    value: 16.0
+- name: 202607_qty_pre-filled disposable injection
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202607'
+      UNIT_OF_MEASURE: pre-filled disposable injection
+  expected:
+    value: 127365.0
+- name: 202607_qty_sachet
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202607'
+      UNIT_OF_MEASURE: sachet
+  expected:
+    value: 1189889.0
+- name: 202607_qty_stocking
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202607'
+      UNIT_OF_MEASURE: stocking
+  expected:
+    value: 1966.0
+- name: 202607_qty_strip
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202607'
+      UNIT_OF_MEASURE: strip
+  expected:
+    value: 1151300.0
+- name: 202607_qty_suppository
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202607'
+      UNIT_OF_MEASURE: suppository
+  expected:
+    value: 33170.0
+- name: 202607_qty_swab
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202607'
+      UNIT_OF_MEASURE: swab
+  expected:
+    value: 51680.0
+- name: 202607_qty_syringe
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202607'
+      UNIT_OF_MEASURE: syringe
+  expected:
+    value: 4616.0
+- name: 202607_qty_system
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202607'
+      UNIT_OF_MEASURE: system
+  expected:
+    value: 30.0
+- name: 202607_qty_tablet
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202607'
+      UNIT_OF_MEASURE: tablet
+  expected:
+    value: 71296074.0
+- name: 202607_qty_tube
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202607'
+      UNIT_OF_MEASURE: tube
+  expected:
+    value: 64.0
+- name: 202607_qty_unit dose
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202607'
+      UNIT_OF_MEASURE: unit dose
+  expected:
+    value: 860954.0
+- name: 202607_qty_vial
+  output:
+    sum:
+    - TOTAL_QUANTITY
+    where:
+      YEAR_MONTH: '202607'
+      UNIT_OF_MEASURE: vial
+  expected:
+    value: 20700.0

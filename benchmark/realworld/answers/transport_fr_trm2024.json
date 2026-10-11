@@ -1,0 +1,409 @@
+{
+ "O_D_NST": [
+  {
+   "kind": "column",
+   "target": "report_year",
+   "args": {
+    "source": "annee"
+   }
+  },
+  {
+   "kind": "template",
+   "target": "commodity_code",
+   "args": {
+    "template": "TOTAL",
+    "where": {
+     "division_marchandises": {
+      "isnull": true
+     }
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "commodity_code",
+   "args": {
+    "template": "{division_marchandises}",
+    "where": {
+     "division_marchandises": {
+      "notnull": true
+     }
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "commodity_label",
+   "args": {
+    "source": "marchandises"
+   }
+  },
+  {
+   "kind": "template",
+   "target": "aggregation_level",
+   "args": {
+    "template": "total",
+    "where": {
+     "division_marchandises": {
+      "isnull": true
+     }
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "aggregation_level",
+   "args": {
+    "template": "commodity",
+    "where": {
+     "division_marchandises": {
+      "notnull": true
+     }
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "raw_value",
+   "args": {
+    "source": "cell_value"
+   }
+  },
+  {
+   "kind": "template",
+   "target": "value_status",
+   "args": {
+    "template": "suppressed",
+    "where": {
+     "cell_value": "s"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "value_status",
+   "args": {
+    "template": "reported",
+    "where": {
+     "cell_value": {
+      "not_in": [
+       "s"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "source_row",
+   "args": {
+    "source": "_src_row"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "table_kind",
+   "args": {
+    "value": "origin_destination"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "origin_region_code",
+   "args": {
+    "source": "numero_regions_de_chargement"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "destination_region_code",
+   "args": {
+    "source": "numero_regions_de_dechargement"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "direction",
+   "args": {
+    "value": "origin_to_destination"
+   }
+  },
+  {
+   "kind": "row_scope",
+   "args": {
+    "conditions": [
+     {
+      "column": "numero_regions_de_chargement",
+      "equals": "11"
+     },
+     {
+      "column": "numero_regions_de_dechargement",
+      "in": [
+       "11",
+       "24"
+      ]
+     }
+    ],
+    "mode": "all"
+   }
+  },
+  {
+   "kind": "grid_scope",
+   "args": {
+    "dimension": "dim1",
+    "include": [
+     "Tonnes_kilometres(en millions)",
+     "Tonnes(en milliers)"
+    ]
+   }
+  },
+  {
+   "kind": "column",
+   "target": "metric",
+   "args": {
+    "source": "dim1",
+    "mapping": {
+     "Tonnes_kilometres(en millions)": "freight_work",
+     "Tonnes(en milliers)": "freight_mass"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "unit",
+   "args": {
+    "source": "dim1",
+    "mapping": {
+     "Tonnes_kilometres(en millions)": "tonne_km",
+     "Tonnes(en milliers)": "tonnes"
+    }
+   }
+  },
+  {
+   "kind": "scale",
+   "target": "value",
+   "args": {
+    "source": "cell_value",
+    "factor": 1000000,
+    "where": {
+     "dim1": "Tonnes_kilometres(en millions)"
+    }
+   }
+  },
+  {
+   "kind": "scale",
+   "target": "value",
+   "args": {
+    "source": "cell_value",
+    "factor": 1000,
+    "where": {
+     "dim1": "Tonnes(en milliers)"
+    }
+   }
+  }
+ ],
+ "Flux_E_I_S_NST_2024": [
+  {
+   "kind": "column",
+   "target": "report_year",
+   "args": {
+    "source": "annee"
+   }
+  },
+  {
+   "kind": "template",
+   "target": "commodity_code",
+   "args": {
+    "template": "TOTAL",
+    "where": {
+     "division_marchandises": {
+      "isnull": true
+     }
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "commodity_code",
+   "args": {
+    "template": "{division_marchandises}",
+    "where": {
+     "division_marchandises": {
+      "notnull": true
+     }
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "commodity_label",
+   "args": {
+    "source": "marchandises"
+   }
+  },
+  {
+   "kind": "template",
+   "target": "aggregation_level",
+   "args": {
+    "template": "total",
+    "where": {
+     "division_marchandises": {
+      "isnull": true
+     }
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "aggregation_level",
+   "args": {
+    "template": "commodity",
+    "where": {
+     "division_marchandises": {
+      "notnull": true
+     }
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "raw_value",
+   "args": {
+    "source": "cell_value"
+   }
+  },
+  {
+   "kind": "template",
+   "target": "value_status",
+   "args": {
+    "template": "suppressed",
+    "where": {
+     "cell_value": "s"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "value_status",
+   "args": {
+    "template": "reported",
+    "where": {
+     "cell_value": {
+      "not_in": [
+       "s"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "source_row",
+   "args": {
+    "source": "_src_row"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "table_kind",
+   "args": {
+    "value": "regional_flow"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "region_code",
+   "args": {
+    "source": "regions"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "direction",
+   "args": {
+    "source": "dim1",
+    "mapping": {
+     "Flux Entrants": "inbound",
+     "Flux Internes": "internal",
+     "Flux sortant": "outbound"
+    }
+   }
+  },
+  {
+   "kind": "row_scope",
+   "args": {
+    "conditions": [
+     {
+      "column": "regions",
+      "equals": "11"
+     }
+    ],
+    "mode": "all"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "metric",
+   "args": {
+    "source": "dim2",
+    "mapping": {
+     "TKM_Entrant(en millions)": "freight_work",
+     "TKM_Internes": "freight_work",
+     "TKM_Sortant": "freight_work",
+     "Tonnes_Entrant(en Milliers)": "freight_mass",
+     "Tonnes_Internes": "freight_mass",
+     "Tonnes_Sortant": "freight_mass"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "unit",
+   "args": {
+    "source": "dim2",
+    "mapping": {
+     "TKM_Entrant(en millions)": "tonne_km",
+     "TKM_Internes": "tonne_km",
+     "TKM_Sortant": "tonne_km",
+     "Tonnes_Entrant(en Milliers)": "tonnes",
+     "Tonnes_Internes": "tonnes",
+     "Tonnes_Sortant": "tonnes"
+    }
+   }
+  },
+  {
+   "kind": "scale",
+   "target": "value",
+   "args": {
+    "source": "cell_value",
+    "factor": 1000000,
+    "where": {
+     "dim2": {
+      "in": [
+       "TKM_Entrant(en millions)",
+       "TKM_Internes",
+       "TKM_Sortant"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "kind": "scale",
+   "target": "value",
+   "args": {
+    "source": "cell_value",
+    "factor": 1000,
+    "where": {
+     "dim2": {
+      "in": [
+       "Tonnes_Entrant(en Milliers)",
+       "Tonnes_Internes",
+       "Tonnes_Sortant"
+      ]
+     }
+    }
+   }
+  }
+ ]
+}

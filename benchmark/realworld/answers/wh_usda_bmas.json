@@ -1,0 +1,131 @@
+{
+ "*": [
+  {
+   "kind": "constant",
+   "target": "location_id",
+   "args": {
+    "value": "US"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "location_level",
+   "args": {
+    "value": "national"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "product_id",
+   "args": {
+    "value": "cotton"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "product_name",
+   "args": {
+    "value": "Cotton"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "period_end",
+   "args": {
+    "source": "report_ending_date",
+    "as_date": true
+   }
+  },
+  {
+   "kind": "column",
+   "target": "metric",
+   "args": {
+    "source": "dim1",
+    "mapping": {
+     "Receipted Inventory": "receipted_inventory",
+     "Unreceipted Inventory": "unreceipted_inventory",
+     "Total Inventory (submitted)": "stock_on_hand",
+     "Effective Capacity (submitted)": "effective_capacity",
+     "Total Capacity (submitted)": "total_capacity",
+     "Bales Shipped": "bales_shipped",
+     "Bales Not Picked Up": "bales_not_picked_up",
+     "BMAS": "bmas",
+     "Flow Reports Submitted": "flow_reports_submitted",
+     "Approved Warehouses": "approved_warehouses",
+     "Effective Capacity (all)": "effective_capacity",
+     "Total Capacity (all)": "total_capacity"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "unit",
+   "args": {
+    "source": "dim1",
+    "mapping": {
+     "Receipted Inventory": "bale",
+     "Unreceipted Inventory": "bale",
+     "Total Inventory (submitted)": "bale",
+     "Effective Capacity (submitted)": "bale",
+     "Total Capacity (submitted)": "bale",
+     "Bales Shipped": "bale",
+     "Bales Not Picked Up": "bale",
+     "BMAS": "bale",
+     "Flow Reports Submitted": "report",
+     "Approved Warehouses": "warehouse",
+     "Effective Capacity (all)": "bale",
+     "Total Capacity (all)": "bale"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "inventory_basis",
+   "args": {
+    "source": "dim1",
+    "mapping": {
+     "Receipted Inventory": "submitted",
+     "Unreceipted Inventory": "submitted",
+     "Total Inventory (submitted)": "submitted",
+     "Effective Capacity (submitted)": "submitted",
+     "Total Capacity (submitted)": "submitted",
+     "Bales Shipped": "submitted",
+     "Bales Not Picked Up": "submitted",
+     "BMAS": "submitted",
+     "Flow Reports Submitted": "submitted",
+     "Approved Warehouses": "all",
+     "Effective Capacity (all)": "all",
+     "Total Capacity (all)": "all"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "source_row",
+   "args": {
+    "source": "_src_row"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "record_kind",
+   "args": {
+    "source": "dim1",
+    "mapping": {
+     "Receipted Inventory": "inventory_snapshot",
+     "Unreceipted Inventory": "inventory_snapshot",
+     "Total Inventory (submitted)": "inventory_snapshot",
+     "Effective Capacity (submitted)": "capacity_snapshot",
+     "Total Capacity (submitted)": "capacity_snapshot",
+     "Bales Shipped": "weekly_flow",
+     "Bales Not Picked Up": "weekly_flow",
+     "BMAS": "weekly_flow",
+     "Flow Reports Submitted": "reporting_coverage",
+     "Approved Warehouses": "reporting_coverage",
+     "Effective Capacity (all)": "capacity_snapshot",
+     "Total Capacity (all)": "capacity_snapshot"
+    }
+   }
+  }
+ ]
+}

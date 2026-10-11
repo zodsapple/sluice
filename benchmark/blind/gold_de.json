@@ -1,0 +1,306 @@
+{
+ "74111-03": [
+  {
+   "kind": "sheet_cell",
+   "target": "measure",
+   "args": {
+    "cell": "A2",
+    "mapping": {
+     "Beschäftigte": "headcount"
+    }
+   }
+  },
+  {
+   "kind": "sheet_cell",
+   "target": "unit",
+   "args": {
+    "cell": "A2",
+    "mapping": {
+     "Beschäftigte": "persons"
+    }
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "period_basis",
+   "args": {
+    "value": "point_in_time"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "population_scope",
+   "args": {
+    "value": "DE_public_service"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "breakdown_dimension",
+   "args": {
+    "value": "functional_area_haushaltssystematik_2012"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "category",
+   "args": {
+    "source": "unnamed_2"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "category_code",
+   "args": {
+    "source": "unnamed_1"
+   }
+  },
+  {
+   "kind": "template",
+   "target": "category_level",
+   "args": {
+    "template": "subfunction"
+   }
+  },
+  {
+   "kind": "template",
+   "target": "category_level",
+   "args": {
+    "template": "major_function",
+    "where": {
+     "unnamed_1": {
+      "regex": "^\\d$"
+     }
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "category_level",
+   "args": {
+    "template": "total",
+    "where": {
+     "unnamed_1": "0-8"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "employment_area",
+   "args": {
+    "source": "aufgabenbereich_haushaltssystematik_2012",
+    "mapping": {
+     "Öffentlicher Dienst insgesamt": "all_public_service",
+     "dar. Bundesbereich": "federal",
+     "dar. Landesbereich": "state",
+     "dar. kommunaler Bereich": "municipal"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "employment_relationship",
+   "args": {
+    "source": "dim1",
+    "mapping": {
+     "Insgesamt": "all",
+     "Beamte/Beamtinnen, Richter/-innen, Berufs- und Zeitsoldaten/-soldatinnen": "civil_servants_judges_military",
+     "Arbeitnehmer": "employees"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "sex",
+   "args": {
+    "source": "dim2",
+    "mapping": {
+     "Insgesamt": "all",
+     "Zusammen": "all",
+     "Männer": "male",
+     "Frauen": "female"
+    }
+   }
+  },
+  {
+   "kind": "unknown",
+   "target": "entity_level",
+   "args": {
+    "reason": "the source has no such dimension"
+   }
+  },
+  {
+   "kind": "unknown",
+   "target": "entity_code",
+   "args": {
+    "reason": "the source has no such dimension"
+   }
+  },
+  {
+   "kind": "unknown",
+   "target": "entity_name",
+   "args": {
+    "reason": "the source has no such dimension"
+   }
+  },
+  {
+   "kind": "unknown",
+   "target": "aggregation_level",
+   "args": {
+    "reason": "the source has no such dimension"
+   }
+  }
+ ],
+ "74111-04": [
+  {
+   "kind": "sheet_cell",
+   "target": "measure",
+   "args": {
+    "cell": "A2",
+    "mapping": {
+     "Vollzeitäquivalent": "fte"
+    }
+   }
+  },
+  {
+   "kind": "sheet_cell",
+   "target": "unit",
+   "args": {
+    "cell": "A2",
+    "mapping": {
+     "Vollzeitäquivalent": "fte"
+    }
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "period_basis",
+   "args": {
+    "value": "point_in_time"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "population_scope",
+   "args": {
+    "value": "DE_public_service"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "breakdown_dimension",
+   "args": {
+    "value": "functional_area_haushaltssystematik_2012"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "category",
+   "args": {
+    "source": "unnamed_2"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "category_code",
+   "args": {
+    "source": "unnamed_1"
+   }
+  },
+  {
+   "kind": "template",
+   "target": "category_level",
+   "args": {
+    "template": "subfunction"
+   }
+  },
+  {
+   "kind": "template",
+   "target": "category_level",
+   "args": {
+    "template": "major_function",
+    "where": {
+     "unnamed_1": {
+      "regex": "^\\d$"
+     }
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "category_level",
+   "args": {
+    "template": "total",
+    "where": {
+     "unnamed_1": "0-8"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "employment_area",
+   "args": {
+    "source": "aufgabenbereich_haushaltssystematik_2012",
+    "mapping": {
+     "Öffentlicher Dienst insgesamt": "all_public_service",
+     "dar. Bundesbereich": "federal",
+     "dar. Landesbereich": "state",
+     "dar. kommunaler Bereich": "municipal"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "employment_relationship",
+   "args": {
+    "source": "dim1",
+    "mapping": {
+     "Insgesamt": "all",
+     "Beamte/Beamtinnen, Richter/-innen, Berufs- und Zeitsoldaten/-soldatinnen": "civil_servants_judges_military",
+     "Arbeitnehmer": "employees"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "sex",
+   "args": {
+    "source": "dim2",
+    "mapping": {
+     "Insgesamt": "all",
+     "Zusammen": "all",
+     "Männer": "male",
+     "Frauen": "female"
+    }
+   }
+  },
+  {
+   "kind": "unknown",
+   "target": "entity_level",
+   "args": {
+    "reason": "the source has no such dimension"
+   }
+  },
+  {
+   "kind": "unknown",
+   "target": "entity_code",
+   "args": {
+    "reason": "the source has no such dimension"
+   }
+  },
+  {
+   "kind": "unknown",
+   "target": "entity_name",
+   "args": {
+    "reason": "the source has no such dimension"
+   }
+  },
+  {
+   "kind": "unknown",
+   "target": "aggregation_level",
+   "args": {
+    "reason": "the source has no such dimension"
+   }
+  }
+ ]
+}

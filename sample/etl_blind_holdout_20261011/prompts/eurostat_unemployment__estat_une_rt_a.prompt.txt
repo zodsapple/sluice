@@ -1,0 +1,331 @@
+### INSTRUCTIONS
+
+You complete a data-mapping draft. A workbook sheet was already parsed (header rows, group rows,
+multi-level headers). You get the target fields that are still unbound, and the facts available on that sheet.
+Answer ONLY with JSON: {"answers":[{"question_id": str, "bindings":[...], "status": "answered"|"unknown"}]}.
+
+A binding is {"kind","target","args","confidence","evidence"}; kinds and args (nothing else exists):
+  constant   {value}                       same value on every row
+  column     {source, mapping?, verbatim?, extract?} copy a listed source; mapping translates its values (list EVERY value you can);
+                                           verbatim:true keeps the text untrimmed; extract = regex whose first group is the value
+  period     {source, part}                part = start | end | type of the period a label names (2023, 2023 Q2, JAN 2023 ...)
+  arith      {op, a, b, decimals?}         op = mul | add | sub | div of two sources or fields
+  sheet_cell {cell, mapping?|date?}        a fact printed once on the sheet; mapping = substring -> value
+  template   {template, where?}            text with {source} placeholders; where = {source: value | {regex|not_regex|in|not_in|isnull|notnull: ..}}
+  scale      {source, factor}              numeric source x factor
+  group_flag {by:[names], repeated, otherwise}   repeated when another row has the same values in `by` (names = sources or fields), else otherwise
+  row_scope  {conditions:[{column, equals|in|not_in|regex|not_regex|same_as}], mode:"all"|"any"}    (no target)
+  grid_scope {dimension, include:[...]}    (no target)
+Questions: {"id","targets"} = bind these fields (any kind except row_scope/grid_scope); a question with "kind":"scope" is
+answered with row_scope / grid_scope bindings only (the id ends with the kind). One answer entry per question id.
+Rules: use only names, values and cells that appear in the packet. For fields with allowed values use only those values.
+For a free-text field ("precedents" lists values other, already approved sources use for it) write the value in the same
+style, via "mapping" when it depends on a source column. Copying source labels unchanged into such a field is almost always
+wrong: translate them with "mapping" or answer "unknown". row_scope / grid_scope: list EVERY row / column group that belongs to
+the extraction - detail rows and totals are usually both wanted unless the packet says otherwise. "example_row" is the
+template's own example for the fields asked: a value that occurs in a listed source, or equals one of its mapped values, is
+strong evidence which source the field is. It is ONE row: never copy its value as a constant for a field that may differ
+between rows (flags, statuses, types, counts) - answer "unknown" unless a listed source or cell decides it. A source marked
+"partial" shows only a sample of its values: never list the sample as an "in" list; state the rule instead (equals, not_in
+for the few values to drop, regex / not_regex for a naming pattern such as a total label) or answer "unknown".
+Date fields are ISO text YYYY-MM-DD. When the date follows from a listed source (a year or month label), build it with a
+template, e.g. "{year}-12-31"; when it differs between cases, give one template binding per case, each with its own
+"where" (see example 3). Use "sheet_cell" with date for a date printed once on the sheet.
+A field defined for only some rows ("filled on X rows only"): one "template" with a "where" for those rows; rows outside the
+"where" stay empty. A two-valued field defined by a condition: one template per value, the second with "not_in" / "not_regex"
+(see example 4). Several bindings for one field are only allowed in this template + where form.
+If the evidence does not decide it, return status "unknown" - do not guess. confidence is 0..1; evidence lists the
+source names / cells you relied on. Several bindings for one target are allowed only as template + where cases.
+
+### EXAMPLES (unrelated domain; only to show the reply shape)
+
+Example 1 input:
+
+{"questions": [{"id": "s1:status", "targets": ["status"]}], "sources": [{"name": "state", "kind": "column", "n": 2, "from": "State", "distinct": ["OPEN", "CLOSED"]}], "schema": [{"name": "status", "allowed": ["open", "closed"], "meaning": "ticket status"}]}
+
+Example 1 reply:
+
+{"answers": [{"question_id": "s1:status", "status": "answered", "bindings": [{"kind": "column", "target": "status", "args": {"source": "state", "mapping": {"OPEN": "open", "CLOSED": "closed"}}, "confidence": 0.95, "evidence": ["state"]}]}]}
+
+Example 2 input:
+
+{"questions": [{"id": "s1:currency", "targets": ["currency"]}], "schema": [{"name": "currency", "meaning": "ISO code"}], "cells": {"A2": "Orders in thousand"}}
+
+Example 2 reply:
+
+{"answers": [{"question_id": "s1:currency", "status": "unknown", "bindings": []}]}
+
+Example 3 input:
+
+{"questions": [{"id": "s1:day", "targets": ["day"]}], "sources": [{"name": "yr", "kind": "dim", "n": 2, "from": "upper header level", "distinct": ["2020", "2021"]}, {"name": "kind", "kind": "group", "n": 2, "from": "group header rows", "distinct": ["Stock at 1 July", "Sales over the year"]}], "schema": [{"name": "day", "type": "date", "meaning": "date the value refers to (ISO)"}]}
+
+Example 3 reply:
+
+{"answers": [{"question_id": "s1:day", "status": "answered", "bindings": [{"kind": "template", "target": "day", "args": {"template": "{yr}-07-01", "where": {"kind": "Stock at 1 July"}}, "confidence": 0.9, "evidence": ["yr", "kind"]}, {"kind": "template", "target": "day", "args": {"template": "{yr}-12-31", "where": {"kind": "Sales over the year"}}, "confidence": 0.8, "evidence": ["yr", "kind"]}]}]}
+
+Example 4 input:
+
+{"questions": [{"id": "s1:row_kind", "targets": ["row_kind"]}, {"id": "s1:units", "targets": ["units"]}, {"id": "s1:is_gift", "targets": ["is_gift"]}], "sources": [{"name": "item_code", "kind": "column", "n": 3, "from": "Item", "distinct": ["NA", "A1", "B7"]}, {"name": "qty", "kind": "column", "n": 40, "from": "Qty"}, {"name": "note", "kind": "column", "n": 3, "from": "Note", "distinct": ["GIFT", "RETURN", "-"]}], "schema": [{"name": "row_kind", "meaning": "'summary' for a total line (item NA), 'line' for an item line"}, {"name": "units", "meaning": "quantity; filled on item lines only, empty on summary lines"}, {"name": "is_gift", "meaning": "'yes' when the note is exactly GIFT, otherwise 'no'"}]}
+
+Example 4 reply:
+
+{"answers": [{"question_id": "s1:row_kind", "status": "answered", "bindings": [{"kind": "template", "target": "row_kind", "args": {"template": "summary", "where": {"item_code": "NA"}}, "confidence": 0.9, "evidence": ["item_code"]}, {"kind": "template", "target": "row_kind", "args": {"template": "line", "where": {"item_code": {"not_in": ["NA"]}}}, "confidence": 0.9, "evidence": ["item_code"]}]}, {"question_id": "s1:units", "status": "answered", "bindings": [{"kind": "template", "target": "units", "args": {"template": "{qty}", "where": {"item_code": {"not_in": ["NA"]}}}, "confidence": 0.85, "evidence": ["qty", "item_code"]}]}, {"question_id": "s1:is_gift", "status": "answered", "bindings": [{"kind": "template", "target": "is_gift", "args": {"template": "yes", "where": {"note": "GIFT"}}, "confidence": 0.9, "evidence": ["note"]}, {"kind": "template", "target": "is_gift", "args": {"template": "no", "where": {"note": {"not_in": ["GIFT"]}}}, "confidence": 0.9, "evidence": ["note"]}]}]}
+
+### PACKET (answer this one)
+
+{
+ "sheet": "estat_une_rt_a",
+ "layout": "wide",
+ "schema": [
+  {
+   "name": "geo",
+   "meaning": ""
+  },
+  {
+   "name": "age_group",
+   "meaning": ""
+  },
+  {
+   "name": "sex",
+   "meaning": ""
+  },
+  {
+   "name": "unit",
+   "meaning": ""
+  },
+  {
+   "name": "rate",
+   "type": "decimal",
+   "meaning": ""
+  }
+ ],
+ "questions": [
+  {
+   "id": "estat_une_rt_a:geo",
+   "targets": [
+    "geo"
+   ]
+  },
+  {
+   "id": "estat_une_rt_a:age_group",
+   "targets": [
+    "age_group"
+   ]
+  },
+  {
+   "id": "estat_une_rt_a:sex",
+   "targets": [
+    "sex"
+   ]
+  },
+  {
+   "id": "estat_une_rt_a:unit",
+   "targets": [
+    "unit"
+   ]
+  },
+  {
+   "id": "estat_une_rt_a:rate",
+   "targets": [
+    "rate"
+   ]
+  },
+  {
+   "id": "estat_une_rt_a:grid_scope",
+   "kind": "scope",
+   "ask": "23 x 1 value columns: which belong to the extraction?"
+  }
+ ],
+ "sources": [
+  {
+   "name": "dim1",
+   "kind": "dim",
+   "n": 23,
+   "from": "value column headers",
+   "distinct": [
+    "2003",
+    "2004",
+    "2005",
+    "2006",
+    "2007",
+    "2008",
+    "2009",
+    "2010",
+    "2011",
+    "2012",
+    "2013",
+    "2014",
+    "2015",
+    "2016",
+    "2017",
+    "2018",
+    "2019",
+    "2020",
+    "2021",
+    "2022",
+    "2023",
+    "2024",
+    "2025"
+   ]
+  },
+  {
+   "name": "unit",
+   "kind": "column",
+   "n": 3,
+   "from": "part of a composite key column",
+   "distinct": [
+    "PC_ACT",
+    "PC_POP",
+    "THS_PER"
+   ]
+  },
+  {
+   "name": "sex",
+   "kind": "column",
+   "n": 3,
+   "from": "part of a composite key column",
+   "distinct": [
+    "F",
+    "M",
+    "T"
+   ]
+  },
+  {
+   "name": "geo",
+   "kind": "column",
+   "n": 38,
+   "from": "part of a composite key column",
+   "distinct": [
+    "AT",
+    "BA",
+    "BE",
+    "BG",
+    "CH",
+    "CY",
+    "CZ",
+    "DE",
+    "DK",
+    "EA20",
+    "EA21",
+    "EE",
+    "EL",
+    "ES",
+    "EU27_2020",
+    "FI",
+    "FR",
+    "HR",
+    "HU",
+    "IE",
+    "IS",
+    "IT",
+    "LT",
+    "LU",
+    "LV",
+    "ME",
+    "MK",
+    "MT",
+    "NL",
+    "NO",
+    "PL",
+    "PT",
+    "RO",
+    "RS",
+    "SE",
+    "SI",
+    "SK",
+    "TR"
+   ]
+  },
+  {
+   "name": "age",
+   "kind": "column",
+   "n": 7,
+   "from": "part of a composite key column",
+   "distinct": [
+    "Y15-24",
+    "Y15-29",
+    "Y15-74",
+    "Y20-64",
+    "Y25-54",
+    "Y25-74",
+    "Y55-74"
+   ]
+  },
+  {
+   "name": "cell_value",
+   "kind": "value",
+   "n": 0,
+   "from": "melted cells"
+  },
+  {
+   "name": "freq",
+   "kind": "column",
+   "n": 1,
+   "from": "part of a composite key column",
+   "distinct": [
+    "A"
+   ]
+  }
+ ],
+ "cells": {},
+ "header_dimensions": {
+  "dim1": [
+   "2003",
+   "2004",
+   "2005",
+   "2006",
+   "2007",
+   "2008",
+   "2009",
+   "2010",
+   "2011",
+   "2012",
+   "2013",
+   "2014",
+   "2015",
+   "2016",
+   "2017",
+   "2018",
+   "2019",
+   "2020",
+   "2021",
+   "2022",
+   "2023",
+   "2024",
+   "2025"
+  ]
+ },
+ "file_name": "estat_une_rt_a.tsv",
+ "example_row": {
+  "geo": "AT",
+  "age_group": "Y15-24",
+  "sex": "F",
+  "unit": "PC_ACT",
+  "rate": "10.5"
+ },
+ "non_numeric_value_tokens": [
+  "0 u",
+  "0.3 b",
+  "0.3 u",
+  "0.4 b",
+  "0.4 u",
+  "0.5 u"
+ ],
+ "already_bound": {
+  "source_id": "constant eurostat_unemployment",
+  "unit": "column unit",
+  "sex": "column sex",
+  "geo": "column geo",
+  "age_group": "column age",
+  "year": "column dim1",
+  "rate": "column cell_value"
+ },
+ "conventions": [
+  "Missing values (written ':') are left out.",
+  "A letter after a value is a Eurostat flag: the number goes to rate, the letter to flag.",
+  "Leading and trailing spaces of text are removed."
+ ]
+}
+
+### YOUR REPLY
+One JSON object only, no prose, no code fence. It must contain one entry in "answers" for EVERY question id in the packet (use status "unknown" when you cannot decide). Do not return an empty list.

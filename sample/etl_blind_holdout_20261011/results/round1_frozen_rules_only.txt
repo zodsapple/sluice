@@ -1,0 +1,8 @@
+wb_population                  record FAIL          Q=4    missing=17460  extra=262    mismatch=0     rows 267/17460 fields 0/5 
+ons_cpi                        record FAIL          Q=5    missing=618    extra=618    mismatch=38    rows 656/656 fields 3/6 
+census_state_pop               record FAIL          Q=4    missing=285    extra=1      mismatch=0     rows 58/285 fields 0/6 
+census_county_pop              record FAIL          Q=4    missing=335    extra=1      mismatch=0     rows 69/335 fields 0/6 
+eurostat_unemployment          -      CRASH         Q=-    missing=-      extra=-      mismatch=-      EngineError: Cannot read estat_une_rt_a.tsv: File is not a zip file
+cdc_covid_deaths               record FAIL          Q=1    missing=0      extra=2754   mismatch=0     rows 137700/11016 fields 0/8 
+uk_gender_pay_gap              record FAIL          Q=3    missing=0      extra=0      mismatch=11168 rows 11168/11168 fields 9/12 
+uci_online_retail              record FAIL          Q=2    missing=0      extra=0      mismatch=541909 rows 541909/541909 fields 10/12 

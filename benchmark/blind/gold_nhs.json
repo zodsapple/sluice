@@ -1,0 +1,463 @@
+{
+ "2": [
+  {
+   "kind": "grid_scope",
+   "args": {
+    "dimension": "dim1",
+    "include": [
+     "All staff groups"
+    ]
+   }
+  },
+  {
+   "kind": "grid_scope",
+   "args": {
+    "dimension": "dim2",
+    "include": [
+     "All staff groups"
+    ]
+   }
+  },
+  {
+   "kind": "row_scope",
+   "args": {
+    "conditions": [
+     {
+      "column": "ics_code",
+      "equals": "All ICS areas"
+     },
+     {
+      "column": "organisation_code",
+      "equals": "All organisations"
+     }
+    ],
+    "mode": "all"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "breakdown_dimension",
+   "args": {
+    "value": "region"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "category",
+   "args": {
+    "source": "nhs_england_region_name"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "unit",
+   "args": {
+    "source": "data_type",
+    "mapping": {
+     "FTE": "fte"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "entity_level",
+   "args": {
+    "template": "nhs_england_region"
+   }
+  },
+  {
+   "kind": "template",
+   "target": "entity_level",
+   "args": {
+    "template": "country",
+    "where": {
+     "nhs_england_region_code": "England"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "entity_code",
+   "args": {
+    "source": "nhs_england_region_code"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "entity_name",
+   "args": {
+    "source": "nhs_england_region_name"
+   }
+  },
+  {
+   "kind": "template",
+   "target": "aggregation_level",
+   "args": {
+    "template": "regional_total"
+   }
+  },
+  {
+   "kind": "template",
+   "target": "aggregation_level",
+   "args": {
+    "template": "national_total",
+    "where": {
+     "nhs_england_region_code": "England"
+    }
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "period_basis",
+   "args": {
+    "value": "point_in_time"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "population_scope",
+   "args": {
+    "value": "Paid substantive HCHS staff directly employed in NHS trusts and other core organisations in England; excludes primary care and bank/agency staff"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "sex",
+   "args": {
+    "value": "all"
+   }
+  },
+  {
+   "kind": "unknown",
+   "target": "category_code",
+   "args": {
+    "reason": "the source has no such dimension"
+   }
+  },
+  {
+   "kind": "unknown",
+   "target": "category_level",
+   "args": {
+    "reason": "the source has no such dimension"
+   }
+  },
+  {
+   "kind": "unknown",
+   "target": "employment_area",
+   "args": {
+    "reason": "the source has no such dimension"
+   }
+  },
+  {
+   "kind": "unknown",
+   "target": "employment_relationship",
+   "args": {
+    "reason": "the source has no such dimension"
+   }
+  }
+ ],
+ "3": [
+  {
+   "kind": "grid_scope",
+   "args": {
+    "dimension": "dim1",
+    "include": [
+     "All staff groups"
+    ]
+   }
+  },
+  {
+   "kind": "grid_scope",
+   "args": {
+    "dimension": "dim2",
+    "include": [
+     "All staff groups"
+    ]
+   }
+  },
+  {
+   "kind": "row_scope",
+   "args": {
+    "conditions": [
+     {
+      "column": "ics_code",
+      "equals": "All ICS areas"
+     },
+     {
+      "column": "organisation_code",
+      "equals": "All organisations"
+     }
+    ],
+    "mode": "all"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "breakdown_dimension",
+   "args": {
+    "value": "region"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "category",
+   "args": {
+    "source": "nhs_england_region_name"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "unit",
+   "args": {
+    "source": "data_type",
+    "mapping": {
+     "Headcount": "persons"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "entity_level",
+   "args": {
+    "template": "nhs_england_region"
+   }
+  },
+  {
+   "kind": "template",
+   "target": "entity_level",
+   "args": {
+    "template": "country",
+    "where": {
+     "nhs_england_region_code": "England"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "entity_code",
+   "args": {
+    "source": "nhs_england_region_code"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "entity_name",
+   "args": {
+    "source": "nhs_england_region_name"
+   }
+  },
+  {
+   "kind": "template",
+   "target": "aggregation_level",
+   "args": {
+    "template": "regional_total"
+   }
+  },
+  {
+   "kind": "template",
+   "target": "aggregation_level",
+   "args": {
+    "template": "national_total",
+    "where": {
+     "nhs_england_region_code": "England"
+    }
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "period_basis",
+   "args": {
+    "value": "point_in_time"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "population_scope",
+   "args": {
+    "value": "Paid substantive HCHS staff directly employed in NHS trusts and other core organisations in England; excludes primary care and bank/agency staff"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "sex",
+   "args": {
+    "value": "all"
+   }
+  },
+  {
+   "kind": "unknown",
+   "target": "category_code",
+   "args": {
+    "reason": "the source has no such dimension"
+   }
+  },
+  {
+   "kind": "unknown",
+   "target": "category_level",
+   "args": {
+    "reason": "the source has no such dimension"
+   }
+  },
+  {
+   "kind": "unknown",
+   "target": "employment_area",
+   "args": {
+    "reason": "the source has no such dimension"
+   }
+  },
+  {
+   "kind": "unknown",
+   "target": "employment_relationship",
+   "args": {
+    "reason": "the source has no such dimension"
+   }
+  }
+ ],
+ "15": [
+  {
+   "kind": "row_scope",
+   "args": {
+    "conditions": [
+     {
+      "column": "staff_group_1",
+      "equals": "All staff groups"
+     },
+     {
+      "column": "staff_group_1",
+      "same_as": "main_staff_group"
+     }
+    ],
+    "mode": "any"
+   }
+  },
+  {
+   "kind": "row_scope",
+   "args": {
+    "conditions": [
+     {
+      "column": "grade",
+      "equals": "All grades"
+     }
+    ],
+    "mode": "all"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "sex",
+   "args": {
+    "source": "dim1",
+    "mapping": {
+     "All genders": "all",
+     "Female": "female",
+     "Male": "male"
+    }
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "breakdown_dimension",
+   "args": {
+    "value": "main_staff_group"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "category",
+   "args": {
+    "source": "main_staff_group"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "unit",
+   "args": {
+    "source": "data_type",
+    "mapping": {
+     "FTE": "fte",
+     "Headcount": "persons"
+    }
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "entity_level",
+   "args": {
+    "value": "country"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "entity_code",
+   "args": {
+    "value": "England"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "entity_name",
+   "args": {
+    "value": "England"
+   }
+  },
+  {
+   "kind": "template",
+   "target": "aggregation_level",
+   "args": {
+    "template": "main_staff_group_total"
+   }
+  },
+  {
+   "kind": "template",
+   "target": "aggregation_level",
+   "args": {
+    "template": "national_total",
+    "where": {
+     "main_staff_group": "All staff groups"
+    }
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "period_basis",
+   "args": {
+    "value": "point_in_time"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "population_scope",
+   "args": {
+    "value": "Paid substantive HCHS staff directly employed in NHS trusts and other core organisations in England; excludes primary care and bank/agency staff"
+   }
+  },
+  {
+   "kind": "unknown",
+   "target": "category_code",
+   "args": {
+    "reason": "the source has no such dimension"
+   }
+  },
+  {
+   "kind": "unknown",
+   "target": "category_level",
+   "args": {
+    "reason": "the source has no such dimension"
+   }
+  },
+  {
+   "kind": "unknown",
+   "target": "employment_area",
+   "args": {
+    "reason": "the source has no such dimension"
+   }
+  },
+  {
+   "kind": "unknown",
+   "target": "employment_relationship",
+   "args": {
+    "reason": "the source has no such dimension"
+   }
+  }
+ ]
+}

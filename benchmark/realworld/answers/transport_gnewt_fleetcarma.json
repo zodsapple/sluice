@@ -1,0 +1,408 @@
+{
+ "Monthly fleet report": [
+  {
+   "kind": "column",
+   "target": "odometer_km_reported",
+   "args": {
+    "source": "odometer_km"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "distance_km_reported",
+   "args": {
+    "source": "total_distance_km"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "average_daily_km_reported",
+   "args": {
+    "source": "average_daily_distance_km"
+   }
+  },
+  {
+   "kind": "template",
+   "target": "average_daily_km_status",
+   "args": {
+    "template": "reported",
+    "where": {
+     "average_daily_distance_km": {
+      "regex": "^-?[0-9.]+$"
+     }
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "average_daily_km_status",
+   "args": {
+    "template": "source_text",
+    "where": {
+     "average_daily_distance_km": {
+      "not_regex": "^-?[0-9.]+$"
+     }
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "electricity_kwh",
+   "args": {
+    "source": "electricity_usage_k_wh"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "idle_percent",
+   "args": {
+    "source": "idle"
+   }
+  },
+  {
+   "kind": "flags",
+   "target": "quality_flags",
+   "args": {
+    "rules": [
+     {
+      "label": "odometer_less_than_period_distance",
+      "any_of": [
+       {
+        "odometer_km_reported": {
+         "lt_col": "distance_km_reported"
+        }
+       }
+      ]
+     },
+     {
+      "label": "average_daily_distance_source_text",
+      "any_of": [
+       {
+        "average_daily_km_reported": {
+         "isnull": true
+        }
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "kind": "column",
+   "target": "vehicle_code",
+   "args": {
+    "source": "vehicle",
+    "extract": "^([A-Za-z]{3})"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "source_row",
+   "args": {
+    "source": "_src_row"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "period_basis",
+   "args": {
+    "value": "month"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "consumption_l_per_100km_equivalent",
+   "args": {
+    "source": "l_100_kmeq"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "last_upload_time",
+   "args": {
+    "source": "last_upload_date",
+    "datetime_fmt": "%Y-%m-%dT%H:%M:%S"
+   }
+  },
+  {
+   "kind": "template",
+   "target": "period_start",
+   "args": {
+    "template": "2015-07-01",
+    "where": {
+     "g1": {
+      "isnull": true
+     }
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "period_end",
+   "args": {
+    "template": "2015-07-31",
+    "where": {
+     "g1": {
+      "isnull": true
+     }
+    }
+   }
+  },
+  {
+   "kind": "row_scope",
+   "args": {
+    "conditions": [
+     {
+      "column": "vehicle",
+      "not_regex": "^Average"
+     }
+    ],
+    "mode": "all"
+   }
+  },
+  {
+   "kind": "template",
+   "target": "period_start",
+   "args": {
+    "template": "2015-08-01",
+    "where": {
+     "g1": "1-31 August"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "period_end",
+   "args": {
+    "template": "2015-08-31",
+    "where": {
+     "g1": "1-31 August"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "period_start",
+   "args": {
+    "template": "2015-09-01",
+    "where": {
+     "g1": "1-30 Sept 2015"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "period_end",
+   "args": {
+    "template": "2015-09-30",
+    "where": {
+     "g1": "1-30 Sept 2015"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "period_start",
+   "args": {
+    "template": "2015-10-01",
+    "where": {
+     "g1": "1-31 Oct 2015"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "period_end",
+   "args": {
+    "template": "2015-10-31",
+    "where": {
+     "g1": "1-31 Oct 2015"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "period_start",
+   "args": {
+    "template": "2015-11-01",
+    "where": {
+     "g1": "1-30 Nov 2015"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "period_end",
+   "args": {
+    "template": "2015-11-30",
+    "where": {
+     "g1": "1-30 Nov 2015"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "period_start",
+   "args": {
+    "template": "2015-12-01",
+    "where": {
+     "g1": "1-31 Dec 2015"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "period_end",
+   "args": {
+    "template": "2015-12-31",
+    "where": {
+     "g1": "1-31 Dec 2015"
+    }
+   }
+  }
+ ],
+ "Annual fleet report": [
+  {
+   "kind": "column",
+   "target": "odometer_km_reported",
+   "args": {
+    "source": "odometer_km"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "distance_km_reported",
+   "args": {
+    "source": "total_distance_km"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "average_daily_km_reported",
+   "args": {
+    "source": "average_daily_distance_km"
+   }
+  },
+  {
+   "kind": "template",
+   "target": "average_daily_km_status",
+   "args": {
+    "template": "reported",
+    "where": {
+     "average_daily_distance_km": {
+      "regex": "^-?[0-9.]+$"
+     }
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "average_daily_km_status",
+   "args": {
+    "template": "source_text",
+    "where": {
+     "average_daily_distance_km": {
+      "not_regex": "^-?[0-9.]+$"
+     }
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "electricity_kwh",
+   "args": {
+    "source": "electricity_usage_k_wh"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "idle_percent",
+   "args": {
+    "source": "idle"
+   }
+  },
+  {
+   "kind": "flags",
+   "target": "quality_flags",
+   "args": {
+    "rules": [
+     {
+      "label": "odometer_less_than_period_distance",
+      "any_of": [
+       {
+        "odometer_km_reported": {
+         "lt_col": "distance_km_reported"
+        }
+       }
+      ]
+     },
+     {
+      "label": "average_daily_distance_source_text",
+      "any_of": [
+       {
+        "average_daily_km_reported": {
+         "isnull": true
+        }
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "kind": "column",
+   "target": "vehicle_code",
+   "args": {
+    "source": "vehicle_description_id_client_type_year",
+    "extract": "^([A-Za-z]{3})"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "source_row",
+   "args": {
+    "source": "_src_row"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "period_basis",
+   "args": {
+    "value": "year"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "period_start",
+   "args": {
+    "value": "2015-07-01"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "period_end",
+   "args": {
+    "value": "2016-06-30"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "kwh_per_km",
+   "args": {
+    "source": "k_wh_km"
+   }
+  },
+  {
+   "kind": "row_scope",
+   "args": {
+    "conditions": [
+     {
+      "column": "odometer_km",
+      "notnull": true
+     }
+    ],
+    "mode": "all"
+   }
+  }
+ ]
+}

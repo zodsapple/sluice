@@ -1,0 +1,38 @@
+{
+ "*": [
+  {
+   "kind": "template",
+   "target": "is_cancellation",
+   "args": {
+    "template": "true",
+    "where": {
+     "invoice_no": {
+      "regex": "^C"
+     }
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "is_cancellation",
+   "args": {
+    "template": "false",
+    "where": {
+     "invoice_no": {
+      "not_regex": "^C"
+     }
+    }
+   }
+  },
+  {
+   "kind": "arith",
+   "target": "line_amount",
+   "args": {
+    "op": "mul",
+    "a": "quantity",
+    "b": "unit_price",
+    "decimals": 4
+   }
+  }
+ ]
+}

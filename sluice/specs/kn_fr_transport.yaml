@@ -1,0 +1,6 @@
+# Same file layout as DHL DE; only identity and filename match differ, so it inherits everything.
+extends: dhl_de_transport.yaml
+name: kn_fr_transport
+description: Kuehne+Nagel France monthly transport billing -> CTD EMEA transport template
+match:
+  filename: [KN_FR, KN FR]

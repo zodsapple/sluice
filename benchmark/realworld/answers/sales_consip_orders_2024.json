@@ -1,0 +1,10 @@
+{"*": [
+ {"kind": "column", "target": "reference_year", "args": {"source": "anno_riferimento"}},
+ {"kind": "template", "target": "record_type", "args": {"template": "master", "where": {"codice_cpv": "NA"}}},
+ {"kind": "template", "target": "record_type", "args": {"template": "detail", "where": {"codice_cpv": {"not_in": ["NA"]}}}},
+ {"kind": "template", "target": "order_count", "args": {"template": "{numero_ordini}", "where": {"codice_cpv": "NA"}}},
+ {"kind": "template", "target": "buyer_count", "args": {"template": "{n_pa}", "where": {"codice_cpv": "NA"}}},
+ {"kind": "template", "target": "supplier_count", "args": {"template": "{n_fornitori}", "where": {"codice_cpv": "NA"}}},
+ {"kind": "template", "target": "ordering_point_count", "args": {"template": "{n_po}", "where": {"codice_cpv": "NA"}}},
+ {"kind": "template", "target": "ordered_amount_eur", "args": {"template": "{importo_ordinato}", "where": {"codice_cpv": {"not_in": ["NA"]}}}}
+]}

@@ -1,0 +1,24 @@
+{
+ "*": [
+  {
+   "kind": "row_scope",
+   "args": {
+    "conditions": [
+     {
+      "column": "cell_value",
+      "not_regex": "^\\s*:"
+     }
+    ],
+    "mode": "all"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "flag",
+   "args": {
+    "source": "cell_value",
+    "extract": "([a-z]+)\\s*$"
+   }
+  }
+ ]
+}

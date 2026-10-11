@@ -1,0 +1,9 @@
+{"*": [
+ {"kind": "row_scope", "args": {"conditions": [{"column": "anno", "equals": "2024"}, {"column": "mese", "equals": "01"}, {"column": "codreg", "equals": "010"}], "mode": "all"}},
+ {"kind": "constant", "target": "period_start", "args": {"value": "2024-01-01"}},
+ {"kind": "constant", "target": "period_end", "args": {"value": "2024-01-31"}},
+ {"kind": "column", "target": "reimbursement_class", "args": {"source": "classe"}},
+ {"kind": "column", "target": "traced_packages", "args": {"source": "numero_confezioni_traccia"}},
+ {"kind": "column", "target": "community_packages", "args": {"source": "numero_confezioni_convenzionata"}},
+ {"kind": "column", "target": "community_spend_gross_eur", "args": {"source": "spesa_convenzionata"}}
+]}

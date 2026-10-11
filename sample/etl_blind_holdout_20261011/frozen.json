@@ -1,0 +1,18 @@
+{
+ "frozen_at": "2026-10-11",
+ "sha256_16": "c45c2990fec19977",
+ "note": "rules / engine / agent code at the moment the holdout cases were downloaded; templates and expected outputs are authored after this, by an independent script; no rule change before the first blind run",
+ "round1": {
+  "file": "results/round1_frozen_rules_only.txt",
+  "result": "0 of 8 PASS (frozen rules, no human answers)",
+  "template_note": "expected.csv of round 1 did not trim text; afterwards the convention 'leading and trailing spaces of text are removed' was written into every template and expected.csv rebuilt (a specification gap of the author, not a rule change)."
+ },
+ "post_freeze_changes": [
+  "tsv/tab/txt read as delimited text (round 1 crashed on .tsv)",
+  "composite key column 'a,b,c\\TIME' split into its keys",
+  "numbers followed by a flag letter / ':' count as a numeric column",
+  "date patterns %Y/%m/%d and %Y/%m/%d %H:%M:%S",
+  "record templates over a sheet with >=3 year-like headers: unpivot (wide) and fold a plain numeric column into a header band",
+  "record bindings: year-like header values -> year field, the only numeric field left -> cell values"
+ ]
+}

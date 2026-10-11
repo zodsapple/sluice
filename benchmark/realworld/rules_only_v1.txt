@@ -1,0 +1,20 @@
+pharm_scot_schedule            stats  FAIL          Q=18   missing=472    extra=1      mismatch=0     rows 474/472 fields 0/13 
+pharm_scot_pca                 record FAIL          Q=25   missing=61     extra=2017   mismatch=0     rows 8710/61 fields 0/19 
+pharm_it_aifa                  record FAIL          Q=7    missing=816    extra=18207  mismatch=0     rows 177749/816 fields 0/16 
+pharm_it_otc                   record FAIL          Q=7    missing=50     extra=50     mismatch=0     rows 50/50 fields 8/10 
+pharm_worcs_ap                 record FAIL          Q=3    missing=0      extra=0      mismatch=51    rows 121/121 fields 11/14 
+pharm_ni_quarterly             stats  FAIL          Q=56   missing=78     extra=1      mismatch=0     rows 806/78 fields 0/17 
+sales_montgomery_202608        record FAIL          Q=6    missing=10957  extra=10957  mismatch=0     rows 10957/10957 fields 8/13 
+sales_consip_orders_2024       record FAIL          Q=14   missing=0      extra=0      mismatch=15973 rows 20578/20578 fields 15/20 
+sales_folkestone_card_202507   record PASS          Q=4    missing=0      extra=0      mismatch=0     rows 38/38 fields 16/16 
+sales_stockport_card_202603    record PASS          Q=2    missing=0      extra=0      mismatch=0     rows 422/422 fields 16/16 
+transport_gr_3pl_orders        record PASS          Q=18   missing=0      extra=0      mismatch=0     rows 653/653 fields 11/11 
+transport_gnewt_agile3         record FAIL          Q=4    missing=0      extra=1      mismatch=13358 rows 13368/13358 fields 0/17 
+transport_gnewt_fleetcarma     record FAIL          Q=14   missing=292    extra=64     mismatch=0     rows 303/292 fields 0/17 
+transport_usda_rail_ports      stats  FAIL          Q=11   missing=54     extra=1      mismatch=0     rows 63/54 fields 0/13 
+transport_fr_trm2024           stats  FAIL          Q=26   missing=200    extra=1      mismatch=0     rows 16848/200 fields 0/17 
+transport_uk_port0101          -      CRASH         Q=-    missing=-      extra=-      mismatch=-      EngineError: Cannot read uk_port0101_original.ods: "There is no item named '[Conte
+wh_usda_cotton_region          stats  FAIL          Q=78   missing=3003   extra=1      mismatch=0     rows 3003/3003 fields 9/21 
+wh_usda_bmas                   stats  FAIL          Q=11   missing=624    extra=1      mismatch=0     rows 624/624 fields 11/21 
+wh_austin_inventory            stats  FAIL          Q=15   missing=3048   extra=1      mismatch=0     rows 4572/3048 fields 0/21 
+wh_eia_petroleum_stocks        stats  FAIL          Q=13   missing=156    extra=1      mismatch=0     rows 59722/156 fields 0/21 

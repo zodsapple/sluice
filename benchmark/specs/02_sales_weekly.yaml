@@ -1,0 +1,31 @@
+# UCI weekly sales: 811 products x (52 quantity columns + 52 normalized columns) -> product x week
+name: sales_weekly_long
+workflow: generic
+locate: {header: 0}
+map:
+  Product_Code: {to: product_code, required: true}
+shape:
+  - op: melt_families
+    families:
+      - {pattern: '^W(\d+)$', value: quantity}
+      - {pattern: '^Normalized (\d+)$', value: normalized}
+    id: [product_code]
+    index: week_index
+    index_type: int
+keys:
+  cols: [product_code, week_index]
+template:
+  filename: 02_sales_weekly_long.csv
+  columns:
+    product_code: product_code
+    week_index: {col: week_index, type: int}
+    quantity: {col: quantity, type: int}
+    normalized: normalized
+controls:
+  - {name: rows, output: {count_rows: true}, expected: {value: 42172}}
+  - {name: quantity_total, output: {sum: [quantity]}, expected: {value: 375287}}
+  - name: zero_weeks_kept
+    output: {count_rows: true, where: {quantity: 0}}
+    expected: {value: 11899}
+rules:
+  - {type: unique, cols: [product_code, week_index], on_fail: halt}

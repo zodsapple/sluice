@@ -1,0 +1,8 @@
+wb_population                  record RUN-FAIL      Q=2    missing=-      extra=-      mismatch=-      IndexError: tuple index out of range
+ons_cpi                        record FAIL          Q=5    missing=618    extra=618    mismatch=38    rows 656/656 fields 3/6 
+census_state_pop               record FAIL          Q=6    missing=285    extra=57     mismatch=0     rows 285/285 fields 2/6 
+census_county_pop              record FAIL          Q=6    missing=335    extra=68     mismatch=0     rows 340/335 fields 0/6 
+eurostat_unemployment          record FAIL          Q=6    missing=39708  extra=63     mismatch=0     rows 2392/39708 fields 0/8 
+cdc_covid_deaths               record FAIL          Q=1    missing=0      extra=2754   mismatch=0     rows 137700/11016 fields 0/8 
+uk_gender_pay_gap              record FAIL          Q=1    missing=0      extra=0      mismatch=11168 rows 11168/11168 fields 11/12 
+uci_online_retail              record FAIL          Q=2    missing=0      extra=0      mismatch=541909 rows 541909/541909 fields 10/12 

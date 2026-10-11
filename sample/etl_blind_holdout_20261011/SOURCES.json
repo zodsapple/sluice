@@ -1,0 +1,92 @@
+[
+ {
+  "case_id": "wb_population",
+  "title": "World Bank, World Development Indicators SP.POP.TOTL",
+  "url": "https://api.worldbank.org/v2/en/indicator/SP.POP.TOTL?downloadformat=csv",
+  "licence": "CC BY 4.0",
+  "downloaded": "2026-10-11",
+  "note": "zip downloaded, the data CSV extracted (metadata CSVs also kept)",
+  "sha256": {
+   "API_SP.POP.TOTL_DS2_en_csv_v2_5254.csv": "6a283ed64894e01f7c79cf2d325fecd3c24a544f6839dcda7e2209913092422e",
+   "Metadata_Country_API_SP.POP.TOTL_DS2_en_csv_v2_5254.csv": "eb2b248a5a2dd23d0238b210475ca8a3753d0ae7b1207828c7db377c592880a1",
+   "Metadata_Indicator_API_SP.POP.TOTL_DS2_en_csv_v2_5254.csv": "f68a7b682fb54623c41e4f73185028285d3e53698f4eb7f595b8214d9cd13147"
+  }
+ },
+ {
+  "case_id": "ons_cpi",
+  "title": "UK Office for National Statistics, CPI index D7BT (MM23)",
+  "url": "https://www.ons.gov.uk/generator?format=csv&uri=/economy/inflationandpriceindices/timeseries/d7bt/mm23",
+  "licence": "Open Government Licence v3.0",
+  "downloaded": "2026-10-11",
+  "note": "",
+  "sha256": {
+   "ons_cpi_d7bt.csv": "27a2473f818423a499fce4be23a2816d6670b1ae93b8eaaa11687c2237322865"
+  }
+ },
+ {
+  "case_id": "census_state_pop",
+  "title": "US Census Bureau, NST-EST2023-POP",
+  "url": "https://www2.census.gov/programs-surveys/popest/tables/2020-2023/state/totals/NST-EST2023-POP.xlsx",
+  "licence": "US government work, public domain",
+  "downloaded": "2026-10-11",
+  "note": "",
+  "sha256": {
+   "NST-EST2023-POP.xlsx": "aec49456a006a06bdaba1ec90f032e0412617da40cdda26709074fbc6bb528e6"
+  }
+ },
+ {
+  "case_id": "census_county_pop",
+  "title": "US Census Bureau, CO-EST2023-POP-01 (Alabama counties)",
+  "url": "https://www2.census.gov/programs-surveys/popest/tables/2020-2023/counties/totals/co-est2023-pop-01.xlsx",
+  "licence": "US government work, public domain",
+  "downloaded": "2026-10-11",
+  "note": "",
+  "sha256": {
+   "co-est2023-pop-01.xlsx": "e3db2ecc7b168053d09834e8e54d6dba27e8b6deb04edf547f213508d7e9ef80"
+  }
+ },
+ {
+  "case_id": "eurostat_unemployment",
+  "title": "Eurostat une_rt_a, annual unemployment rates by age and sex",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/sdmx/2.1/data/une_rt_a?format=TSV&compressed=false",
+  "licence": "Eurostat reuse policy (CC BY 4.0)",
+  "downloaded": "2026-10-11",
+  "note": "",
+  "sha256": {
+   "estat_une_rt_a.tsv": "28d59bee907dd37ad9b6cf3691413faa4a68893a6af3b2f6e7b7c187bb8bb295"
+  }
+ },
+ {
+  "case_id": "cdc_covid_deaths",
+  "title": "CDC NCHS, Provisional COVID-19 Deaths by Sex and Age",
+  "url": "https://data.cdc.gov/api/views/9bhg-hcku/rows.csv?accessType=DOWNLOAD",
+  "licence": "US government work, public domain",
+  "downloaded": "2026-10-11",
+  "note": "",
+  "sha256": {
+   "Provisional_COVID-19_Deaths_by_Sex_and_Age.csv": "23d84197a68b80bb68b4cc1eb12134797c844a5e89634db731ccc6314adf2119"
+  }
+ },
+ {
+  "case_id": "uci_online_retail",
+  "title": "UCI Machine Learning Repository, Online Retail (D. Chen)",
+  "url": "https://archive.ics.uci.edu/static/public/352/online+retail.zip",
+  "licence": "CC BY 4.0",
+  "downloaded": "2026-10-11",
+  "note": "zip downloaded, Online Retail.xlsx extracted",
+  "sha256": {
+   "Online Retail.xlsx": "43465a06f2ccf7c8b5bd2892bc7defb52f97487934fe93b16ae4c3936424676d"
+  }
+ },
+ {
+  "case_id": "uk_gender_pay_gap",
+  "title": "UK Government Equalities Office, Gender pay gap service, 2023 to 2024 data",
+  "url": "https://gender-pay-gap.service.gov.uk/viewing/download-data/2023",
+  "licence": "Open Government Licence v3.0",
+  "downloaded": "2026-10-11",
+  "note": "",
+  "sha256": {
+   "gender_pay_gap_2023.csv": "a261aa286084b938140c7c6213780352a57f473f95d536233128f8db2bb02287"
+  }
+ }
+]

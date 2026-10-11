@@ -1,0 +1,67 @@
+{
+ "*": [
+  {
+   "kind": "column",
+   "target": "county",
+   "args": {
+    "source": "geographic_area",
+    "extract": "^\\.?([^,]+),"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "state",
+   "args": {
+    "source": "geographic_area",
+    "extract": ", (.+)$"
+   }
+  },
+  {
+   "kind": "row_scope",
+   "args": {
+    "conditions": [
+     {
+      "column": "geographic_area",
+      "regex": "^\\."
+     },
+     {
+      "column": "cell_value",
+      "notnull": true
+     }
+    ],
+    "mode": "all"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "estimate_type",
+   "args": {
+    "source": "dim1",
+    "mapping": {
+     "April 1, 2020 Estimates Base": "base",
+     "Population Estimate (as of July 1)": "estimate"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "reference_date",
+   "args": {
+    "template": "2020-04-01",
+    "where": {
+     "dim1": "April 1, 2020 Estimates Base"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "reference_date",
+   "args": {
+    "template": "{dim2}-07-01",
+    "where": {
+     "dim1": "Population Estimate (as of July 1)"
+    }
+   }
+  }
+ ]
+}

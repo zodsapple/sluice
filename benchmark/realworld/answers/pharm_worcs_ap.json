@@ -1,0 +1,64 @@
+{
+ "*": [
+  {
+   "kind": "template",
+   "target": "pharmacy_purchase_flag",
+   "args": {
+    "template": "true",
+    "where": {
+     "description": "PHARMACY PURCHASES"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "pharmacy_purchase_flag",
+   "args": {
+    "template": "false",
+    "where": {
+     "description": {
+      "not_in": [
+       "PHARMACY PURCHASES"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "kind": "group_flag",
+   "target": "business_key_status",
+   "args": {
+    "by": [
+     "entity",
+     "payment_date",
+     "supplier",
+     "transaction_number",
+     "purchase_invoice_number",
+     "expense_type",
+     "expense_area"
+    ],
+    "repeated": "collision",
+    "otherwise": "unique_in_file"
+   }
+  },
+  {
+   "kind": "group_flag",
+   "target": "transaction_has_multiple_lines",
+   "args": {
+    "by": [
+     "transaction_number"
+    ],
+    "repeated": "true",
+    "otherwise": "false"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "description",
+   "args": {
+    "source": "description",
+    "verbatim": true
+   }
+  }
+ ]
+}

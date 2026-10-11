@@ -1,0 +1,1040 @@
+{
+ "*": [
+  {
+   "kind": "constant",
+   "target": "location_level",
+   "args": {
+    "value": "region_and_size"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "product_id",
+   "args": {
+    "value": "cotton"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "product_name",
+   "args": {
+    "value": "Cotton"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "inventory_basis",
+   "args": {
+    "value": "submitted_warehouse_flow_reports"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "period_end",
+   "args": {
+    "source": "report_ending_date",
+    "as_date": true
+   }
+  },
+  {
+   "kind": "column",
+   "target": "source_row",
+   "args": {
+    "source": "_src_row"
+   }
+  }
+ ],
+ "Total Inventory": [
+  {
+   "kind": "constant",
+   "target": "metric",
+   "args": {
+    "value": "stock_on_hand"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "record_kind",
+   "args": {
+    "value": "inventory_snapshot"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "unit",
+   "args": {
+    "value": "bale"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "location_id",
+   "args": {
+    "source": "dim1",
+    "mapping": {
+     "MS LRG 1 0": "MS",
+     "MS LRG 2 < 3": "MS",
+     "MS LRG 3 3 to <4_5": "MS",
+     "MS LRG 4 >=4_5": "MS",
+     "MS MED 1 0": "MS",
+     "MS MED 2 < 3": "MS",
+     "MS MED 3 3 to <4_5": "MS",
+     "MS MED 4 >=4_5": "MS",
+     "MS SML 1 0": "MS",
+     "MS SML 2 < 3": "MS",
+     "MS SML 3 3 to <4_5": "MS",
+     "MS SML 4 >=4_5": "MS",
+     "SE LRG 1 0": "SE",
+     "SE LRG 2 < 3": "SE",
+     "SE LRG 3 3 to <4_5": "SE",
+     "SE LRG 4 >=4_5": "SE",
+     "SE MED 1 0": "SE",
+     "SE MED 2 < 3": "SE",
+     "SE MED 3 3 to <4_5": "SE",
+     "SE MED 4 >=4_5": "SE",
+     "SE SML 1 0": "SE",
+     "SE SML 2 < 3": "SE",
+     "SE SML 3 3 to <4_5": "SE",
+     "SE SML 4 >=4_5": "SE",
+     "SW LRG 1 0": "SW",
+     "SW LRG 2 < 3": "SW",
+     "SW LRG 3 3 to <4_5": "SW",
+     "SW LRG 4 >=4_5": "SW",
+     "SW MED 1 0": "SW",
+     "SW MED 2 < 3": "SW",
+     "SW MED 3 3 to <4_5": "SW",
+     "SW MED 4 >=4_5": "SW",
+     "SW SML 1 0": "SW",
+     "SW SML 2 < 3": "SW",
+     "SW SML 3 3 to <4_5": "SW",
+     "SW SML 4 >=4_5": "SW",
+     "W LRG 1 0": "W",
+     "W LRG 2 < 3": "W",
+     "W LRG 3 3 to <4_5": "W",
+     "W LRG 4 >=4_5": "W",
+     "W MED 1 0": "W",
+     "W MED 2 < 3": "W",
+     "W MED 3 3 to <4_5": "W",
+     "W MED 4 >=4_5": "W"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "facility_size",
+   "args": {
+    "source": "dim1",
+    "mapping": {
+     "MS LRG 1 0": "LRG",
+     "MS LRG 2 < 3": "LRG",
+     "MS LRG 3 3 to <4_5": "LRG",
+     "MS LRG 4 >=4_5": "LRG",
+     "MS MED 1 0": "MED",
+     "MS MED 2 < 3": "MED",
+     "MS MED 3 3 to <4_5": "MED",
+     "MS MED 4 >=4_5": "MED",
+     "MS SML 1 0": "SML",
+     "MS SML 2 < 3": "SML",
+     "MS SML 3 3 to <4_5": "SML",
+     "MS SML 4 >=4_5": "SML",
+     "SE LRG 1 0": "LRG",
+     "SE LRG 2 < 3": "LRG",
+     "SE LRG 3 3 to <4_5": "LRG",
+     "SE LRG 4 >=4_5": "LRG",
+     "SE MED 1 0": "MED",
+     "SE MED 2 < 3": "MED",
+     "SE MED 3 3 to <4_5": "MED",
+     "SE MED 4 >=4_5": "MED",
+     "SE SML 1 0": "SML",
+     "SE SML 2 < 3": "SML",
+     "SE SML 3 3 to <4_5": "SML",
+     "SE SML 4 >=4_5": "SML",
+     "SW LRG 1 0": "LRG",
+     "SW LRG 2 < 3": "LRG",
+     "SW LRG 3 3 to <4_5": "LRG",
+     "SW LRG 4 >=4_5": "LRG",
+     "SW MED 1 0": "MED",
+     "SW MED 2 < 3": "MED",
+     "SW MED 3 3 to <4_5": "MED",
+     "SW MED 4 >=4_5": "MED",
+     "SW SML 1 0": "SML",
+     "SW SML 2 < 3": "SML",
+     "SW SML 3 3 to <4_5": "SML",
+     "SW SML 4 >=4_5": "SML",
+     "W LRG 1 0": "LRG",
+     "W LRG 2 < 3": "LRG",
+     "W LRG 3 3 to <4_5": "LRG",
+     "W LRG 4 >=4_5": "LRG",
+     "W MED 1 0": "MED",
+     "W MED 2 < 3": "MED",
+     "W MED 3 3 to <4_5": "MED",
+     "W MED 4 >=4_5": "MED"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "flow_bucket",
+   "args": {
+    "source": "dim1",
+    "mapping": {
+     "MS LRG 1 0": "1 0",
+     "MS LRG 2 < 3": "2 < 3",
+     "MS LRG 3 3 to <4_5": "3 3 to <4_5",
+     "MS LRG 4 >=4_5": "4 >=4_5",
+     "MS MED 1 0": "1 0",
+     "MS MED 2 < 3": "2 < 3",
+     "MS MED 3 3 to <4_5": "3 3 to <4_5",
+     "MS MED 4 >=4_5": "4 >=4_5",
+     "MS SML 1 0": "1 0",
+     "MS SML 2 < 3": "2 < 3",
+     "MS SML 3 3 to <4_5": "3 3 to <4_5",
+     "MS SML 4 >=4_5": "4 >=4_5",
+     "SE LRG 1 0": "1 0",
+     "SE LRG 2 < 3": "2 < 3",
+     "SE LRG 3 3 to <4_5": "3 3 to <4_5",
+     "SE LRG 4 >=4_5": "4 >=4_5",
+     "SE MED 1 0": "1 0",
+     "SE MED 2 < 3": "2 < 3",
+     "SE MED 3 3 to <4_5": "3 3 to <4_5",
+     "SE MED 4 >=4_5": "4 >=4_5",
+     "SE SML 1 0": "1 0",
+     "SE SML 2 < 3": "2 < 3",
+     "SE SML 3 3 to <4_5": "3 3 to <4_5",
+     "SE SML 4 >=4_5": "4 >=4_5",
+     "SW LRG 1 0": "1 0",
+     "SW LRG 2 < 3": "2 < 3",
+     "SW LRG 3 3 to <4_5": "3 3 to <4_5",
+     "SW LRG 4 >=4_5": "4 >=4_5",
+     "SW MED 1 0": "1 0",
+     "SW MED 2 < 3": "2 < 3",
+     "SW MED 3 3 to <4_5": "3 3 to <4_5",
+     "SW MED 4 >=4_5": "4 >=4_5",
+     "SW SML 1 0": "1 0",
+     "SW SML 2 < 3": "2 < 3",
+     "SW SML 3 3 to <4_5": "3 3 to <4_5",
+     "SW SML 4 >=4_5": "4 >=4_5",
+     "W LRG 1 0": "1 0",
+     "W LRG 2 < 3": "2 < 3",
+     "W LRG 3 3 to <4_5": "3 3 to <4_5",
+     "W LRG 4 >=4_5": "4 >=4_5",
+     "W MED 1 0": "1 0",
+     "W MED 2 < 3": "2 < 3",
+     "W MED 3 3 to <4_5": "3 3 to <4_5",
+     "W MED 4 >=4_5": "4 >=4_5"
+    }
+   }
+  }
+ ],
+ "Bales Shipped": [
+  {
+   "kind": "constant",
+   "target": "metric",
+   "args": {
+    "value": "bales_shipped"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "record_kind",
+   "args": {
+    "value": "weekly_flow"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "unit",
+   "args": {
+    "value": "bale"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "location_id",
+   "args": {
+    "source": "dim1",
+    "mapping": {
+     "MS LRG 1 0": "MS",
+     "MS LRG 2 < 3": "MS",
+     "MS LRG 3 3 to <4_5": "MS",
+     "MS LRG 4 >=4_5": "MS",
+     "MS MED 1 0": "MS",
+     "MS MED 2 < 3": "MS",
+     "MS MED 3 3 to <4_5": "MS",
+     "MS MED 4 >=4_5": "MS",
+     "MS SML 1 0": "MS",
+     "MS SML 2 < 3": "MS",
+     "MS SML 3 3 to <4_5": "MS",
+     "MS SML 4 >=4_5": "MS",
+     "SE LRG 1 0": "SE",
+     "SE LRG 2 < 3": "SE",
+     "SE LRG 3 3 to <4_5": "SE",
+     "SE LRG 4 >=4_5": "SE",
+     "SE MED 1 0": "SE",
+     "SE MED 2 < 3": "SE",
+     "SE MED 3 3 to <4_5": "SE",
+     "SE MED 4 >=4_5": "SE",
+     "SE SML 1 0": "SE",
+     "SE SML 2 < 3": "SE",
+     "SE SML 3 3 to <4_5": "SE",
+     "SE SML 4 >=4_5": "SE",
+     "SW LRG 1 0": "SW",
+     "SW LRG 2 < 3": "SW",
+     "SW LRG 3 3 to <4_5": "SW",
+     "SW LRG 4 >=4_5": "SW",
+     "SW MED 1 0": "SW",
+     "SW MED 2 < 3": "SW",
+     "SW MED 3 3 to <4_5": "SW",
+     "SW MED 4 >=4_5": "SW",
+     "SW SML 1 0": "SW",
+     "SW SML 2 < 3": "SW",
+     "SW SML 3 3 to <4_5": "SW",
+     "SW SML 4 >=4_5": "SW",
+     "W LRG 1 0": "W",
+     "W LRG 2 < 3": "W",
+     "W LRG 3 3 to <4_5": "W",
+     "W LRG 4 >=4_5": "W",
+     "W MED 1 0": "W",
+     "W MED 2 < 3": "W",
+     "W MED 3 3 to <4_5": "W",
+     "W MED 4 >=4_5": "W"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "facility_size",
+   "args": {
+    "source": "dim1",
+    "mapping": {
+     "MS LRG 1 0": "LRG",
+     "MS LRG 2 < 3": "LRG",
+     "MS LRG 3 3 to <4_5": "LRG",
+     "MS LRG 4 >=4_5": "LRG",
+     "MS MED 1 0": "MED",
+     "MS MED 2 < 3": "MED",
+     "MS MED 3 3 to <4_5": "MED",
+     "MS MED 4 >=4_5": "MED",
+     "MS SML 1 0": "SML",
+     "MS SML 2 < 3": "SML",
+     "MS SML 3 3 to <4_5": "SML",
+     "MS SML 4 >=4_5": "SML",
+     "SE LRG 1 0": "LRG",
+     "SE LRG 2 < 3": "LRG",
+     "SE LRG 3 3 to <4_5": "LRG",
+     "SE LRG 4 >=4_5": "LRG",
+     "SE MED 1 0": "MED",
+     "SE MED 2 < 3": "MED",
+     "SE MED 3 3 to <4_5": "MED",
+     "SE MED 4 >=4_5": "MED",
+     "SE SML 1 0": "SML",
+     "SE SML 2 < 3": "SML",
+     "SE SML 3 3 to <4_5": "SML",
+     "SE SML 4 >=4_5": "SML",
+     "SW LRG 1 0": "LRG",
+     "SW LRG 2 < 3": "LRG",
+     "SW LRG 3 3 to <4_5": "LRG",
+     "SW LRG 4 >=4_5": "LRG",
+     "SW MED 1 0": "MED",
+     "SW MED 2 < 3": "MED",
+     "SW MED 3 3 to <4_5": "MED",
+     "SW MED 4 >=4_5": "MED",
+     "SW SML 1 0": "SML",
+     "SW SML 2 < 3": "SML",
+     "SW SML 3 3 to <4_5": "SML",
+     "SW SML 4 >=4_5": "SML",
+     "W LRG 1 0": "LRG",
+     "W LRG 2 < 3": "LRG",
+     "W LRG 3 3 to <4_5": "LRG",
+     "W LRG 4 >=4_5": "LRG",
+     "W MED 1 0": "MED",
+     "W MED 2 < 3": "MED",
+     "W MED 3 3 to <4_5": "MED",
+     "W MED 4 >=4_5": "MED"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "flow_bucket",
+   "args": {
+    "source": "dim1",
+    "mapping": {
+     "MS LRG 1 0": "1 0",
+     "MS LRG 2 < 3": "2 < 3",
+     "MS LRG 3 3 to <4_5": "3 3 to <4_5",
+     "MS LRG 4 >=4_5": "4 >=4_5",
+     "MS MED 1 0": "1 0",
+     "MS MED 2 < 3": "2 < 3",
+     "MS MED 3 3 to <4_5": "3 3 to <4_5",
+     "MS MED 4 >=4_5": "4 >=4_5",
+     "MS SML 1 0": "1 0",
+     "MS SML 2 < 3": "2 < 3",
+     "MS SML 3 3 to <4_5": "3 3 to <4_5",
+     "MS SML 4 >=4_5": "4 >=4_5",
+     "SE LRG 1 0": "1 0",
+     "SE LRG 2 < 3": "2 < 3",
+     "SE LRG 3 3 to <4_5": "3 3 to <4_5",
+     "SE LRG 4 >=4_5": "4 >=4_5",
+     "SE MED 1 0": "1 0",
+     "SE MED 2 < 3": "2 < 3",
+     "SE MED 3 3 to <4_5": "3 3 to <4_5",
+     "SE MED 4 >=4_5": "4 >=4_5",
+     "SE SML 1 0": "1 0",
+     "SE SML 2 < 3": "2 < 3",
+     "SE SML 3 3 to <4_5": "3 3 to <4_5",
+     "SE SML 4 >=4_5": "4 >=4_5",
+     "SW LRG 1 0": "1 0",
+     "SW LRG 2 < 3": "2 < 3",
+     "SW LRG 3 3 to <4_5": "3 3 to <4_5",
+     "SW LRG 4 >=4_5": "4 >=4_5",
+     "SW MED 1 0": "1 0",
+     "SW MED 2 < 3": "2 < 3",
+     "SW MED 3 3 to <4_5": "3 3 to <4_5",
+     "SW MED 4 >=4_5": "4 >=4_5",
+     "SW SML 1 0": "1 0",
+     "SW SML 2 < 3": "2 < 3",
+     "SW SML 3 3 to <4_5": "3 3 to <4_5",
+     "SW SML 4 >=4_5": "4 >=4_5",
+     "W LRG 1 0": "1 0",
+     "W LRG 2 < 3": "2 < 3",
+     "W LRG 3 3 to <4_5": "3 3 to <4_5",
+     "W LRG 4 >=4_5": "4 >=4_5",
+     "W MED 1 0": "1 0",
+     "W MED 2 < 3": "2 < 3",
+     "W MED 3 3 to <4_5": "3 3 to <4_5",
+     "W MED 4 >=4_5": "4 >=4_5"
+    }
+   }
+  }
+ ],
+ "Bales Not Picked Up": [
+  {
+   "kind": "constant",
+   "target": "metric",
+   "args": {
+    "value": "bales_not_picked_up"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "record_kind",
+   "args": {
+    "value": "weekly_flow"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "unit",
+   "args": {
+    "value": "bale"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "location_id",
+   "args": {
+    "source": "dim1",
+    "mapping": {
+     "MS LRG 1 0": "MS",
+     "MS LRG 2 < 3": "MS",
+     "MS LRG 3 3 to <4_5": "MS",
+     "MS LRG 4 >=4_5": "MS",
+     "MS MED 1 0": "MS",
+     "MS MED 2 < 3": "MS",
+     "MS MED 3 3 to <4_5": "MS",
+     "MS MED 4 >=4_5": "MS",
+     "MS SML 1 0": "MS",
+     "MS SML 2 < 3": "MS",
+     "MS SML 3 3 to <4_5": "MS",
+     "MS SML 4 >=4_5": "MS",
+     "SE LRG 1 0": "SE",
+     "SE LRG 2 < 3": "SE",
+     "SE LRG 3 3 to <4_5": "SE",
+     "SE LRG 4 >=4_5": "SE",
+     "SE MED 1 0": "SE",
+     "SE MED 2 < 3": "SE",
+     "SE MED 3 3 to <4_5": "SE",
+     "SE MED 4 >=4_5": "SE",
+     "SE SML 1 0": "SE",
+     "SE SML 2 < 3": "SE",
+     "SE SML 3 3 to <4_5": "SE",
+     "SE SML 4 >=4_5": "SE",
+     "SW LRG 1 0": "SW",
+     "SW LRG 2 < 3": "SW",
+     "SW LRG 3 3 to <4_5": "SW",
+     "SW LRG 4 >=4_5": "SW",
+     "SW MED 1 0": "SW",
+     "SW MED 2 < 3": "SW",
+     "SW MED 3 3 to <4_5": "SW",
+     "SW MED 4 >=4_5": "SW",
+     "SW SML 1 0": "SW",
+     "SW SML 2 < 3": "SW",
+     "SW SML 3 3 to <4_5": "SW",
+     "SW SML 4 >=4_5": "SW",
+     "W LRG 1 0": "W",
+     "W LRG 2 < 3": "W",
+     "W LRG 3 3 to <4_5": "W",
+     "W LRG 4 >=4_5": "W",
+     "W MED 1 0": "W",
+     "W MED 2 < 3": "W",
+     "W MED 3 3 to <4_5": "W",
+     "W MED 4 >=4_5": "W"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "facility_size",
+   "args": {
+    "source": "dim1",
+    "mapping": {
+     "MS LRG 1 0": "LRG",
+     "MS LRG 2 < 3": "LRG",
+     "MS LRG 3 3 to <4_5": "LRG",
+     "MS LRG 4 >=4_5": "LRG",
+     "MS MED 1 0": "MED",
+     "MS MED 2 < 3": "MED",
+     "MS MED 3 3 to <4_5": "MED",
+     "MS MED 4 >=4_5": "MED",
+     "MS SML 1 0": "SML",
+     "MS SML 2 < 3": "SML",
+     "MS SML 3 3 to <4_5": "SML",
+     "MS SML 4 >=4_5": "SML",
+     "SE LRG 1 0": "LRG",
+     "SE LRG 2 < 3": "LRG",
+     "SE LRG 3 3 to <4_5": "LRG",
+     "SE LRG 4 >=4_5": "LRG",
+     "SE MED 1 0": "MED",
+     "SE MED 2 < 3": "MED",
+     "SE MED 3 3 to <4_5": "MED",
+     "SE MED 4 >=4_5": "MED",
+     "SE SML 1 0": "SML",
+     "SE SML 2 < 3": "SML",
+     "SE SML 3 3 to <4_5": "SML",
+     "SE SML 4 >=4_5": "SML",
+     "SW LRG 1 0": "LRG",
+     "SW LRG 2 < 3": "LRG",
+     "SW LRG 3 3 to <4_5": "LRG",
+     "SW LRG 4 >=4_5": "LRG",
+     "SW MED 1 0": "MED",
+     "SW MED 2 < 3": "MED",
+     "SW MED 3 3 to <4_5": "MED",
+     "SW MED 4 >=4_5": "MED",
+     "SW SML 1 0": "SML",
+     "SW SML 2 < 3": "SML",
+     "SW SML 3 3 to <4_5": "SML",
+     "SW SML 4 >=4_5": "SML",
+     "W LRG 1 0": "LRG",
+     "W LRG 2 < 3": "LRG",
+     "W LRG 3 3 to <4_5": "LRG",
+     "W LRG 4 >=4_5": "LRG",
+     "W MED 1 0": "MED",
+     "W MED 2 < 3": "MED",
+     "W MED 3 3 to <4_5": "MED",
+     "W MED 4 >=4_5": "MED"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "flow_bucket",
+   "args": {
+    "source": "dim1",
+    "mapping": {
+     "MS LRG 1 0": "1 0",
+     "MS LRG 2 < 3": "2 < 3",
+     "MS LRG 3 3 to <4_5": "3 3 to <4_5",
+     "MS LRG 4 >=4_5": "4 >=4_5",
+     "MS MED 1 0": "1 0",
+     "MS MED 2 < 3": "2 < 3",
+     "MS MED 3 3 to <4_5": "3 3 to <4_5",
+     "MS MED 4 >=4_5": "4 >=4_5",
+     "MS SML 1 0": "1 0",
+     "MS SML 2 < 3": "2 < 3",
+     "MS SML 3 3 to <4_5": "3 3 to <4_5",
+     "MS SML 4 >=4_5": "4 >=4_5",
+     "SE LRG 1 0": "1 0",
+     "SE LRG 2 < 3": "2 < 3",
+     "SE LRG 3 3 to <4_5": "3 3 to <4_5",
+     "SE LRG 4 >=4_5": "4 >=4_5",
+     "SE MED 1 0": "1 0",
+     "SE MED 2 < 3": "2 < 3",
+     "SE MED 3 3 to <4_5": "3 3 to <4_5",
+     "SE MED 4 >=4_5": "4 >=4_5",
+     "SE SML 1 0": "1 0",
+     "SE SML 2 < 3": "2 < 3",
+     "SE SML 3 3 to <4_5": "3 3 to <4_5",
+     "SE SML 4 >=4_5": "4 >=4_5",
+     "SW LRG 1 0": "1 0",
+     "SW LRG 2 < 3": "2 < 3",
+     "SW LRG 3 3 to <4_5": "3 3 to <4_5",
+     "SW LRG 4 >=4_5": "4 >=4_5",
+     "SW MED 1 0": "1 0",
+     "SW MED 2 < 3": "2 < 3",
+     "SW MED 3 3 to <4_5": "3 3 to <4_5",
+     "SW MED 4 >=4_5": "4 >=4_5",
+     "SW SML 1 0": "1 0",
+     "SW SML 2 < 3": "2 < 3",
+     "SW SML 3 3 to <4_5": "3 3 to <4_5",
+     "SW SML 4 >=4_5": "4 >=4_5",
+     "W LRG 1 0": "1 0",
+     "W LRG 2 < 3": "2 < 3",
+     "W LRG 3 3 to <4_5": "3 3 to <4_5",
+     "W LRG 4 >=4_5": "4 >=4_5",
+     "W MED 1 0": "1 0",
+     "W MED 2 < 3": "2 < 3",
+     "W MED 3 3 to <4_5": "3 3 to <4_5",
+     "W MED 4 >=4_5": "4 >=4_5"
+    }
+   }
+  }
+ ],
+ "Capacity Of Warehouses": [
+  {
+   "kind": "constant",
+   "target": "metric",
+   "args": {
+    "value": "effective_capacity"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "record_kind",
+   "args": {
+    "value": "capacity_snapshot"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "unit",
+   "args": {
+    "value": "bale"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "location_id",
+   "args": {
+    "source": "dim1",
+    "mapping": {
+     "MS LRG 1 0": "MS",
+     "MS LRG 2 < 3": "MS",
+     "MS LRG 3 3 to <4_5": "MS",
+     "MS LRG 4 >=4_5": "MS",
+     "MS MED 1 0": "MS",
+     "MS MED 2 < 3": "MS",
+     "MS MED 3 3 to <4_5": "MS",
+     "MS MED 4 >=4_5": "MS",
+     "MS SML 1 0": "MS",
+     "MS SML 2 < 3": "MS",
+     "MS SML 3 3 to <4_5": "MS",
+     "MS SML 4 >=4_5": "MS",
+     "SE LRG 1 0": "SE",
+     "SE LRG 2 < 3": "SE",
+     "SE LRG 3 3 to <4_5": "SE",
+     "SE LRG 4 >=4_5": "SE",
+     "SE MED 1 0": "SE",
+     "SE MED 2 < 3": "SE",
+     "SE MED 3 3 to <4_5": "SE",
+     "SE MED 4 >=4_5": "SE",
+     "SE SML 1 0": "SE",
+     "SE SML 2 < 3": "SE",
+     "SE SML 3 3 to <4_5": "SE",
+     "SE SML 4 >=4_5": "SE",
+     "SW LRG 1 0": "SW",
+     "SW LRG 2 < 3": "SW",
+     "SW LRG 3 3 to <4_5": "SW",
+     "SW LRG 4 >=4_5": "SW",
+     "SW MED 1 0": "SW",
+     "SW MED 2 < 3": "SW",
+     "SW MED 3 3 to <4_5": "SW",
+     "SW MED 4 >=4_5": "SW",
+     "SW SML 1 0": "SW",
+     "SW SML 2 < 3": "SW",
+     "SW SML 3 3 to <4_5": "SW",
+     "SW SML 4 >=4_5": "SW",
+     "W LRG 1 0": "W",
+     "W LRG 2 < 3": "W",
+     "W LRG 3 3 to <4_5": "W",
+     "W LRG 4 >=4_5": "W",
+     "W MED 1 0": "W",
+     "W MED 2 < 3": "W",
+     "W MED 3 3 to <4_5": "W",
+     "W MED 4 >=4_5": "W"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "facility_size",
+   "args": {
+    "source": "dim1",
+    "mapping": {
+     "MS LRG 1 0": "LRG",
+     "MS LRG 2 < 3": "LRG",
+     "MS LRG 3 3 to <4_5": "LRG",
+     "MS LRG 4 >=4_5": "LRG",
+     "MS MED 1 0": "MED",
+     "MS MED 2 < 3": "MED",
+     "MS MED 3 3 to <4_5": "MED",
+     "MS MED 4 >=4_5": "MED",
+     "MS SML 1 0": "SML",
+     "MS SML 2 < 3": "SML",
+     "MS SML 3 3 to <4_5": "SML",
+     "MS SML 4 >=4_5": "SML",
+     "SE LRG 1 0": "LRG",
+     "SE LRG 2 < 3": "LRG",
+     "SE LRG 3 3 to <4_5": "LRG",
+     "SE LRG 4 >=4_5": "LRG",
+     "SE MED 1 0": "MED",
+     "SE MED 2 < 3": "MED",
+     "SE MED 3 3 to <4_5": "MED",
+     "SE MED 4 >=4_5": "MED",
+     "SE SML 1 0": "SML",
+     "SE SML 2 < 3": "SML",
+     "SE SML 3 3 to <4_5": "SML",
+     "SE SML 4 >=4_5": "SML",
+     "SW LRG 1 0": "LRG",
+     "SW LRG 2 < 3": "LRG",
+     "SW LRG 3 3 to <4_5": "LRG",
+     "SW LRG 4 >=4_5": "LRG",
+     "SW MED 1 0": "MED",
+     "SW MED 2 < 3": "MED",
+     "SW MED 3 3 to <4_5": "MED",
+     "SW MED 4 >=4_5": "MED",
+     "SW SML 1 0": "SML",
+     "SW SML 2 < 3": "SML",
+     "SW SML 3 3 to <4_5": "SML",
+     "SW SML 4 >=4_5": "SML",
+     "W LRG 1 0": "LRG",
+     "W LRG 2 < 3": "LRG",
+     "W LRG 3 3 to <4_5": "LRG",
+     "W LRG 4 >=4_5": "LRG",
+     "W MED 1 0": "MED",
+     "W MED 2 < 3": "MED",
+     "W MED 3 3 to <4_5": "MED",
+     "W MED 4 >=4_5": "MED"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "flow_bucket",
+   "args": {
+    "source": "dim1",
+    "mapping": {
+     "MS LRG 1 0": "1 0",
+     "MS LRG 2 < 3": "2 < 3",
+     "MS LRG 3 3 to <4_5": "3 3 to <4_5",
+     "MS LRG 4 >=4_5": "4 >=4_5",
+     "MS MED 1 0": "1 0",
+     "MS MED 2 < 3": "2 < 3",
+     "MS MED 3 3 to <4_5": "3 3 to <4_5",
+     "MS MED 4 >=4_5": "4 >=4_5",
+     "MS SML 1 0": "1 0",
+     "MS SML 2 < 3": "2 < 3",
+     "MS SML 3 3 to <4_5": "3 3 to <4_5",
+     "MS SML 4 >=4_5": "4 >=4_5",
+     "SE LRG 1 0": "1 0",
+     "SE LRG 2 < 3": "2 < 3",
+     "SE LRG 3 3 to <4_5": "3 3 to <4_5",
+     "SE LRG 4 >=4_5": "4 >=4_5",
+     "SE MED 1 0": "1 0",
+     "SE MED 2 < 3": "2 < 3",
+     "SE MED 3 3 to <4_5": "3 3 to <4_5",
+     "SE MED 4 >=4_5": "4 >=4_5",
+     "SE SML 1 0": "1 0",
+     "SE SML 2 < 3": "2 < 3",
+     "SE SML 3 3 to <4_5": "3 3 to <4_5",
+     "SE SML 4 >=4_5": "4 >=4_5",
+     "SW LRG 1 0": "1 0",
+     "SW LRG 2 < 3": "2 < 3",
+     "SW LRG 3 3 to <4_5": "3 3 to <4_5",
+     "SW LRG 4 >=4_5": "4 >=4_5",
+     "SW MED 1 0": "1 0",
+     "SW MED 2 < 3": "2 < 3",
+     "SW MED 3 3 to <4_5": "3 3 to <4_5",
+     "SW MED 4 >=4_5": "4 >=4_5",
+     "SW SML 1 0": "1 0",
+     "SW SML 2 < 3": "2 < 3",
+     "SW SML 3 3 to <4_5": "3 3 to <4_5",
+     "SW SML 4 >=4_5": "4 >=4_5",
+     "W LRG 1 0": "1 0",
+     "W LRG 2 < 3": "2 < 3",
+     "W LRG 3 3 to <4_5": "3 3 to <4_5",
+     "W LRG 4 >=4_5": "4 >=4_5",
+     "W MED 1 0": "1 0",
+     "W MED 2 < 3": "2 < 3",
+     "W MED 3 3 to <4_5": "3 3 to <4_5",
+     "W MED 4 >=4_5": "4 >=4_5"
+    }
+   }
+  }
+ ],
+ "Bales Over_Under Flow": [
+  {
+   "kind": "constant",
+   "target": "metric",
+   "args": {
+    "value": "over_under_flow"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "record_kind",
+   "args": {
+    "value": "weekly_flow_difference"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "unit",
+   "args": {
+    "value": "bale"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "location_id",
+   "args": {
+    "source": "dim1",
+    "mapping": {
+     "MS LRG 1 0": "MS",
+     "MS LRG 2 < 3": "MS",
+     "MS LRG 3 3 to <4_5": "MS",
+     "MS LRG 4 >=4_5": "MS",
+     "MS MED 1 0": "MS",
+     "MS MED 2 < 3": "MS",
+     "MS MED 3 3 to <4_5": "MS",
+     "MS MED 4 >=4_5": "MS",
+     "MS SML 1 0": "MS",
+     "MS SML 2 < 3": "MS",
+     "MS SML 3 3 to <4_5": "MS",
+     "MS SML 4 >=4_5": "MS",
+     "SE LRG 1 0": "SE",
+     "SE LRG 2 < 3": "SE",
+     "SE LRG 3 3 to <4_5": "SE",
+     "SE LRG 4 >=4_5": "SE",
+     "SE MED 1 0": "SE",
+     "SE MED 2 < 3": "SE",
+     "SE MED 3 3 to <4_5": "SE",
+     "SE MED 4 >=4_5": "SE",
+     "SE SML 1 0": "SE",
+     "SE SML 2 < 3": "SE",
+     "SE SML 3 3 to <4_5": "SE",
+     "SE SML 4 >=4_5": "SE",
+     "SW LRG 1 0": "SW",
+     "SW LRG 2 < 3": "SW",
+     "SW LRG 3 3 to <4_5": "SW",
+     "SW LRG 4 >=4_5": "SW",
+     "SW MED 1 0": "SW",
+     "SW MED 2 < 3": "SW",
+     "SW MED 3 3 to <4_5": "SW",
+     "SW MED 4 >=4_5": "SW",
+     "SW SML 1 0": "SW",
+     "SW SML 2 < 3": "SW",
+     "SW SML 3 3 to <4_5": "SW",
+     "SW SML 4 >=4_5": "SW",
+     "W LRG 1 0": "W",
+     "W LRG 2 < 3": "W",
+     "W LRG 3 3 to <4_5": "W",
+     "W LRG 4 >=4_5": "W",
+     "W MED 1 0": "W",
+     "W MED 2 < 3": "W",
+     "W MED 3 3 to <4_5": "W",
+     "W MED 4 >=4_5": "W"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "facility_size",
+   "args": {
+    "source": "dim1",
+    "mapping": {
+     "MS LRG 1 0": "LRG",
+     "MS LRG 2 < 3": "LRG",
+     "MS LRG 3 3 to <4_5": "LRG",
+     "MS LRG 4 >=4_5": "LRG",
+     "MS MED 1 0": "MED",
+     "MS MED 2 < 3": "MED",
+     "MS MED 3 3 to <4_5": "MED",
+     "MS MED 4 >=4_5": "MED",
+     "MS SML 1 0": "SML",
+     "MS SML 2 < 3": "SML",
+     "MS SML 3 3 to <4_5": "SML",
+     "MS SML 4 >=4_5": "SML",
+     "SE LRG 1 0": "LRG",
+     "SE LRG 2 < 3": "LRG",
+     "SE LRG 3 3 to <4_5": "LRG",
+     "SE LRG 4 >=4_5": "LRG",
+     "SE MED 1 0": "MED",
+     "SE MED 2 < 3": "MED",
+     "SE MED 3 3 to <4_5": "MED",
+     "SE MED 4 >=4_5": "MED",
+     "SE SML 1 0": "SML",
+     "SE SML 2 < 3": "SML",
+     "SE SML 3 3 to <4_5": "SML",
+     "SE SML 4 >=4_5": "SML",
+     "SW LRG 1 0": "LRG",
+     "SW LRG 2 < 3": "LRG",
+     "SW LRG 3 3 to <4_5": "LRG",
+     "SW LRG 4 >=4_5": "LRG",
+     "SW MED 1 0": "MED",
+     "SW MED 2 < 3": "MED",
+     "SW MED 3 3 to <4_5": "MED",
+     "SW MED 4 >=4_5": "MED",
+     "SW SML 1 0": "SML",
+     "SW SML 2 < 3": "SML",
+     "SW SML 3 3 to <4_5": "SML",
+     "SW SML 4 >=4_5": "SML",
+     "W LRG 1 0": "LRG",
+     "W LRG 2 < 3": "LRG",
+     "W LRG 3 3 to <4_5": "LRG",
+     "W LRG 4 >=4_5": "LRG",
+     "W MED 1 0": "MED",
+     "W MED 2 < 3": "MED",
+     "W MED 3 3 to <4_5": "MED",
+     "W MED 4 >=4_5": "MED"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "flow_bucket",
+   "args": {
+    "source": "dim1",
+    "mapping": {
+     "MS LRG 1 0": "1 0",
+     "MS LRG 2 < 3": "2 < 3",
+     "MS LRG 3 3 to <4_5": "3 3 to <4_5",
+     "MS LRG 4 >=4_5": "4 >=4_5",
+     "MS MED 1 0": "1 0",
+     "MS MED 2 < 3": "2 < 3",
+     "MS MED 3 3 to <4_5": "3 3 to <4_5",
+     "MS MED 4 >=4_5": "4 >=4_5",
+     "MS SML 1 0": "1 0",
+     "MS SML 2 < 3": "2 < 3",
+     "MS SML 3 3 to <4_5": "3 3 to <4_5",
+     "MS SML 4 >=4_5": "4 >=4_5",
+     "SE LRG 1 0": "1 0",
+     "SE LRG 2 < 3": "2 < 3",
+     "SE LRG 3 3 to <4_5": "3 3 to <4_5",
+     "SE LRG 4 >=4_5": "4 >=4_5",
+     "SE MED 1 0": "1 0",
+     "SE MED 2 < 3": "2 < 3",
+     "SE MED 3 3 to <4_5": "3 3 to <4_5",
+     "SE MED 4 >=4_5": "4 >=4_5",
+     "SE SML 1 0": "1 0",
+     "SE SML 2 < 3": "2 < 3",
+     "SE SML 3 3 to <4_5": "3 3 to <4_5",
+     "SE SML 4 >=4_5": "4 >=4_5",
+     "SW LRG 1 0": "1 0",
+     "SW LRG 2 < 3": "2 < 3",
+     "SW LRG 3 3 to <4_5": "3 3 to <4_5",
+     "SW LRG 4 >=4_5": "4 >=4_5",
+     "SW MED 1 0": "1 0",
+     "SW MED 2 < 3": "2 < 3",
+     "SW MED 3 3 to <4_5": "3 3 to <4_5",
+     "SW MED 4 >=4_5": "4 >=4_5",
+     "SW SML 1 0": "1 0",
+     "SW SML 2 < 3": "2 < 3",
+     "SW SML 3 3 to <4_5": "3 3 to <4_5",
+     "SW SML 4 >=4_5": "4 >=4_5",
+     "W LRG 1 0": "1 0",
+     "W LRG 2 < 3": "2 < 3",
+     "W LRG 3 3 to <4_5": "3 3 to <4_5",
+     "W LRG 4 >=4_5": "4 >=4_5",
+     "W MED 1 0": "1 0",
+     "W MED 2 < 3": "2 < 3",
+     "W MED 3 3 to <4_5": "3 3 to <4_5",
+     "W MED 4 >=4_5": "4 >=4_5"
+    }
+   }
+  }
+ ],
+ "Number of Warehouses": [
+  {
+   "kind": "constant",
+   "target": "metric",
+   "args": {
+    "value": "warehouse_count"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "record_kind",
+   "args": {
+    "value": "reporting_coverage"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "unit",
+   "args": {
+    "value": "warehouse"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "location_id",
+   "args": {
+    "source": "dim1",
+    "mapping": {
+     "MS LRG": "MS",
+     "MS MED": "MS",
+     "MS SML": "MS",
+     "SE LRG": "SE",
+     "SE MED": "SE",
+     "SE SML": "SE",
+     "SW LRG": "SW",
+     "SW MED": "SW",
+     "SW SML": "SW",
+     "W LRG": "W",
+     "W MED": "W"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "facility_size",
+   "args": {
+    "source": "dim1",
+    "mapping": {
+     "MS LRG": "LRG",
+     "MS MED": "MED",
+     "MS SML": "SML",
+     "SE LRG": "LRG",
+     "SE MED": "MED",
+     "SE SML": "SML",
+     "SW LRG": "LRG",
+     "SW MED": "MED",
+     "SW SML": "SML",
+     "W LRG": "LRG",
+     "W MED": "MED"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "flow_bucket",
+   "args": {
+    "source": "dim1",
+    "mapping": {
+     "MS LRG": "",
+     "MS MED": "",
+     "MS SML": "",
+     "SE LRG": "",
+     "SE MED": "",
+     "SE SML": "",
+     "SW LRG": "",
+     "SW MED": "",
+     "SW SML": "",
+     "W LRG": "",
+     "W MED": ""
+    }
+   }
+  }
+ ]
+}

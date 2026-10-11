@@ -1,0 +1,230 @@
+{
+ "cases": [
+  {
+   "case_id": "wb_population",
+   "domain": "demography",
+   "format": "csv",
+   "raw_file": "cases/wb_population/API_SP.POP.TOTL_DS2_en_csv_v2_5254.csv",
+   "expected_rows": 17460
+  },
+  {
+   "case_id": "ons_cpi",
+   "domain": "prices",
+   "format": "csv",
+   "raw_file": "cases/ons_cpi/ons_cpi_d7bt.csv",
+   "expected_rows": 656
+  },
+  {
+   "case_id": "census_state_pop",
+   "domain": "demography",
+   "format": "xlsx",
+   "raw_file": "cases/census_state_pop/NST-EST2023-POP.xlsx",
+   "expected_rows": 285
+  },
+  {
+   "case_id": "census_county_pop",
+   "domain": "demography",
+   "format": "xlsx",
+   "raw_file": "cases/census_county_pop/co-est2023-pop-01.xlsx",
+   "expected_rows": 335
+  },
+  {
+   "case_id": "eurostat_unemployment",
+   "domain": "labour",
+   "format": "tsv",
+   "raw_file": "cases/eurostat_unemployment/estat_une_rt_a.tsv",
+   "expected_rows": 39708
+  },
+  {
+   "case_id": "cdc_covid_deaths",
+   "domain": "health",
+   "format": "csv",
+   "raw_file": "cases/cdc_covid_deaths/Provisional_COVID-19_Deaths_by_Sex_and_Age.csv",
+   "expected_rows": 11016
+  },
+  {
+   "case_id": "uci_online_retail",
+   "domain": "sales",
+   "format": "xlsx",
+   "raw_file": "cases/uci_online_retail/Online Retail.xlsx",
+   "expected_rows": 541909
+  },
+  {
+   "case_id": "uk_gender_pay_gap",
+   "domain": "hr",
+   "format": "csv",
+   "raw_file": "cases/uk_gender_pay_gap/gender_pay_gap_2023.csv",
+   "expected_rows": 11168
+  }
+ ],
+ "scoring_cases": {
+  "wb_population": {
+   "expected": "cases/wb_population/expected.csv",
+   "expected_rows": 17460,
+   "key": [
+    "country_code",
+    "year"
+   ],
+   "compare_fields": [
+    "country_name",
+    "population"
+   ],
+   "numeric_fields": {
+    "year": "0.000001",
+    "population": "0.000001"
+   },
+   "sum_controls": [],
+   "scope": "All countries and aggregates, every year with a value"
+  },
+  "ons_cpi": {
+   "expected": "cases/ons_cpi/expected.csv",
+   "expected_rows": 656,
+   "key": [
+    "period_type",
+    "period"
+   ],
+   "compare_fields": [
+    "period_start",
+    "period_end",
+    "index_value"
+   ],
+   "numeric_fields": {
+    "index_value": "0.000001"
+   },
+   "sum_controls": [],
+   "scope": "All annual, quarterly and monthly rows"
+  },
+  "census_state_pop": {
+   "expected": "cases/census_state_pop/expected.csv",
+   "expected_rows": 285,
+   "key": [
+    "geography",
+    "reference_date",
+    "estimate_type"
+   ],
+   "compare_fields": [
+    "geography_level",
+    "population"
+   ],
+   "numeric_fields": {
+    "population": "0.000001"
+   },
+   "sum_controls": [],
+   "scope": "Every geography row, base and four annual estimates"
+  },
+  "census_county_pop": {
+   "expected": "cases/census_county_pop/expected.csv",
+   "expected_rows": 335,
+   "key": [
+    "county",
+    "state",
+    "reference_date",
+    "estimate_type"
+   ],
+   "compare_fields": [
+    "population"
+   ],
+   "numeric_fields": {
+    "population": "0.000001"
+   },
+   "sum_controls": [],
+   "scope": "Every county row, base and four annual estimates"
+  },
+  "eurostat_unemployment": {
+   "expected": "cases/eurostat_unemployment/expected.csv",
+   "expected_rows": 39708,
+   "key": [
+    "geo",
+    "age_group",
+    "sex",
+    "unit",
+    "year"
+   ],
+   "compare_fields": [
+    "rate",
+    "flag"
+   ],
+   "numeric_fields": {
+    "year": "0.000001",
+    "rate": "0.000001"
+   },
+   "sum_controls": [],
+   "scope": "Every series and year with a value"
+  },
+  "cdc_covid_deaths": {
+   "expected": "cases/cdc_covid_deaths/expected.csv",
+   "expected_rows": 11016,
+   "key": [
+    "year",
+    "state",
+    "sex",
+    "age_group"
+   ],
+   "compare_fields": [
+    "data_as_of",
+    "covid_deaths",
+    "total_deaths"
+   ],
+   "numeric_fields": {
+    "year": "0.000001",
+    "covid_deaths": "0.000001",
+    "total_deaths": "0.000001"
+   },
+   "sum_controls": [],
+   "scope": "Rows with Group = By Year"
+  },
+  "uci_online_retail": {
+   "expected": "cases/uci_online_retail/expected.csv",
+   "expected_rows": 541909,
+   "key": [
+    "source_row"
+   ],
+   "compare_fields": [
+    "invoice_no",
+    "stock_code",
+    "description",
+    "quantity",
+    "invoice_date",
+    "unit_price",
+    "customer_id",
+    "country",
+    "is_cancellation",
+    "line_amount"
+   ],
+   "numeric_fields": {
+    "quantity": "0.000001",
+    "unit_price": "0.000001",
+    "line_amount": "0.000001",
+    "source_row": "0.000001"
+   },
+   "sum_controls": [],
+   "scope": "Every invoice line"
+  },
+  "uk_gender_pay_gap": {
+   "expected": "cases/uk_gender_pay_gap/expected.csv",
+   "expected_rows": 11168,
+   "key": [
+    "employer_id"
+   ],
+   "compare_fields": [
+    "employer_name",
+    "postcode",
+    "company_number",
+    "mean_hourly_pay_gap_percent",
+    "median_hourly_pay_gap_percent",
+    "mean_bonus_gap_percent",
+    "employer_size",
+    "submitted_after_deadline",
+    "due_date",
+    "date_submitted"
+   ],
+   "numeric_fields": {
+    "mean_hourly_pay_gap_percent": "0.000001",
+    "median_hourly_pay_gap_percent": "0.000001",
+    "mean_bonus_gap_percent": "0.000001"
+   },
+   "sum_controls": [],
+   "scope": "Every employer row"
+  }
+ }
+}

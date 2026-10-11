@@ -1,0 +1,37 @@
+{
+ "_structure": {
+  "ons_cpi_d7bt": {
+   "synthetic_header": [
+    "period",
+    "index_value"
+   ],
+   "data_start": 8
+  }
+ },
+ "*": [
+  {
+   "kind": "period",
+   "target": "period_type",
+   "args": {
+    "source": "period",
+    "part": "type"
+   }
+  },
+  {
+   "kind": "period",
+   "target": "period_start",
+   "args": {
+    "source": "period",
+    "part": "start"
+   }
+  },
+  {
+   "kind": "period",
+   "target": "period_end",
+   "args": {
+    "source": "period",
+    "part": "end"
+   }
+  }
+ ]
+}

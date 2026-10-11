@@ -1,0 +1,32 @@
+# Effective-dated history -> point-in-time snapshot. Intervals are [from, to); 9999-01-01 is an open-end marker.
+name: hr_history_snapshot
+workflow: generic
+locate: {header: 0}
+map:
+  employee_id:    {to: employee_id, required: true}
+  dept_code:      dept_code
+  dept_name:      dept_name
+  job_title:      job_title
+  effective_from: {to: effective_from, required: true}
+  effective_to:   {to: effective_to, required: true}
+shape:
+  - {op: strip, cols: [employee_id]}
+  - {op: asof_filter, from_col: effective_from, to_col: effective_to, as_of: '2000-01-01', out_col: as_of}
+keys:
+  cols: [employee_id]
+  pattern: '^\d+$'
+template:
+  filename: 06_hr_snapshot.csv
+  columns:
+    as_of: as_of
+    employee_id: employee_id
+    dept_code: dept_code
+    dept_name: dept_name
+    job_title: job_title
+    effective_from: effective_from
+    effective_to: effective_to
+controls:
+  - {name: employees_at_as_of, output: {count_rows: true}, expected: {value: 176}}
+  - {name: distinct_employees, output: {count_unique: employee_id}, expected: {value: 176}}
+rules:
+  - {type: unique, cols: [employee_id], on_fail: halt}

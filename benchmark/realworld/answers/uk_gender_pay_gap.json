@@ -1,0 +1,15 @@
+{
+ "*": [
+  {
+   "kind": "column",
+   "target": "submitted_after_deadline",
+   "args": {
+    "source": "submitted_after_the_deadline",
+    "mapping": {
+     "True": "true",
+     "False": "false"
+    }
+   }
+  }
+ ]
+}

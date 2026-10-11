@@ -1,0 +1,50 @@
+# Report layout: department group rows, repeated two-level headers, subtotals, mixed date formats, OPEN sentinel.
+name: hr_grouped_report_snapshot
+workflow: generic
+locate:
+  header_rows: [6, 7]
+  data_start: 5            # the first group row sits above the first header
+  skip_rows_matching: ['^employee id$', '^effective from$', 'subtotal$', '^grand total']
+map:
+  Employee ID:                         {to: employee_id, required: true}
+  Job title:                           {to: job_title, required: true}
+  Assignment period|Effective from:    {to: effective_from, required: true}
+  Assignment period|Effective to:      {to: effective_to, required: true}
+  Headcount:                           headcount
+const:
+  as_of: '2000-01-01'
+measures: [headcount]
+shape:
+  - {op: group_context, col: employee_id, pattern: '^(?P<dept_code>d\d{3}) \| (?P<dept_name>.+)$'}
+  - {op: strip, cols: [employee_id]}
+  - op: parse_date
+    cols: [effective_from, effective_to]
+    as_text: true
+    sentinels: {OPEN: '9999-01-01'}
+    formats: ['%Y-%m-%d', '%d.%m.%Y', '%Y-%m-%d %H:%M:%S']
+keys:
+  cols: [employee_id]
+  pattern: '^\d+$'
+template:
+  filename: 06_hr_snapshot.csv
+  columns:
+    as_of: as_of
+    employee_id: employee_id
+    dept_code: dept_code
+    dept_name: dept_name
+    job_title: job_title
+    effective_from: effective_from
+    effective_to: effective_to
+controls:
+  - {name: employees, output: {count_rows: true}, expected: {value: 176}}
+  - name: headcount_matches_rows
+    source: {sum: [headcount], stage: keyed}
+    output: {count_rows: true}
+  - {name: marketing, output: {count_rows: true, where: {dept_code: d001}}, expected: {value: 12}}
+  - {name: production, output: {count_rows: true, where: {dept_code: d004}}, expected: {value: 37}}
+  - name: no_open_text_left
+    output: {count_rows: true, where: {effective_to: {eq: OPEN}}}
+    expected: {value: 0}
+rules:
+  - {type: unique, cols: [employee_id], on_fail: halt}
+  - {type: not_null, cols: [dept_code, dept_name, effective_from, effective_to], on_fail: halt}

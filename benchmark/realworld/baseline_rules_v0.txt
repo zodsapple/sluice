@@ -1,0 +1,20 @@
+pharm_scot_schedule            stats  FAIL          Q=18   missing=472    extra=1      mismatch=0     
+pharm_scot_pca                 record FAIL          Q=4    missing=39     extra=1996   mismatch=0     
+pharm_it_aifa                  record FAIL          Q=2    missing=816    extra=18207  mismatch=0     
+pharm_it_otc                   record FAIL          Q=2    missing=50     extra=50     mismatch=0     
+pharm_worcs_ap                 record FAIL          Q=0    missing=0      extra=0      mismatch=51    
+pharm_ni_quarterly             stats  FAIL          Q=56   missing=78     extra=1      mismatch=0     
+sales_montgomery_202608        record FAIL          Q=2    missing=10957  extra=10957  mismatch=0     
+sales_consip_orders_2024       record FAIL          Q=0    missing=20578  extra=33     mismatch=0     
+sales_folkestone_card_202507   record PASS          Q=0    missing=0      extra=0      mismatch=0     
+sales_stockport_card_202603    record PASS          Q=0    missing=0      extra=0      mismatch=0     
+transport_gr_3pl_orders        record FAIL          Q=0    missing=575    extra=6      mismatch=0     
+transport_gnewt_agile3         record FAIL          Q=1    missing=13357  extra=0      mismatch=0     
+transport_gnewt_fleetcarma     record FAIL          Q=0    missing=292    extra=64     mismatch=0     
+transport_usda_rail_ports      stats  FAIL          Q=2    missing=54     extra=1      mismatch=0     
+transport_fr_trm2024           stats  FAIL          Q=2    missing=200    extra=1      mismatch=0     
+transport_uk_port0101          -      CRASH         Q=-    missing=-      extra=-      mismatch=-     EngineError: Cannot read uk_port0101_original.ods: "There is no item named '[Content_Types].xml' in the archive"
+wh_usda_cotton_region          stats  FAIL          Q=48   missing=3003   extra=1      mismatch=0     
+wh_usda_bmas                   stats  FAIL          Q=8    missing=624    extra=1      mismatch=0     
+wh_austin_inventory            stats  FAIL          Q=8    missing=3048   extra=1      mismatch=0     
+wh_eia_petroleum_stocks        stats  FAIL          Q=9    missing=156    extra=1      mismatch=0     

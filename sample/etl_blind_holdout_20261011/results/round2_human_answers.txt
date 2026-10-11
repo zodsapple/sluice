@@ -1,0 +1,8 @@
+wb_population                  record PASS          Q=2    missing=0      extra=0      mismatch=0     rows 17460/17460 fields 5/5 
+ons_cpi                        record PASS          Q=0    missing=0      extra=0      mismatch=0     rows 656/656 fields 6/6 
+census_state_pop               record PASS          Q=2    missing=0      extra=0      mismatch=0     rows 285/285 fields 6/6 
+census_county_pop              record PASS          Q=2    missing=0      extra=0      mismatch=0     rows 335/335 fields 6/6 
+eurostat_unemployment          record PASS          Q=6    missing=0      extra=0      mismatch=0     rows 39708/39708 fields 8/8 
+cdc_covid_deaths               record PASS          Q=0    missing=0      extra=0      mismatch=0     rows 11016/11016 fields 8/8 
+uk_gender_pay_gap              record PASS          Q=1    missing=0      extra=0      mismatch=0     rows 11168/11168 fields 12/12 
+uci_online_retail              record PASS          Q=0    missing=0      extra=0      mismatch=0     rows 541909/541909 fields 12/12 

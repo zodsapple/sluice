@@ -1,0 +1,103 @@
+name: sales_retail_landing
+workflow: generic
+description: Raw transaction landing. Anomalies (cancellations, negatives, duplicates) are counted, not removed.
+locate:
+  header: 0
+map:
+  InvoiceNo:
+    to: invoice_no
+    required: true
+  StockCode:
+    to: stock_code
+    required: true
+  Description: description
+  Quantity: quantity
+  InvoiceDate: invoice_date
+  UnitPrice: unit_price
+  CustomerID: customer_id
+  Country: country
+shape:
+- op: strip
+  cols:
+  - invoice_no
+  - stock_code
+  - customer_id
+- op: parse_date
+  cols:
+  - invoice_date
+keys:
+  cols: []
+template:
+  filename: 01_sales_landing.csv
+  columns:
+    invoice_no: invoice_no
+    stock_code: stock_code
+    description: description
+    quantity:
+      col: quantity
+      type: int
+    invoice_date: invoice_date
+    unit_price:
+      col: unit_price
+      type: number
+    customer_id: customer_id
+    country: country
+controls:
+- name: rows
+  output:
+    count_rows: true
+  expected:
+    value: 541909
+- name: null_description
+  output:
+    count_rows: true
+    where:
+      description:
+        isnull: true
+  expected:
+    value: 1454
+- name: null_customer
+  output:
+    count_rows: true
+    where:
+      customer_id:
+        isnull: true
+  expected:
+    value: 135080
+- name: negative_quantity
+  output:
+    count_rows: true
+    where:
+      quantity:
+        lt: 0
+  expected:
+    value: 10624
+- name: cancellation_invoices
+  output:
+    count_rows: true
+    where:
+      invoice_no:
+        startswith: C
+  expected:
+    value: 9288
+- name: zero_price
+  output:
+    count_rows: true
+    where:
+      unit_price:
+        eq: 0
+  expected:
+    value: 2515
+- name: negative_price
+  output:
+    count_rows: true
+    where:
+      unit_price:
+        lt: 0
+  expected:
+    value: 2
+- name: exact_duplicates_observed
+  output:
+    duplicates: true
+  expected:
+    value: 5268

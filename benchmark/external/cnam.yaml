@@ -1,0 +1,325 @@
+name: cnam_medicam_prescriber
+workflow: generic
+description: 'CNAM MedicAM, all-prescriber sheet: 6 months x 3 metrics across -> one row per product and month.'
+locate:
+  sheet:
+    name: MedicAM_2025mois_tous_presc
+  header: 0
+  skip_rows_matching:
+  - ^total$
+map:
+  CIP13:
+    to: source_cip13
+    required: true
+  NOM COURT:
+    to: product_short_name
+    required: false
+  PRODUIT:
+    to: product_name
+    required: false
+  Code EphMRA:
+    to: ephmra_code
+    required: false
+  Classe EphMRA:
+    to: ephmra_label
+    required: false
+  Code ATC:
+    to: atc5_code
+    required: false
+  Classe ATC:
+    to: atc5_label
+    required: false
+  Code ATC 2:
+    to: atc2_code
+    required: false
+  Libellé ATC 2:
+    to: atc2_label
+    required: false
+const:
+  country_code: FR
+  prescriber_group: all
+  quantity_unit: reimbursed_box
+  currency: EUR
+shape:
+- op: strip
+  cols:
+  - source_cip13
+- op: melt_families
+  id:
+  - source_cip13
+  - product_short_name
+  - product_name
+  - ephmra_label
+  - atc5_label
+  - atc2_label
+  - ephmra_code
+  - atc5_code
+  - atc2_code
+  index: reporting_month
+  families:
+  - pattern: ^Base de remboursement\s*(\d{4}-\d{2})$
+    value: reimbursement_base_eur
+  - pattern: ^Nombre de boites remboursées\s*(\d{4}-\d{2})$
+    value: reimbursed_box_count
+  - pattern: ^Montant remboursé\s*(\d{4}-\d{2})$
+    value: reimbursed_amount_eur
+- op: derive
+  col: row_kind
+  template: product
+- op: derive
+  col: row_kind
+  template: other_aggregate
+  where:
+    source_cip13: Autres
+- op: derive
+  col: product_code
+  template: '{source_cip13}'
+  where:
+    source_cip13:
+      ne: Autres
+- op: flag
+  out: has_negative_measure
+  any_of:
+  - reimbursement_base_eur:
+      lt: 0
+  - reimbursed_box_count:
+      lt: 0
+  - reimbursed_amount_eur:
+      lt: 0
+- op: flag
+  out: has_suspect_source_text
+  any_of:
+  - product_short_name:
+      regex: '[¿�]'
+  - product_name:
+      regex: '[¿�]'
+  - ephmra_label:
+      regex: '[¿�]'
+  - atc5_label:
+      regex: '[¿�]'
+  - atc2_label:
+      regex: '[¿�]'
+- op: flag
+  out: has_missing_atc
+  any_of:
+  - atc5_code:
+      isnull: true
+keys:
+  cols:
+  - source_cip13
+  - reporting_month
+  - row_kind
+  pattern: ^(\d{13}|Autres)$
+template:
+  filename: cnam_out.csv
+  columns:
+    source_sheet: _src_sheet
+    source_row:
+      col: _src_row
+      type: int
+    country_code: country_code
+    reporting_month: reporting_month
+    prescriber_group: prescriber_group
+    row_kind: row_kind
+    source_cip13: source_cip13
+    product_code: product_code
+    product_short_name: product_short_name
+    product_name: product_name
+    ephmra_code: ephmra_code
+    ephmra_label: ephmra_label
+    atc5_code: atc5_code
+    atc5_label: atc5_label
+    atc2_code: atc2_code
+    atc2_label: atc2_label
+    reimbursement_base_eur: reimbursement_base_eur
+    reimbursed_amount_eur: reimbursed_amount_eur
+    reimbursed_box_count:
+      col: reimbursed_box_count
+      type: int
+    quantity_unit: quantity_unit
+    currency: currency
+    has_negative_measure: has_negative_measure
+    has_suspect_source_text: has_suspect_source_text
+    has_missing_atc: has_missing_atc
+controls:
+- name: rows
+  output:
+    count_rows: true
+  expected:
+    value: 87762
+- name: autres_rows
+  output:
+    count_rows: true
+    where:
+      row_kind: other_aggregate
+  expected:
+    value: 6
+- name: 2025-01_reimbursement_base_eur
+  output:
+    sum:
+    - reimbursement_base_eur
+    where:
+      reporting_month: 2025-01
+  expected:
+    value: 2649086586.359996
+  tol: 0.01
+- name: 2025-01_reimbursed_box_count
+  output:
+    sum:
+    - reimbursed_box_count
+    where:
+      reporting_month: 2025-01
+  expected:
+    value: 210929136.0
+  tol: 0.01
+- name: 2025-01_reimbursed_amount_eur
+  output:
+    sum:
+    - reimbursed_amount_eur
+    where:
+      reporting_month: 2025-01
+  expected:
+    value: 2316604558.157598
+  tol: 0.01
+- name: 2025-02_reimbursement_base_eur
+  output:
+    sum:
+    - reimbursement_base_eur
+    where:
+      reporting_month: 2025-02
+  expected:
+    value: 2394043240.0500097
+  tol: 0.01
+- name: 2025-02_reimbursed_box_count
+  output:
+    sum:
+    - reimbursed_box_count
+    where:
+      reporting_month: 2025-02
+  expected:
+    value: 188733671.0
+  tol: 0.01
+- name: 2025-02_reimbursed_amount_eur
+  output:
+    sum:
+    - reimbursed_amount_eur
+    where:
+      reporting_month: 2025-02
+  expected:
+    value: 2089073817.0921054
+  tol: 0.01
+- name: 2025-03_reimbursement_base_eur
+  output:
+    sum:
+    - reimbursement_base_eur
+    where:
+      reporting_month: 2025-03
+  expected:
+    value: 2552702074.8900013
+  tol: 0.01
+- name: 2025-03_reimbursed_box_count
+  output:
+    sum:
+    - reimbursed_box_count
+    where:
+      reporting_month: 2025-03
+  expected:
+    value: 193325541.0
+  tol: 0.01
+- name: 2025-03_reimbursed_amount_eur
+  output:
+    sum:
+    - reimbursed_amount_eur
+    where:
+      reporting_month: 2025-03
+  expected:
+    value: 2231804037.92471
+  tol: 0.01
+- name: 2025-04_reimbursement_base_eur
+  output:
+    sum:
+    - reimbursement_base_eur
+    where:
+      reporting_month: 2025-04
+  expected:
+    value: 2641296520.879992
+  tol: 0.01
+- name: 2025-04_reimbursed_box_count
+  output:
+    sum:
+    - reimbursed_box_count
+    where:
+      reporting_month: 2025-04
+  expected:
+    value: 197463933.0
+  tol: 0.01
+- name: 2025-04_reimbursed_amount_eur
+  output:
+    sum:
+    - reimbursed_amount_eur
+    where:
+      reporting_month: 2025-04
+  expected:
+    value: 2308175794.422106
+  tol: 0.01
+- name: 2025-05_reimbursement_base_eur
+  output:
+    sum:
+    - reimbursement_base_eur
+    where:
+      reporting_month: 2025-05
+  expected:
+    value: 2538358688.590014
+  tol: 0.01
+- name: 2025-05_reimbursed_box_count
+  output:
+    sum:
+    - reimbursed_box_count
+    where:
+      reporting_month: 2025-05
+  expected:
+    value: 185946001.0
+  tol: 0.01
+- name: 2025-05_reimbursed_amount_eur
+  output:
+    sum:
+    - reimbursed_amount_eur
+    where:
+      reporting_month: 2025-05
+  expected:
+    value: 2221395265.4664125
+  tol: 0.01
+- name: 2025-06_reimbursement_base_eur
+  output:
+    sum:
+    - reimbursement_base_eur
+    where:
+      reporting_month: 2025-06
+  expected:
+    value: 2632534323.0000052
+  tol: 0.01
+- name: 2025-06_reimbursed_box_count
+  output:
+    sum:
+    - reimbursed_box_count
+    where:
+      reporting_month: 2025-06
+  expected:
+    value: 191452688.0
+  tol: 0.01
+- name: 2025-06_reimbursed_amount_eur
+  output:
+    sum:
+    - reimbursed_amount_eur
+    where:
+      reporting_month: 2025-06
+  expected:
+    value: 2305393318.7459006
+  tol: 0.01
+rules:
+- type: unique
+  cols:
+  - source_cip13
+  - reporting_month
+  - row_kind
+  on_fail: halt

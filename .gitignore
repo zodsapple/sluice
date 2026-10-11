@@ -1,0 +1,17 @@
+__pycache__/
+.pytest_cache/
+*.pyc
+_etl_logs/
+dq_logs/
+*.bak
+*.proposed_patch.json
+benchmark/*_results.json
+
+# public sample packs are big (270 MB): keep the recipes, not the files
+sample/etl_starter_20261010/
+sample/etl_external_reports_20261010_v2/
+sample/etl_realworld_noisy_20261011_v3/
+sample/etl_blind_holdout_20261011/cases/
+sample/output/
+sample/_prompts/
+test_env/output/

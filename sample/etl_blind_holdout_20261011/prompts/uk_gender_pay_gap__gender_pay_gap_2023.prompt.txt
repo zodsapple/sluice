@@ -1,0 +1,240 @@
+### INSTRUCTIONS
+
+You complete a data-mapping draft. A workbook sheet was already parsed (header rows, group rows,
+multi-level headers). You get the target fields that are still unbound, and the facts available on that sheet.
+Answer ONLY with JSON: {"answers":[{"question_id": str, "bindings":[...], "status": "answered"|"unknown"}]}.
+
+A binding is {"kind","target","args","confidence","evidence"}; kinds and args (nothing else exists):
+  constant   {value}                       same value on every row
+  column     {source, mapping?, verbatim?, extract?} copy a listed source; mapping translates its values (list EVERY value you can);
+                                           verbatim:true keeps the text untrimmed; extract = regex whose first group is the value
+  period     {source, part}                part = start | end | type of the period a label names (2023, 2023 Q2, JAN 2023 ...)
+  arith      {op, a, b, decimals?}         op = mul | add | sub | div of two sources or fields
+  sheet_cell {cell, mapping?|date?}        a fact printed once on the sheet; mapping = substring -> value
+  template   {template, where?}            text with {source} placeholders; where = {source: value | {regex|not_regex|in|not_in|isnull|notnull: ..}}
+  scale      {source, factor}              numeric source x factor
+  group_flag {by:[names], repeated, otherwise}   repeated when another row has the same values in `by` (names = sources or fields), else otherwise
+  row_scope  {conditions:[{column, equals|in|not_in|regex|not_regex|same_as}], mode:"all"|"any"}    (no target)
+  grid_scope {dimension, include:[...]}    (no target)
+Questions: {"id","targets"} = bind these fields (any kind except row_scope/grid_scope); a question with "kind":"scope" is
+answered with row_scope / grid_scope bindings only (the id ends with the kind). One answer entry per question id.
+Rules: use only names, values and cells that appear in the packet. For fields with allowed values use only those values.
+For a free-text field ("precedents" lists values other, already approved sources use for it) write the value in the same
+style, via "mapping" when it depends on a source column. Copying source labels unchanged into such a field is almost always
+wrong: translate them with "mapping" or answer "unknown". row_scope / grid_scope: list EVERY row / column group that belongs to
+the extraction - detail rows and totals are usually both wanted unless the packet says otherwise. "example_row" is the
+template's own example for the fields asked: a value that occurs in a listed source, or equals one of its mapped values, is
+strong evidence which source the field is. It is ONE row: never copy its value as a constant for a field that may differ
+between rows (flags, statuses, types, counts) - answer "unknown" unless a listed source or cell decides it. A source marked
+"partial" shows only a sample of its values: never list the sample as an "in" list; state the rule instead (equals, not_in
+for the few values to drop, regex / not_regex for a naming pattern such as a total label) or answer "unknown".
+Date fields are ISO text YYYY-MM-DD. When the date follows from a listed source (a year or month label), build it with a
+template, e.g. "{year}-12-31"; when it differs between cases, give one template binding per case, each with its own
+"where" (see example 3). Use "sheet_cell" with date for a date printed once on the sheet.
+A field defined for only some rows ("filled on X rows only"): one "template" with a "where" for those rows; rows outside the
+"where" stay empty. A two-valued field defined by a condition: one template per value, the second with "not_in" / "not_regex"
+(see example 4). Several bindings for one field are only allowed in this template + where form.
+If the evidence does not decide it, return status "unknown" - do not guess. confidence is 0..1; evidence lists the
+source names / cells you relied on. Several bindings for one target are allowed only as template + where cases.
+
+### EXAMPLES (unrelated domain; only to show the reply shape)
+
+Example 1 input:
+
+{"questions": [{"id": "s1:status", "targets": ["status"]}], "sources": [{"name": "state", "kind": "column", "n": 2, "from": "State", "distinct": ["OPEN", "CLOSED"]}], "schema": [{"name": "status", "allowed": ["open", "closed"], "meaning": "ticket status"}]}
+
+Example 1 reply:
+
+{"answers": [{"question_id": "s1:status", "status": "answered", "bindings": [{"kind": "column", "target": "status", "args": {"source": "state", "mapping": {"OPEN": "open", "CLOSED": "closed"}}, "confidence": 0.95, "evidence": ["state"]}]}]}
+
+Example 2 input:
+
+{"questions": [{"id": "s1:currency", "targets": ["currency"]}], "schema": [{"name": "currency", "meaning": "ISO code"}], "cells": {"A2": "Orders in thousand"}}
+
+Example 2 reply:
+
+{"answers": [{"question_id": "s1:currency", "status": "unknown", "bindings": []}]}
+
+Example 3 input:
+
+{"questions": [{"id": "s1:day", "targets": ["day"]}], "sources": [{"name": "yr", "kind": "dim", "n": 2, "from": "upper header level", "distinct": ["2020", "2021"]}, {"name": "kind", "kind": "group", "n": 2, "from": "group header rows", "distinct": ["Stock at 1 July", "Sales over the year"]}], "schema": [{"name": "day", "type": "date", "meaning": "date the value refers to (ISO)"}]}
+
+Example 3 reply:
+
+{"answers": [{"question_id": "s1:day", "status": "answered", "bindings": [{"kind": "template", "target": "day", "args": {"template": "{yr}-07-01", "where": {"kind": "Stock at 1 July"}}, "confidence": 0.9, "evidence": ["yr", "kind"]}, {"kind": "template", "target": "day", "args": {"template": "{yr}-12-31", "where": {"kind": "Sales over the year"}}, "confidence": 0.8, "evidence": ["yr", "kind"]}]}]}
+
+Example 4 input:
+
+{"questions": [{"id": "s1:row_kind", "targets": ["row_kind"]}, {"id": "s1:units", "targets": ["units"]}, {"id": "s1:is_gift", "targets": ["is_gift"]}], "sources": [{"name": "item_code", "kind": "column", "n": 3, "from": "Item", "distinct": ["NA", "A1", "B7"]}, {"name": "qty", "kind": "column", "n": 40, "from": "Qty"}, {"name": "note", "kind": "column", "n": 3, "from": "Note", "distinct": ["GIFT", "RETURN", "-"]}], "schema": [{"name": "row_kind", "meaning": "'summary' for a total line (item NA), 'line' for an item line"}, {"name": "units", "meaning": "quantity; filled on item lines only, empty on summary lines"}, {"name": "is_gift", "meaning": "'yes' when the note is exactly GIFT, otherwise 'no'"}]}
+
+Example 4 reply:
+
+{"answers": [{"question_id": "s1:row_kind", "status": "answered", "bindings": [{"kind": "template", "target": "row_kind", "args": {"template": "summary", "where": {"item_code": "NA"}}, "confidence": 0.9, "evidence": ["item_code"]}, {"kind": "template", "target": "row_kind", "args": {"template": "line", "where": {"item_code": {"not_in": ["NA"]}}}, "confidence": 0.9, "evidence": ["item_code"]}]}, {"question_id": "s1:units", "status": "answered", "bindings": [{"kind": "template", "target": "units", "args": {"template": "{qty}", "where": {"item_code": {"not_in": ["NA"]}}}, "confidence": 0.85, "evidence": ["qty", "item_code"]}]}, {"question_id": "s1:is_gift", "status": "answered", "bindings": [{"kind": "template", "target": "is_gift", "args": {"template": "yes", "where": {"note": "GIFT"}}, "confidence": 0.9, "evidence": ["note"]}, {"kind": "template", "target": "is_gift", "args": {"template": "no", "where": {"note": {"not_in": ["GIFT"]}}}, "confidence": 0.9, "evidence": ["note"]}]}]}
+
+### PACKET (answer this one)
+
+{
+ "sheet": "gender_pay_gap_2023",
+ "layout": "tidy",
+ "schema": [
+  {
+   "name": "postcode",
+   "meaning": ""
+  }
+ ],
+ "questions": [
+  {
+   "id": "gender_pay_gap_2023:postcode",
+   "targets": [
+    "postcode"
+   ]
+  }
+ ],
+ "sources": [
+  {
+   "name": "post_code",
+   "kind": "column",
+   "n": 8020,
+   "from": "PostCode",
+   "distinct": [
+    "SY23 3FL",
+    "EH6 8NU",
+    "SE1 3TQ",
+    "WC1V 6BX",
+    "GU1 3BB",
+    "NG7 2SZ",
+    "RG24 8AG",
+    "WA4 4BT"
+   ],
+   "partial": true
+  },
+  {
+   "name": "sic_codes",
+   "kind": "column",
+   "n": 2089,
+   "from": "SicCodes",
+   "distinct": [
+    "47730",
+    "82990",
+    "62090",
+    "85200,\n85310",
+    "93110,\n93130,\n93290",
+    "49100",
+    "85590,\n87200,\n87300,\n87900",
+    "93110,\n93120"
+   ],
+   "partial": true
+  },
+  {
+   "name": "employer_size",
+   "kind": "column",
+   "n": 7,
+   "from": "EmployerSize",
+   "distinct": [
+    "1000 to 4999",
+    "250 to 499",
+    "Less than 250",
+    "5000 to 19,999",
+    "500 to 999",
+    "20,000 or more",
+    "Not Provided"
+   ]
+  },
+  {
+   "name": "employer_id",
+   "kind": "column",
+   "n": 11168,
+   "from": "EmployerId",
+   "distinct": [
+    "19070",
+    "16879",
+    "19455",
+    "22185",
+    "15320",
+    "763",
+    "764",
+    "17626"
+   ],
+   "partial": true
+  },
+  {
+   "name": "responsible_person",
+   "kind": "column",
+   "n": 7661,
+   "from": "ResponsiblePerson",
+   "distinct": [
+    "Dylan Jones (Diversity and Inclusion Manager)",
+    "Osmond Ramsay (Finance Director)",
+    "Linda Stigter (Director of People and Culture)",
+    "Curt Hess ((Chief Operating Officer))",
+    "Catherine Perceval (Bursar)",
+    "Andy Mayhew (Managing Director)",
+    "Warren Plant (Head of Reward)",
+    "Phil James (Finance Manager)"
+   ],
+   "partial": true
+  },
+  {
+   "name": "employer_name",
+   "kind": "column",
+   "n": 11167,
+   "from": "EmployerName",
+   "distinct": [
+    "'PRIFYSGOL ABERYSTWYTH' AND 'ABERYSTWYTH UNIVERSITY'",
+    "\"RED BAND\" CHEMICAL COMPANY, LIMITED",
+    "10 TRINITY SQUARE HOTEL LIMITED",
+    "10X BANKING TECHNOLOGY UK LIMITED",
+    "1509 GROUP",
+    "AB INBEV UK LIMITED",
+    "AB WORLD FOODS LIMITED",
+    "ABACAREDIG HOLDINGS LIMITED"
+   ],
+   "partial": true
+  },
+  {
+   "name": "company_number",
+   "kind": "column",
+   "n": 9711,
+   "from": "CompanyNumber",
+   "distinct": [
+    "RC000641",
+    "SC016876",
+    "08064685",
+    "11738306",
+    "04104101",
+    "03982132",
+    "01400901",
+    "08612949"
+   ],
+   "partial": true
+  }
+ ],
+ "cells": {},
+ "file_name": "gender_pay_gap_2023.csv",
+ "example_row": {
+  "postcode": "SY23 3FL"
+ },
+ "already_bound": {
+  "source_id": "constant uk_gender_pay_gap",
+  "employer_size": "column employer_size",
+  "employer_name": "column employer_name",
+  "employer_id": "column employer_id",
+  "due_date": "column due_date",
+  "date_submitted": "column date_submitted",
+  "company_number": "column company_number",
+  "median_hourly_pay_gap_percent": "column diff_median_hourly_percent",
+  "mean_hourly_pay_gap_percent": "column diff_mean_hourly_percent",
+  "submitted_after_deadline": "column submitted_after_the_deadline",
+  "postcode": "column post_code",
+  "mean_bonus_gap_percent": "column diff_mean_bonus_percent"
+ },
+ "conventions": [
+  "One row per employer.",
+  "submitted_after_deadline is written true or false in lower case.",
+  "Dates are ISO dates (the time of day is dropped).",
+  "Leading and trailing spaces of text are removed."
+ ]
+}
+
+### YOUR REPLY
+One JSON object only, no prose, no code fence. It must contain one entry in "answers" for EVERY question id in the packet (use status "unknown" when you cannot decide). Do not return an empty list.

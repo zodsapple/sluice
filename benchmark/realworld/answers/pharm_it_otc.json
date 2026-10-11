@@ -1,0 +1,5 @@
+{"*": [
+ {"kind": "constant", "target": "period_start", "args": {"value": "2024-07-01"}},
+ {"kind": "constant", "target": "period_end", "args": {"value": "2024-12-31"}},
+ {"kind": "column", "target": "supplied_packages", "args": {"source": "quantit_confezioni_fornite_alle_farmacie_ed_agli_esercizi_commerciali"}}
+]}

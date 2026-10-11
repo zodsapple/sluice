@@ -1,0 +1,57 @@
+# Derived workbook: two sheets (Volume: two-level merged header; NIC_GBP), banner rows, subtotals, notes.
+name: pharmacy_multisheet_long
+workflow: generic
+locate:
+  sheet: {name: Volume}
+  header_rows: [4, 5]
+  skip_rows_matching: ['^selected ', '^quantity is not']
+map:
+  BNF code:     {to: bnf_code, required: true}
+  Presentation: {to: bnf_name, required: true}
+  Unit:         {to: unit, required: true}
+sources:
+  - name: nic
+    locate:
+      sheet: {name: NIC_GBP}
+      header_rows: [4]
+      skip_rows_matching: ['^selected ', '^nic is net']
+    map:
+      BNF code:     {to: bnf_code, required: true}
+      Presentation: {to: bnf_name, required: true}
+      Unit:         {to: unit, required: true}
+    shape:
+      - op: melt_families
+        families: [{pattern: '^(\d{4}-\d{2})$', value: nic_gbp}]
+        id: [bnf_code, bnf_name, unit]
+        index: year_month
+shape:
+  - op: melt_families
+    families:
+      - {pattern: '^(\d{4}-\d{2})\|Items$', value: items}
+      - {pattern: '^(\d{4}-\d{2})\|Quantity$', value: total_quantity}
+    id: [bnf_code, bnf_name, unit]
+    index: year_month
+  - {op: join_source, source: nic, by: [bnf_code, bnf_name, unit, year_month], how: outer}
+  - {op: flag_present, cols: [items, total_quantity, nic_gbp], out: source_present}
+  - {op: regex_replace, col: year_month, pattern: '-', repl: ''}
+keys:
+  cols: [year_month, bnf_code, bnf_name, unit]
+template:
+  filename: 04_pharmacy_long.csv
+  columns:
+    year_month: year_month
+    bnf_code: bnf_code
+    bnf_name: bnf_name
+    unit: unit
+    items: {col: items, type: int}
+    total_quantity: {col: total_quantity, type: number}
+    nic_gbp: {col: nic_gbp, type: number}
+    source_present: {col: source_present, type: int}
+controls:
+  - {name: dense_rows, output: {count_rows: true}, expected: {value: 160}}
+  - {name: rows_with_source, output: {sum: [source_present]}, expected: {value: 140}}
+  - name: absent_rows_blank_not_zero
+    output: {count_rows: true, where: {source_present: 0, items: {notnull: true}}}
+    expected: {value: 0}
+rules:
+  - {type: unique, cols: [year_month, bnf_code, bnf_name, unit], on_fail: halt}

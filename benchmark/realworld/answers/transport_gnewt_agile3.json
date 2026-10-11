@@ -1,0 +1,168 @@
+{
+ "*": [
+  {
+   "kind": "row_scope",
+   "args": {
+    "conditions": [
+     {
+      "column": "id_of_van_round",
+      "notnull": true
+     }
+    ],
+    "mode": "all"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "successful_pickups_raw",
+   "args": {
+    "source": "successful_pickups"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "successful_collections_raw",
+   "args": {
+    "source": "successful_collections"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "successful_pickups",
+   "args": {
+    "source": "successful_pickups"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "successful_collections",
+   "args": {
+    "source": "successful_collections"
+   }
+  },
+  {
+   "kind": "template",
+   "target": "successful_pickups_status",
+   "args": {
+    "template": "reported",
+    "where": {
+     "successful_pickups": {
+      "notnull": true
+     }
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "successful_pickups_status",
+   "args": {
+    "template": "source_text",
+    "where": {
+     "successful_pickups": {
+      "isnull": true
+     }
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "successful_collections_status",
+   "args": {
+    "template": "reported",
+    "where": {
+     "successful_collections": {
+      "notnull": true
+     }
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "successful_collections_status",
+   "args": {
+    "template": "source_text",
+    "where": {
+     "successful_collections": {
+      "isnull": true
+     }
+    }
+   }
+  },
+  {
+   "kind": "flags",
+   "target": "quality_flags",
+   "args": {
+    "rules": [
+     {
+      "label": "date_outside_declared_period",
+      "any_of": [
+       {
+        "reported_date": {
+         "lt": "2015-07-01"
+        }
+       },
+       {
+        "reported_date": {
+         "gt": "2016-06-30"
+        }
+       }
+      ]
+     },
+     {
+      "label": "fractional_parcel_count",
+      "any_of": [
+       {
+        "parcels_total": {
+         "regex": "[.][0-9]*[1-9]"
+        }
+       }
+      ]
+     },
+     {
+      "label": "non_numeric_pickup_or_collection",
+      "any_of": [
+       {
+        "successful_pickups": {
+         "isnull": true
+        }
+       },
+       {
+        "successful_collections": {
+         "isnull": true
+        }
+       }
+      ]
+     },
+     {
+      "label": "missing_reported_daily_miles",
+      "any_of": [
+       {
+        "daily_miles_reported": {
+         "isnull": true
+        }
+       }
+      ]
+     },
+     {
+      "label": "courier_cell_error",
+      "any_of": [
+       {
+        "courier_code_raw": {
+         "regex": "^#N/A"
+        }
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "kind": "column",
+   "target": "courier_code_raw",
+   "args": {
+    "source": "courier_number",
+    "verbatim": true
+   }
+  }
+ ]
+}

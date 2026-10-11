@@ -1,0 +1,342 @@
+{
+ "*": [
+  {
+   "kind": "constant",
+   "target": "period_label_intro",
+   "args": {
+    "value": "2024/25"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "period_label_table",
+   "args": {
+    "value": "2023/24"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "period_status",
+   "args": {
+    "value": "conflicting_source_labels"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "source_row",
+   "args": {
+    "source": "_src_row"
+   }
+  }
+ ],
+ "Tab 1 - BNF chapter": [
+  {
+   "kind": "constant",
+   "target": "aggregation_level",
+   "args": {
+    "value": "chapter"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "bnf_chapter",
+   "args": {
+    "source": "bnf_chapter"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "category_name",
+   "args": {
+    "source": "bnf_chapter_name"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "dispensed_items",
+   "args": {
+    "source": "number_of_dispensed_items"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "gross_ingredient_cost_gbp",
+   "args": {
+    "source": "gross_ingredient_cost"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "cost_per_item_gbp",
+   "args": {
+    "source": "cost_per_item"
+   }
+  },
+  {
+   "kind": "row_scope",
+   "args": {
+    "conditions": [
+     {
+      "column": "bnf_chapter_name",
+      "not_in": [
+       "TOTAL"
+      ]
+     },
+     {
+      "column": "number_of_dispensed_items",
+      "notnull": true
+     }
+    ],
+    "mode": "all"
+   }
+  }
+ ],
+ "Tab 2 - BNF section": [
+  {
+   "kind": "constant",
+   "target": "aggregation_level",
+   "args": {
+    "value": "section"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "bnf_chapter",
+   "args": {
+    "source": "bnf_chapter"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "bnf_section",
+   "args": {
+    "source": "bnf_section"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "category_name",
+   "args": {
+    "source": "bnf_section_name"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "dispensed_items",
+   "args": {
+    "source": "number_of_dispensed_items"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "gross_ingredient_cost_gbp",
+   "args": {
+    "source": "gross_ingredient_cost"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "cost_per_item_gbp",
+   "args": {
+    "source": "cost_per_item"
+   }
+  },
+  {
+   "kind": "row_scope",
+   "args": {
+    "conditions": [
+     {
+      "column": "bnf_chapter",
+      "equals": "01"
+     },
+     {
+      "column": "bnf_section",
+      "notnull": true
+     }
+    ],
+    "mode": "all"
+   }
+  }
+ ],
+ "Tab 3 - BNF sub-section": [
+  {
+   "kind": "constant",
+   "target": "aggregation_level",
+   "args": {
+    "value": "subsection"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "bnf_chapter",
+   "args": {
+    "source": "bnf_chapter"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "bnf_section",
+   "args": {
+    "source": "bnf_section"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "bnf_subsection",
+   "args": {
+    "source": "bnf_sub_section"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "category_name",
+   "args": {
+    "source": "bnf_sub_section_name"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "dispensed_items",
+   "args": {
+    "source": "number_of_dispensed_items"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "gross_ingredient_cost_gbp",
+   "args": {
+    "source": "gross_ingredient_cost"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "cost_per_item_gbp",
+   "args": {
+    "source": "cost_per_item"
+   }
+  },
+  {
+   "kind": "row_scope",
+   "args": {
+    "conditions": [
+     {
+      "column": "bnf_sub_section",
+      "equals": "050301"
+     }
+    ],
+    "mode": "all"
+   }
+  }
+ ],
+ "Tab 5 - Individual preparation": [
+  {
+   "kind": "constant",
+   "target": "aggregation_level",
+   "args": {
+    "value": "preparation"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "chemical_name",
+   "args": {
+    "source": "bnf_chemical_name"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "product_name",
+   "args": {
+    "source": "drug_device_name"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "category_name",
+   "args": {
+    "source": "bnf_sub_section"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "bnf_subsection",
+   "args": {
+    "source": "bnf_sub_section_1"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "bnf_chapter",
+   "args": {
+    "source": "bnf_sub_section_1",
+    "extract": "^(\\d{2})"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "bnf_section",
+   "args": {
+    "source": "bnf_sub_section_1",
+    "extract": "^(\\d{4})"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "dispensed_items",
+   "args": {
+    "source": "number_of_dispensed_items"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "gross_ingredient_cost_gbp",
+   "args": {
+    "source": "gross_ingredient_cost"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "cost_per_item_gbp",
+   "args": {
+    "source": "cost_per_item"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "dispensed_quantity",
+   "args": {
+    "source": "dispensed_quantity"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "quantity_per_item",
+   "args": {
+    "source": "quantity_per_item"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "quantity_unit",
+   "args": {
+    "value": "source_product_specific_unspecified"
+   }
+  },
+  {
+   "kind": "row_scope",
+   "args": {
+    "conditions": [
+     {
+      "column": "bnf_sub_section_1",
+      "equals": "050301"
+     },
+     {
+      "column": "number_of_dispensed_items",
+      "notnull": true
+     }
+    ],
+    "mode": "all"
+   }
+  }
+ ]
+}

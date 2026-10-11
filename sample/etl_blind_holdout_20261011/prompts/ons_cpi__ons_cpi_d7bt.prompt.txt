@@ -1,0 +1,211 @@
+### INSTRUCTIONS
+
+You complete a data-mapping draft. A workbook sheet was already parsed (header rows, group rows,
+multi-level headers). You get the target fields that are still unbound, and the facts available on that sheet.
+Answer ONLY with JSON: {"answers":[{"question_id": str, "bindings":[...], "status": "answered"|"unknown"}]}.
+
+A binding is {"kind","target","args","confidence","evidence"}; kinds and args (nothing else exists):
+  constant   {value}                       same value on every row
+  column     {source, mapping?, verbatim?, extract?} copy a listed source; mapping translates its values (list EVERY value you can);
+                                           verbatim:true keeps the text untrimmed; extract = regex whose first group is the value
+  period     {source, part}                part = start | end | type of the period a label names (2023, 2023 Q2, JAN 2023 ...)
+  arith      {op, a, b, decimals?}         op = mul | add | sub | div of two sources or fields
+  sheet_cell {cell, mapping?|date?}        a fact printed once on the sheet; mapping = substring -> value
+  template   {template, where?}            text with {source} placeholders; where = {source: value | {regex|not_regex|in|not_in|isnull|notnull: ..}}
+  scale      {source, factor}              numeric source x factor
+  group_flag {by:[names], repeated, otherwise}   repeated when another row has the same values in `by` (names = sources or fields), else otherwise
+  row_scope  {conditions:[{column, equals|in|not_in|regex|not_regex|same_as}], mode:"all"|"any"}    (no target)
+  grid_scope {dimension, include:[...]}    (no target)
+Questions: {"id","targets"} = bind these fields (any kind except row_scope/grid_scope); a question with "kind":"scope" is
+answered with row_scope / grid_scope bindings only (the id ends with the kind). One answer entry per question id.
+Rules: use only names, values and cells that appear in the packet. For fields with allowed values use only those values.
+For a free-text field ("precedents" lists values other, already approved sources use for it) write the value in the same
+style, via "mapping" when it depends on a source column. Copying source labels unchanged into such a field is almost always
+wrong: translate them with "mapping" or answer "unknown". row_scope / grid_scope: list EVERY row / column group that belongs to
+the extraction - detail rows and totals are usually both wanted unless the packet says otherwise. "example_row" is the
+template's own example for the fields asked: a value that occurs in a listed source, or equals one of its mapped values, is
+strong evidence which source the field is. It is ONE row: never copy its value as a constant for a field that may differ
+between rows (flags, statuses, types, counts) - answer "unknown" unless a listed source or cell decides it. A source marked
+"partial" shows only a sample of its values: never list the sample as an "in" list; state the rule instead (equals, not_in
+for the few values to drop, regex / not_regex for a naming pattern such as a total label) or answer "unknown".
+Date fields are ISO text YYYY-MM-DD. When the date follows from a listed source (a year or month label), build it with a
+template, e.g. "{year}-12-31"; when it differs between cases, give one template binding per case, each with its own
+"where" (see example 3). Use "sheet_cell" with date for a date printed once on the sheet.
+A field defined for only some rows ("filled on X rows only"): one "template" with a "where" for those rows; rows outside the
+"where" stay empty. A two-valued field defined by a condition: one template per value, the second with "not_in" / "not_regex"
+(see example 4). Several bindings for one field are only allowed in this template + where form.
+If the evidence does not decide it, return status "unknown" - do not guess. confidence is 0..1; evidence lists the
+source names / cells you relied on. Several bindings for one target are allowed only as template + where cases.
+
+### EXAMPLES (unrelated domain; only to show the reply shape)
+
+Example 1 input:
+
+{"questions": [{"id": "s1:status", "targets": ["status"]}], "sources": [{"name": "state", "kind": "column", "n": 2, "from": "State", "distinct": ["OPEN", "CLOSED"]}], "schema": [{"name": "status", "allowed": ["open", "closed"], "meaning": "ticket status"}]}
+
+Example 1 reply:
+
+{"answers": [{"question_id": "s1:status", "status": "answered", "bindings": [{"kind": "column", "target": "status", "args": {"source": "state", "mapping": {"OPEN": "open", "CLOSED": "closed"}}, "confidence": 0.95, "evidence": ["state"]}]}]}
+
+Example 2 input:
+
+{"questions": [{"id": "s1:currency", "targets": ["currency"]}], "schema": [{"name": "currency", "meaning": "ISO code"}], "cells": {"A2": "Orders in thousand"}}
+
+Example 2 reply:
+
+{"answers": [{"question_id": "s1:currency", "status": "unknown", "bindings": []}]}
+
+Example 3 input:
+
+{"questions": [{"id": "s1:day", "targets": ["day"]}], "sources": [{"name": "yr", "kind": "dim", "n": 2, "from": "upper header level", "distinct": ["2020", "2021"]}, {"name": "kind", "kind": "group", "n": 2, "from": "group header rows", "distinct": ["Stock at 1 July", "Sales over the year"]}], "schema": [{"name": "day", "type": "date", "meaning": "date the value refers to (ISO)"}]}
+
+Example 3 reply:
+
+{"answers": [{"question_id": "s1:day", "status": "answered", "bindings": [{"kind": "template", "target": "day", "args": {"template": "{yr}-07-01", "where": {"kind": "Stock at 1 July"}}, "confidence": 0.9, "evidence": ["yr", "kind"]}, {"kind": "template", "target": "day", "args": {"template": "{yr}-12-31", "where": {"kind": "Sales over the year"}}, "confidence": 0.8, "evidence": ["yr", "kind"]}]}]}
+
+Example 4 input:
+
+{"questions": [{"id": "s1:row_kind", "targets": ["row_kind"]}, {"id": "s1:units", "targets": ["units"]}, {"id": "s1:is_gift", "targets": ["is_gift"]}], "sources": [{"name": "item_code", "kind": "column", "n": 3, "from": "Item", "distinct": ["NA", "A1", "B7"]}, {"name": "qty", "kind": "column", "n": 40, "from": "Qty"}, {"name": "note", "kind": "column", "n": 3, "from": "Note", "distinct": ["GIFT", "RETURN", "-"]}], "schema": [{"name": "row_kind", "meaning": "'summary' for a total line (item NA), 'line' for an item line"}, {"name": "units", "meaning": "quantity; filled on item lines only, empty on summary lines"}, {"name": "is_gift", "meaning": "'yes' when the note is exactly GIFT, otherwise 'no'"}]}
+
+Example 4 reply:
+
+{"answers": [{"question_id": "s1:row_kind", "status": "answered", "bindings": [{"kind": "template", "target": "row_kind", "args": {"template": "summary", "where": {"item_code": "NA"}}, "confidence": 0.9, "evidence": ["item_code"]}, {"kind": "template", "target": "row_kind", "args": {"template": "line", "where": {"item_code": {"not_in": ["NA"]}}}, "confidence": 0.9, "evidence": ["item_code"]}]}, {"question_id": "s1:units", "status": "answered", "bindings": [{"kind": "template", "target": "units", "args": {"template": "{qty}", "where": {"item_code": {"not_in": ["NA"]}}}, "confidence": 0.85, "evidence": ["qty", "item_code"]}]}, {"question_id": "s1:is_gift", "status": "answered", "bindings": [{"kind": "template", "target": "is_gift", "args": {"template": "yes", "where": {"note": "GIFT"}}, "confidence": 0.9, "evidence": ["note"]}, {"kind": "template", "target": "is_gift", "args": {"template": "no", "where": {"note": {"not_in": ["GIFT"]}}}, "confidence": 0.9, "evidence": ["note"]}]}]}
+
+### PACKET (answer this one)
+
+{
+ "sheet": "ons_cpi_d7bt",
+ "layout": "tidy",
+ "schema": [
+  {
+   "name": "period",
+   "meaning": ""
+  },
+  {
+   "name": "period_type",
+   "meaning": ""
+  },
+  {
+   "name": "period_start",
+   "type": "date",
+   "meaning": ""
+  },
+  {
+   "name": "period_end",
+   "type": "date",
+   "meaning": ""
+  },
+  {
+   "name": "index_value",
+   "type": "decimal",
+   "meaning": ""
+  }
+ ],
+ "questions": [
+  {
+   "id": "ons_cpi_d7bt:period",
+   "targets": [
+    "period"
+   ]
+  },
+  {
+   "id": "ons_cpi_d7bt:period_type",
+   "targets": [
+    "period_type"
+   ]
+  },
+  {
+   "id": "ons_cpi_d7bt:period_start",
+   "targets": [
+    "period_start"
+   ]
+  },
+  {
+   "id": "ons_cpi_d7bt:period_end",
+   "targets": [
+    "period_end"
+   ]
+  },
+  {
+   "id": "ons_cpi_d7bt:index_value",
+   "targets": [
+    "index_value"
+   ]
+  }
+ ],
+ "sources": [
+  {
+   "name": "g1",
+   "kind": "group",
+   "n": 1,
+   "from": "group header rows",
+   "distinct": [
+    "Important notes"
+   ]
+  },
+  {
+   "name": "next_release",
+   "kind": "column",
+   "n": 656,
+   "from": "Next release",
+   "distinct": [
+    "1988",
+    "1989",
+    "1990",
+    "1991",
+    "1992",
+    "1992 Q4",
+    "1993 Q1",
+    "1993 Q2"
+   ],
+   "partial": true
+  },
+  {
+   "name": "21_october_2026",
+   "kind": "column",
+   "n": 409,
+   "from": "21 October 2026",
+   "distinct": [
+    "49.6",
+    "52.2",
+    "55.9",
+    "60.1",
+    "62.6",
+    "63.2",
+    "64.4",
+    "64.5"
+   ],
+   "partial": true
+  }
+ ],
+ "cells": {
+  "A1": "Title",
+  "B1": "CPI INDEX 00: ALL ITEMS 2015=100",
+  "A2": "CDID",
+  "B2": "D7BT",
+  "A3": "Source dataset ID",
+  "B3": "MM23"
+ },
+ "file_name": "ons_cpi_d7bt.csv",
+ "example_row": {
+  "period": "1988",
+  "period_type": "year",
+  "period_start": "1988-01-01",
+  "period_end": "1988-12-31",
+  "index_value": "49.6"
+ },
+ "already_bound": {
+  "source_id": "constant ons_cpi",
+  "period": "column next_release",
+  "index_value": "column 21_october_2026",
+  "period_type": "constant year"
+ },
+ "conventions": [
+  "Annual, quarterly and monthly values are all kept; period_type is year, quarter or month.",
+  "period is the label as printed; period_start / period_end are the first and last day of the period.",
+  "Leading and trailing spaces of text are removed."
+ ]
+}
+
+### YOUR REPLY
+One JSON object only, no prose, no code fence. It must contain one entry in "answers" for EVERY question id in the packet (use status "unknown" when you cannot decide). Do not return an empty list.

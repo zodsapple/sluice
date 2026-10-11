@@ -1,0 +1,195 @@
+{
+ "*": [
+  {
+   "kind": "template",
+   "target": "report_row_label",
+   "args": {
+    "template": "{for_the_week_ending}",
+    "where": {
+     "dim2": {
+      "not_in": [
+       "Mexico3"
+      ]
+     }
+    },
+    "verbatim": [
+     "for_the_week_ending"
+    ]
+   }
+  },
+  {
+   "kind": "template",
+   "target": "report_row_label",
+   "args": {
+    "template": "{week_ending:%Y-%m-%dT%H:%M:%S}",
+    "where": {
+     "dim2": "Mexico3"
+    },
+    "verbatim": [
+     "for_the_week_ending"
+    ]
+   }
+  },
+  {
+   "kind": "column",
+   "target": "reporting_year",
+   "args": {
+    "source": "for_the_week_ending",
+    "mapping": {
+     "11/2/2022p": "2022",
+     "10/26/2022r": "2022",
+     "2022 YTDr": "2022",
+     "2021 YTDr": "2021",
+     "2022 YTD as % of 2021 YTD": "2022",
+     "Last 4 weeks as % of 20212": "2022",
+     "Last 4 weeks as % of 4-year avg.2": "2022",
+     "Total 2021": "2021",
+     "Total 2020": "2020"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "period_basis",
+   "args": {
+    "source": "for_the_week_ending",
+    "mapping": {
+     "11/2/2022p": "week",
+     "10/26/2022r": "week",
+     "2022 YTDr": "year_to_date",
+     "2021 YTDr": "year_to_date",
+     "2022 YTD as % of 2021 YTD": "comparison_ratio",
+     "Last 4 weeks as % of 20212": "comparison_ratio",
+     "Last 4 weeks as % of 4-year avg.2": "comparison_ratio",
+     "Total 2021": "year",
+     "Total 2020": "year"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "period_end",
+   "args": {
+    "source": "for_the_week_ending",
+    "mapping": {
+     "11/2/2022p": "2022-11-02",
+     "10/26/2022r": "2022-10-26",
+     "2022 YTDr": "",
+     "2021 YTDr": "",
+     "2022 YTD as % of 2021 YTD": "",
+     "Last 4 weeks as % of 20212": "",
+     "Last 4 weeks as % of 4-year avg.2": "",
+     "Total 2021": "",
+     "Total 2020": ""
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "metric",
+   "args": {
+    "source": "for_the_week_ending",
+    "mapping": {
+     "11/2/2022p": "rail_carloads",
+     "10/26/2022r": "rail_carloads",
+     "2022 YTDr": "rail_carloads",
+     "2021 YTDr": "rail_carloads",
+     "2022 YTD as % of 2021 YTD": "carload_ratio_percent",
+     "Last 4 weeks as % of 20212": "carload_ratio_percent",
+     "Last 4 weeks as % of 4-year avg.2": "carload_ratio_percent",
+     "Total 2021": "rail_carloads",
+     "Total 2020": "rail_carloads"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "unit",
+   "args": {
+    "source": "for_the_week_ending",
+    "mapping": {
+     "11/2/2022p": "carloads",
+     "10/26/2022r": "carloads",
+     "2022 YTDr": "carloads",
+     "2021 YTDr": "carloads",
+     "2022 YTD as % of 2021 YTD": "percent",
+     "Last 4 weeks as % of 20212": "percent",
+     "Last 4 weeks as % of 4-year avg.2": "percent",
+     "Total 2021": "carloads",
+     "Total 2020": "carloads"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "revision_status",
+   "args": {
+    "source": "for_the_week_ending",
+    "mapping": {
+     "11/2/2022p": "provisional",
+     "10/26/2022r": "revised",
+     "2022 YTDr": "revised",
+     "2021 YTDr": "revised",
+     "2022 YTD as % of 2021 YTD": "reported",
+     "Last 4 weeks as % of 20212": "reported",
+     "Last 4 weeks as % of 4-year avg.2": "reported",
+     "Total 2021": "reported",
+     "Total 2020": "reported"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "port_region",
+   "args": {
+    "source": "dim2",
+    "mapping": {
+     "Gulf": "Mississippi Gulf",
+     "Texas Gulf": "Texas Gulf",
+     "Northwest": "Pacific Northwest",
+     "East Gulf": "Atlantic & East Gulf",
+     "Total": "Total US port regions",
+     "Mexico3": "Cross-border Mexico"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "aggregation_level",
+   "args": {
+    "source": "dim2",
+    "mapping": {
+     "Gulf": "region",
+     "Texas Gulf": "region",
+     "Northwest": "region",
+     "East Gulf": "region",
+     "Total": "total",
+     "Mexico3": "region"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "revision_status",
+   "args": {
+    "template": "reported",
+    "where": {
+     "dim2": "Mexico3"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "period_end",
+   "args": {
+    "template": "{week_ending:%Y-%m-%d}",
+    "where": {
+     "dim2": "Mexico3",
+     "week_ending": {
+      "regex": "^[0-9]{4}-[0-9]{2}-[0-9]{2}"
+     }
+    }
+   }
+  }
+ ]
+}

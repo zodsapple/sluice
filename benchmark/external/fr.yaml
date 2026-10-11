@@ -1,0 +1,113 @@
+# DGAFP/Insee "Figure 1": two stacked tables (year-end headcount, annual FTE) x (year, with/without supported contracts).
+# Raw headers appear only under `map`; every semantic decision (codes, scope names, scale) is an explicit, reviewable line.
+name: fr_dgafp_insee_ip2052
+workflow: generic
+locate:
+  sheet: {name: Figure 1}
+  header_rows: [2, 3]
+  skip_rows_matching: ['^en milliers', '^\d\. ', '^Lecture', '^Champ', '^Source']
+map:
+  Versant de la fonction publique: {to: label, required: true}
+const:
+  source_id: fr_dgafp_insee_ip2052
+  country: FR
+  breakdown_dimension: public_service_branch
+  sex: all
+  value_status: reported
+  source_unit: thousands
+  source_scale: '1000'
+  employment_area: ''
+  employment_relationship: ''
+  entity_level: ''
+  entity_code: ''
+  entity_name: ''
+  aggregation_level: ''
+shape:
+  - {op: strip, cols: [label]}
+  - {op: group_context, col: label, pattern: '^(?P<block>Effectif au 31 décembre|Volume de travail en équivalent temps plein)\d*$'}
+  - op: map_values
+    col: block
+    into: measure
+    mapping: {'Effectif au 31 décembre': headcount, 'Volume de travail en équivalent temps plein': fte}
+  - op: melt_families
+    families: [{pattern: '^(\d{4})\|(Y compris contrats aidés|Hors contrats aidés)$', value: source_value}]
+    id: [label, measure]
+    index: [year, coverage]
+    cell_col: source_cell
+  - op: map_values
+    col: coverage
+    into: coverage_code
+    mapping: {'Y compris contrats aidés': including_supported_contracts, 'Hors contrats aidés': excluding_supported_contracts}
+  - {op: derive, col: population_scope, template: 'FR_excluding_Mayotte__{coverage_code}'}
+  - {op: derive, col: reference_date, template: '{year}-12-31', where: {measure: headcount}}
+  - {op: derive, col: period_start, template: '{year}-12-31', where: {measure: headcount}}
+  - {op: derive, col: period_start, template: '{year}-01-01', where: {measure: fte}}
+  - {op: derive, col: period_end, template: '{year}-12-31'}
+  - op: map_values
+    col: measure
+    into: period_basis
+    mapping: {headcount: point_in_time, fte: annual_work_volume}
+  - op: map_values
+    col: measure
+    into: unit
+    mapping: {headcount: persons, fte: fte}
+  - op: map_values
+    col: label
+    into: category_code
+    mapping: {"Fonction publique de l'État (FPE)": FPE, 'Fonction publique territoriale (FPT)': FPT,
+              'Fonction publique hospitalière (FPH)': FPH, 'Ensemble de la fonction publique': ALL}
+  - op: map_values
+    col: category_code
+    into: category_level
+    mapping: {FPE: branch, FPT: branch, FPH: branch, ALL: total}
+  - {op: scale, col: source_value, factor: 1000, out: value}
+keys:
+  cols: [period_start, period_end, population_scope, category_code, measure]
+template:
+  filename: fr_out.csv
+  columns:
+    source_id: source_id
+    country: country
+    reference_date: reference_date
+    period_start: period_start
+    period_end: period_end
+    period_basis: period_basis
+    population_scope: population_scope
+    breakdown_dimension: breakdown_dimension
+    category: label
+    category_code: category_code
+    category_level: category_level
+    employment_area: employment_area
+    employment_relationship: employment_relationship
+    sex: sex
+    measure: measure
+    value: value
+    unit: unit
+    value_status: value_status
+    entity_level: entity_level
+    entity_code: entity_code
+    entity_name: entity_name
+    aggregation_level: aggregation_level
+    source_value: source_value
+    source_unit: source_unit
+    source_scale: source_scale
+    source_sheet: _src_sheet
+    source_cell: source_cell
+controls:
+  - {name: rows, output: {count_rows: true}, expected: {value: 32}}
+  - name: headcount_2023_total_incl_supported
+    output:
+      sum: [value]
+      where: {category_code: ALL, measure: headcount, reference_date: '2023-12-31',
+              population_scope: FR_excluding_Mayotte__including_supported_contracts}
+    expected: {value: 5832600}
+  - name: fte_2023_fpe_incl_supported
+    output:
+      sum: [value]
+      where: {category_code: FPE, measure: fte, period_start: '2023-01-01',
+              population_scope: FR_excluding_Mayotte__including_supported_contracts}
+    expected: {value: 2554229.57636108}
+    tol: 0.00001
+rules:
+  - {type: unique, cols: [period_start, period_end, population_scope, category_code, measure], on_fail: halt}
+  - {type: not_null, cols: [period_start, period_end, population_scope, category_code, measure, value], on_fail: halt}

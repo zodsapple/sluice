@@ -1,0 +1,6 @@
+{
+ "pharmacy_purchase_flag": "'true' when the description is exactly PHARMACY PURCHASES, otherwise 'false'",
+ "business_key_status": "'collision' when another record has the same entity, payment date, supplier, transaction number, purchase invoice number, expense type and expense area; otherwise 'unique_in_file'",
+ "transaction_has_multiple_lines": "'true' when the same transaction number appears on more than one record, otherwise 'false'",
+ "description": "free text of the payment line; keep it exactly as in the source, including trailing spaces"
+}

@@ -1,0 +1,57 @@
+# Two raw history tables joined on employee + overlapping validity intervals ([from, to) semantics).
+name: hr_interval_join
+workflow: generic
+locate: {header: 0}
+map:
+  employee_id: {to: employee_id, required: true}
+  dept_code:   {to: dept_code, required: true}
+  from_date:   {to: source_dept_from, required: true}
+  to_date:     {to: source_dept_to, required: true}
+sources:
+  - name: titles
+    file: sample/etl_starter_20261010/sources/hr/hr_source_titles.csv
+    locate: {header: 0}
+    map:
+      employee_id: {to: employee_id, required: true}
+      job_title:   {to: job_title, required: true}
+      from_date:   {to: source_title_from, required: true}
+      to_date:     {to: source_title_to, required: true}
+shape:
+  - op: map_values
+    col: dept_code
+    into: dept_name
+    mapping: {d001: Marketing, d002: Finance, d003: Human Resources, d004: Production, d005: Development,
+              d006: Quality Management, d007: Sales, d008: Research, d009: Customer Service}
+  - op: interval_join
+    source: titles
+    by: [employee_id]
+    left_from: source_dept_from
+    left_to: source_dept_to
+    right_from: source_title_from
+    right_to: source_title_to
+    out_from: effective_from
+    out_to: effective_to
+    bring: [job_title]
+keys:
+  cols: [employee_id, effective_from]
+template:
+  filename: 05_hr_effective_history.csv
+  columns:
+    employee_id: employee_id
+    dept_code: dept_code
+    dept_name: dept_name
+    job_title: job_title
+    effective_from: effective_from
+    effective_to: effective_to
+    source_dept_from: source_dept_from
+    source_dept_to: source_dept_to
+    source_title_from: source_title_from
+    source_title_to: source_title_to
+controls:
+  - {name: history_rows, output: {count_rows: true}, expected: {value: 477}}
+  - {name: employees, output: {count_unique: employee_id}, expected: {value: 240}}
+  - name: naive_join_would_be_wrong
+    output: {count_rows: true}
+    expected: {value: 477}     # an employee_id-only join gives 526 rows
+rules:
+  - {type: unique, cols: [employee_id, effective_from], on_fail: halt}

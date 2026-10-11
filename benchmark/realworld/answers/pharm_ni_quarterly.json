@@ -1,0 +1,556 @@
+{
+ "*": [
+  {
+   "kind": "constant",
+   "target": "financial_year",
+   "args": {
+    "value": "2024/25"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "publication_status",
+   "args": {
+    "value": "provisional"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "source_value",
+   "args": {
+    "source": "cell_value"
+   }
+  }
+ ],
+ "1.1": [
+  {
+   "kind": "grid_scope",
+   "args": {
+    "dimension": "dim1",
+    "include": [
+     "2024/25 Quarter 1",
+     "2024/25 Quarter 2",
+     "2024/25 Quarter 3"
+    ]
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "table_id",
+   "args": {
+    "value": "1.1"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "quarter",
+   "args": {
+    "source": "dim1",
+    "mapping": {
+     "2024/25 Quarter 1": "1",
+     "2024/25 Quarter 2": "2",
+     "2024/25 Quarter 3": "3"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "period_start",
+   "args": {
+    "source": "dim1",
+    "mapping": {
+     "2024/25 Quarter 1": "2024-04-01",
+     "2024/25 Quarter 2": "2024-07-01",
+     "2024/25 Quarter 3": "2024-10-01"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "period_end",
+   "args": {
+    "source": "dim1",
+    "mapping": {
+     "2024/25 Quarter 1": "2024-06-30",
+     "2024/25 Quarter 2": "2024-09-30",
+     "2024/25 Quarter 3": "2024-12-31"
+    }
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "geography",
+   "args": {
+    "value": "Northern Ireland"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "geography_level",
+   "args": {
+    "value": "national_total"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "metric",
+   "args": {
+    "source": "northern_ireland",
+    "mapping": {
+     "Number of Pharmacies": "pharmacy_count",
+     "Number of Prescription Items (in thousands)": "dispensed_items",
+     "Ingredient Cost (Before Discount) (in thousands)": "ingredient_cost_before_discount",
+     "Number of Pharmacy Forms (in thousands)": "pharmacy_forms",
+     "Average Number of Items per Pharmacy Form": "items_per_pharmacy_form"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "unit",
+   "args": {
+    "source": "northern_ireland",
+    "mapping": {
+     "Number of Pharmacies": "pharmacy",
+     "Number of Prescription Items (in thousands)": "prescription_items",
+     "Ingredient Cost (Before Discount) (in thousands)": "GBP",
+     "Number of Pharmacy Forms (in thousands)": "pharmacy_forms",
+     "Average Number of Items per Pharmacy Form": "items_per_form"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "source_scale",
+   "args": {
+    "source": "northern_ireland",
+    "mapping": {
+     "Number of Pharmacies": "1",
+     "Number of Prescription Items (in thousands)": "1000",
+     "Ingredient Cost (Before Discount) (in thousands)": "1000",
+     "Number of Pharmacy Forms (in thousands)": "1000",
+     "Average Number of Items per Pharmacy Form": "1"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "source_rounding",
+   "args": {
+    "source": "northern_ireland",
+    "mapping": {
+     "Number of Pharmacies": "as_published",
+     "Number of Prescription Items (in thousands)": "rounded_to_0.1_thousand",
+     "Ingredient Cost (Before Discount) (in thousands)": "rounded_to_0.1_thousand",
+     "Number of Pharmacy Forms (in thousands)": "rounded_to_0.1_thousand",
+     "Average Number of Items per Pharmacy Form": "as_published"
+    }
+   }
+  },
+  {
+   "kind": "scale",
+   "target": "value",
+   "args": {
+    "source": "cell_value",
+    "factor": 1000,
+    "where": {
+     "northern_ireland": {
+      "in": [
+       "Number of Prescription Items (in thousands)",
+       "Ingredient Cost (Before Discount) (in thousands)",
+       "Number of Pharmacy Forms (in thousands)"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "kind": "scale",
+   "target": "value",
+   "args": {
+    "source": "cell_value",
+    "factor": 1,
+    "where": {
+     "northern_ireland": {
+      "in": [
+       "Number of Pharmacies",
+       "Average Number of Items per Pharmacy Form"
+      ]
+     }
+    }
+   }
+  }
+ ],
+ "1.2": [
+  {
+   "kind": "grid_scope",
+   "args": {
+    "dimension": "dim1",
+    "include": [
+     "2024/25 Quarter 1 000's",
+     "2024/25 Quarter 2 000's",
+     "2024/25 Quarter 3 000's"
+    ]
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "table_id",
+   "args": {
+    "value": "1.2"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "quarter",
+   "args": {
+    "source": "dim1",
+    "mapping": {
+     "2024/25 Quarter 1 000's": "1",
+     "2024/25 Quarter 2 000's": "2",
+     "2024/25 Quarter 3 000's": "3"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "period_start",
+   "args": {
+    "source": "dim1",
+    "mapping": {
+     "2024/25 Quarter 1 000's": "2024-04-01",
+     "2024/25 Quarter 2 000's": "2024-07-01",
+     "2024/25 Quarter 3 000's": "2024-10-01"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "period_end",
+   "args": {
+    "source": "dim1",
+    "mapping": {
+     "2024/25 Quarter 1 000's": "2024-06-30",
+     "2024/25 Quarter 2 000's": "2024-09-30",
+     "2024/25 Quarter 3 000's": "2024-12-31"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "geography",
+   "args": {
+    "source": "local_commissioning_group_health_trust",
+    "mapping": {
+     "Belfast": "Belfast",
+     "Northern": "Northern",
+     "South Eastern": "South Eastern",
+     "Southern": "Southern",
+     "Western": "Western",
+     "Unknown [note 1]": "Unknown [note 1]",
+     "Northern Ireland": "Northern Ireland"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "geography_level",
+   "args": {
+    "source": "local_commissioning_group_health_trust",
+    "mapping": {
+     "Belfast": "local_commissioning_group",
+     "Northern": "local_commissioning_group",
+     "South Eastern": "local_commissioning_group",
+     "Southern": "local_commissioning_group",
+     "Western": "local_commissioning_group",
+     "Unknown [note 1]": "unassigned",
+     "Northern Ireland": "national_total"
+    }
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "metric",
+   "args": {
+    "value": "dispensed_items"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "unit",
+   "args": {
+    "value": "prescription_items"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "source_scale",
+   "args": {
+    "value": "1000"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "source_rounding",
+   "args": {
+    "value": "rounded_to_0.1_thousand"
+   }
+  },
+  {
+   "kind": "scale",
+   "target": "value",
+   "args": {
+    "source": "cell_value",
+    "factor": 1000
+   }
+  }
+ ],
+ "1.3": [
+  {
+   "kind": "grid_scope",
+   "args": {
+    "dimension": "dim1",
+    "include": [
+     "2024/25 Quarter 1 £000's",
+     "2024/25 Quarter 2 £000's",
+     "2024/25 Quarter 3 £000's"
+    ]
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "table_id",
+   "args": {
+    "value": "1.3"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "quarter",
+   "args": {
+    "source": "dim1",
+    "mapping": {
+     "2024/25 Quarter 1 £000's": "1",
+     "2024/25 Quarter 2 £000's": "2",
+     "2024/25 Quarter 3 £000's": "3"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "period_start",
+   "args": {
+    "source": "dim1",
+    "mapping": {
+     "2024/25 Quarter 1 £000's": "2024-04-01",
+     "2024/25 Quarter 2 £000's": "2024-07-01",
+     "2024/25 Quarter 3 £000's": "2024-10-01"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "period_end",
+   "args": {
+    "source": "dim1",
+    "mapping": {
+     "2024/25 Quarter 1 £000's": "2024-06-30",
+     "2024/25 Quarter 2 £000's": "2024-09-30",
+     "2024/25 Quarter 3 £000's": "2024-12-31"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "geography",
+   "args": {
+    "source": "local_commissioning_group_health_trust",
+    "mapping": {
+     "Belfast": "Belfast",
+     "Northern": "Northern",
+     "South Eastern": "South Eastern",
+     "Southern": "Southern",
+     "Western": "Western",
+     "Unknown [note 1]": "Unknown [note 1]",
+     "Northern Ireland": "Northern Ireland"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "geography_level",
+   "args": {
+    "source": "local_commissioning_group_health_trust",
+    "mapping": {
+     "Belfast": "local_commissioning_group",
+     "Northern": "local_commissioning_group",
+     "South Eastern": "local_commissioning_group",
+     "Southern": "local_commissioning_group",
+     "Western": "local_commissioning_group",
+     "Unknown [note 1]": "unassigned",
+     "Northern Ireland": "national_total"
+    }
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "metric",
+   "args": {
+    "value": "ingredient_cost_before_discount"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "unit",
+   "args": {
+    "value": "GBP"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "source_scale",
+   "args": {
+    "value": "1000"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "source_rounding",
+   "args": {
+    "value": "rounded_to_0.1_thousand"
+   }
+  },
+  {
+   "kind": "scale",
+   "target": "value",
+   "args": {
+    "source": "cell_value",
+    "factor": 1000
+   }
+  }
+ ],
+ "1.4": [
+  {
+   "kind": "grid_scope",
+   "args": {
+    "dimension": "dim1",
+    "include": [
+     "2024/25 Quarter 1 £'s",
+     "2024/25 Quarter 2 £'s",
+     "2024/25 Quarter 3 £'s"
+    ]
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "table_id",
+   "args": {
+    "value": "1.4"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "quarter",
+   "args": {
+    "source": "dim1",
+    "mapping": {
+     "2024/25 Quarter 1 £'s": "1",
+     "2024/25 Quarter 2 £'s": "2",
+     "2024/25 Quarter 3 £'s": "3"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "period_start",
+   "args": {
+    "source": "dim1",
+    "mapping": {
+     "2024/25 Quarter 1 £'s": "2024-04-01",
+     "2024/25 Quarter 2 £'s": "2024-07-01",
+     "2024/25 Quarter 3 £'s": "2024-10-01"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "period_end",
+   "args": {
+    "source": "dim1",
+    "mapping": {
+     "2024/25 Quarter 1 £'s": "2024-06-30",
+     "2024/25 Quarter 2 £'s": "2024-09-30",
+     "2024/25 Quarter 3 £'s": "2024-12-31"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "geography",
+   "args": {
+    "source": "local_commissioning_group_health_trust",
+    "mapping": {
+     "Belfast": "Belfast",
+     "Northern": "Northern",
+     "South Eastern": "South Eastern",
+     "Southern": "Southern",
+     "Western": "Western",
+     "Unknown [note 1]": "Unknown [note 1]",
+     "Northern Ireland": "Northern Ireland"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "geography_level",
+   "args": {
+    "source": "local_commissioning_group_health_trust",
+    "mapping": {
+     "Belfast": "local_commissioning_group",
+     "Northern": "local_commissioning_group",
+     "South Eastern": "local_commissioning_group",
+     "Southern": "local_commissioning_group",
+     "Western": "local_commissioning_group",
+     "Unknown [note 1]": "unassigned",
+     "Northern Ireland": "national_total"
+    }
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "metric",
+   "args": {
+    "value": "ingredient_cost_per_item"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "unit",
+   "args": {
+    "value": "GBP_per_item"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "source_scale",
+   "args": {
+    "value": "1"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "source_rounding",
+   "args": {
+    "value": "as_published"
+   }
+  },
+  {
+   "kind": "scale",
+   "target": "value",
+   "args": {
+    "source": "cell_value",
+    "factor": 1
+   }
+  }
+ ]
+}

@@ -1,0 +1,317 @@
+{
+ "*": [
+  {
+   "kind": "row_scope",
+   "args": {
+    "conditions": [
+     {
+      "column": "date",
+      "in": [
+       "1982-08-20",
+       "1982-08-27",
+       "2026-09-11",
+       "2026-09-18",
+       "2026-09-25",
+       "2026-10-02"
+      ]
+     }
+    ],
+    "mode": "all"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "period_end",
+   "args": {
+    "source": "date",
+    "as_date": true
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "record_kind",
+   "args": {
+    "value": "inventory_snapshot"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "location_id",
+   "args": {
+    "source": "dim2",
+    "mapping": {
+     "WCRSTUS1|Weekly U.S. Ending Stocks of Crude Oil (Thousand Barrels)": "US",
+     "WCESTUS1|Weekly U.S. Ending Stocks excluding SPR of Crude Oil (Thousand Barrels)": "US",
+     "WCESTP11|Weekly East Coast (PADD 1) Ending Stocks excluding SPR of Crude Oil (Thousand Barrels)": "PADD_1",
+     "WCESTP21|Weekly Midwest (PADD 2) Ending Stocks excluding SPR of Crude Oil (Thousand Barrels)": "PADD_2",
+     "W_EPC0_SAX_YCUOK_MBBL|Weekly Cushing, OK Ending Stocks excluding SPR of Crude Oil (Thousand Barrels)": "Cushing_OK",
+     "WCESTP31|Weekly Gulf Coast (PADD 3) Ending Stocks excluding SPR of Crude Oil (Thousand Barrels)": "PADD_3",
+     "WCESTP41|Weekly Rocky Mountain (PADD 4) Ending Stocks excluding SPR of Crude Oil (Thousand Barrels)": "PADD_4",
+     "WCESTP51|Weekly West Coast (PADD 5) Ending Stocks excluding SPR of Crude Oil (Thousand Barrels)": "PADD_5",
+     "W_EPC0_SKA_NUS_MBBL|Weekly U.S. Crude Oil Stocks in Transit (on Ships) from Alaska (Thousand Barrels)": "US_Alaska_in_transit",
+     "WCSSTUS1|Weekly U.S. Ending Stocks of Crude Oil in SPR (Thousand Barrels)": "US",
+     "WGTSTUS1|Weekly U.S. Ending Stocks of Total Gasoline (Thousand Barrels)": "US",
+     "WGRSTUS1|Weekly U.S. Ending Stocks of Reformulated Motor Gasoline (Thousand Barrels)": "US",
+     "WG4ST_NUS_1|Weekly U.S. Ending Stocks of Conventional Motor Gasoline (Thousand Barrels)": "US",
+     "WBCSTUS1|Weekly U.S. Ending Stocks of Gasoline Blending Components (Thousand Barrels)": "US",
+     "W_EPOOXE_SAE_NUS_MBBL|Weekly U.S. Ending Stocks of Fuel Ethanol (Thousand Barrels)": "US",
+     "WKJSTUS1|Weekly U.S. Ending Stocks of Kerosene-Type Jet Fuel (Thousand Barrels)": "US",
+     "WDISTUS1|Weekly U.S. Ending Stocks of Distillate Fuel Oil (Thousand Barrels)": "US",
+     "WD0ST_NUS_1|Weekly U.S. Ending Stocks of Distillate Fuel Oil, 0 to 15 ppm Sulfur (Thousand Barrels)": "US",
+     "WD1ST_NUS_1|Weekly U.S. Ending Stocks of Distillate Fuel Oil, Greater than 15 to 500 ppm Sulfur (Thousand Barrels)": "US",
+     "WDGSTUS1|Weekly U.S. Ending Stocks of Distillate Fuel Oil, Greater Than 500 ppm Sulfur (Thousand Barrels)": "US",
+     "WRESTUS1|Weekly U.S. Ending Stocks of Residual Fuel Oil (Thousand Barrels)": "US",
+     "WPRSTUS1|Weekly U.S. Propane and Propylene Ending Stocks Excluding Propylene at Terminal (Thousand Barrels)": "US",
+     "W_EPPO6_SAE_NUS_MBBL|Weekly U.S. Ending Stocks of Other Oils (Excluding Fuel Ethanol) (Thousand Barrels)": "US",
+     "WUOSTUS1|Weekly U.S. Ending Stocks of Unfinished Oils (Thousand Barrels)": "US",
+     "WTTSTUS1|Weekly U.S. Ending Stocks of Crude Oil and Petroleum Products (Thousand Barrels)": "US",
+     "WTESTUS1|Weekly U.S. Ending Stocks excluding SPR of Crude Oil and Petroleum Products (Thousand Barrels)": "US"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "product_id",
+   "args": {
+    "source": "dim2",
+    "mapping": {
+     "WCRSTUS1|Weekly U.S. Ending Stocks of Crude Oil (Thousand Barrels)": "WCRSTUS1",
+     "WCESTUS1|Weekly U.S. Ending Stocks excluding SPR of Crude Oil (Thousand Barrels)": "WCESTUS1",
+     "WCESTP11|Weekly East Coast (PADD 1) Ending Stocks excluding SPR of Crude Oil (Thousand Barrels)": "WCESTP11",
+     "WCESTP21|Weekly Midwest (PADD 2) Ending Stocks excluding SPR of Crude Oil (Thousand Barrels)": "WCESTP21",
+     "W_EPC0_SAX_YCUOK_MBBL|Weekly Cushing, OK Ending Stocks excluding SPR of Crude Oil (Thousand Barrels)": "W_EPC0_SAX_YCUOK_MBBL",
+     "WCESTP31|Weekly Gulf Coast (PADD 3) Ending Stocks excluding SPR of Crude Oil (Thousand Barrels)": "WCESTP31",
+     "WCESTP41|Weekly Rocky Mountain (PADD 4) Ending Stocks excluding SPR of Crude Oil (Thousand Barrels)": "WCESTP41",
+     "WCESTP51|Weekly West Coast (PADD 5) Ending Stocks excluding SPR of Crude Oil (Thousand Barrels)": "WCESTP51",
+     "W_EPC0_SKA_NUS_MBBL|Weekly U.S. Crude Oil Stocks in Transit (on Ships) from Alaska (Thousand Barrels)": "W_EPC0_SKA_NUS_MBBL",
+     "WCSSTUS1|Weekly U.S. Ending Stocks of Crude Oil in SPR (Thousand Barrels)": "WCSSTUS1",
+     "WGTSTUS1|Weekly U.S. Ending Stocks of Total Gasoline (Thousand Barrels)": "WGTSTUS1",
+     "WGRSTUS1|Weekly U.S. Ending Stocks of Reformulated Motor Gasoline (Thousand Barrels)": "WGRSTUS1",
+     "WG4ST_NUS_1|Weekly U.S. Ending Stocks of Conventional Motor Gasoline (Thousand Barrels)": "WG4ST_NUS_1",
+     "WBCSTUS1|Weekly U.S. Ending Stocks of Gasoline Blending Components (Thousand Barrels)": "WBCSTUS1",
+     "W_EPOOXE_SAE_NUS_MBBL|Weekly U.S. Ending Stocks of Fuel Ethanol (Thousand Barrels)": "W_EPOOXE_SAE_NUS_MBBL",
+     "WKJSTUS1|Weekly U.S. Ending Stocks of Kerosene-Type Jet Fuel (Thousand Barrels)": "WKJSTUS1",
+     "WDISTUS1|Weekly U.S. Ending Stocks of Distillate Fuel Oil (Thousand Barrels)": "WDISTUS1",
+     "WD0ST_NUS_1|Weekly U.S. Ending Stocks of Distillate Fuel Oil, 0 to 15 ppm Sulfur (Thousand Barrels)": "WD0ST_NUS_1",
+     "WD1ST_NUS_1|Weekly U.S. Ending Stocks of Distillate Fuel Oil, Greater than 15 to 500 ppm Sulfur (Thousand Barrels)": "WD1ST_NUS_1",
+     "WDGSTUS1|Weekly U.S. Ending Stocks of Distillate Fuel Oil, Greater Than 500 ppm Sulfur (Thousand Barrels)": "WDGSTUS1",
+     "WRESTUS1|Weekly U.S. Ending Stocks of Residual Fuel Oil (Thousand Barrels)": "WRESTUS1",
+     "WPRSTUS1|Weekly U.S. Propane and Propylene Ending Stocks Excluding Propylene at Terminal (Thousand Barrels)": "WPRSTUS1",
+     "W_EPPO6_SAE_NUS_MBBL|Weekly U.S. Ending Stocks of Other Oils (Excluding Fuel Ethanol) (Thousand Barrels)": "W_EPPO6_SAE_NUS_MBBL",
+     "WUOSTUS1|Weekly U.S. Ending Stocks of Unfinished Oils (Thousand Barrels)": "WUOSTUS1",
+     "WTTSTUS1|Weekly U.S. Ending Stocks of Crude Oil and Petroleum Products (Thousand Barrels)": "WTTSTUS1",
+     "WTESTUS1|Weekly U.S. Ending Stocks excluding SPR of Crude Oil and Petroleum Products (Thousand Barrels)": "WTESTUS1"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "series_id",
+   "args": {
+    "source": "dim2",
+    "mapping": {
+     "WCRSTUS1|Weekly U.S. Ending Stocks of Crude Oil (Thousand Barrels)": "WCRSTUS1",
+     "WCESTUS1|Weekly U.S. Ending Stocks excluding SPR of Crude Oil (Thousand Barrels)": "WCESTUS1",
+     "WCESTP11|Weekly East Coast (PADD 1) Ending Stocks excluding SPR of Crude Oil (Thousand Barrels)": "WCESTP11",
+     "WCESTP21|Weekly Midwest (PADD 2) Ending Stocks excluding SPR of Crude Oil (Thousand Barrels)": "WCESTP21",
+     "W_EPC0_SAX_YCUOK_MBBL|Weekly Cushing, OK Ending Stocks excluding SPR of Crude Oil (Thousand Barrels)": "W_EPC0_SAX_YCUOK_MBBL",
+     "WCESTP31|Weekly Gulf Coast (PADD 3) Ending Stocks excluding SPR of Crude Oil (Thousand Barrels)": "WCESTP31",
+     "WCESTP41|Weekly Rocky Mountain (PADD 4) Ending Stocks excluding SPR of Crude Oil (Thousand Barrels)": "WCESTP41",
+     "WCESTP51|Weekly West Coast (PADD 5) Ending Stocks excluding SPR of Crude Oil (Thousand Barrels)": "WCESTP51",
+     "W_EPC0_SKA_NUS_MBBL|Weekly U.S. Crude Oil Stocks in Transit (on Ships) from Alaska (Thousand Barrels)": "W_EPC0_SKA_NUS_MBBL",
+     "WCSSTUS1|Weekly U.S. Ending Stocks of Crude Oil in SPR (Thousand Barrels)": "WCSSTUS1",
+     "WGTSTUS1|Weekly U.S. Ending Stocks of Total Gasoline (Thousand Barrels)": "WGTSTUS1",
+     "WGRSTUS1|Weekly U.S. Ending Stocks of Reformulated Motor Gasoline (Thousand Barrels)": "WGRSTUS1",
+     "WG4ST_NUS_1|Weekly U.S. Ending Stocks of Conventional Motor Gasoline (Thousand Barrels)": "WG4ST_NUS_1",
+     "WBCSTUS1|Weekly U.S. Ending Stocks of Gasoline Blending Components (Thousand Barrels)": "WBCSTUS1",
+     "W_EPOOXE_SAE_NUS_MBBL|Weekly U.S. Ending Stocks of Fuel Ethanol (Thousand Barrels)": "W_EPOOXE_SAE_NUS_MBBL",
+     "WKJSTUS1|Weekly U.S. Ending Stocks of Kerosene-Type Jet Fuel (Thousand Barrels)": "WKJSTUS1",
+     "WDISTUS1|Weekly U.S. Ending Stocks of Distillate Fuel Oil (Thousand Barrels)": "WDISTUS1",
+     "WD0ST_NUS_1|Weekly U.S. Ending Stocks of Distillate Fuel Oil, 0 to 15 ppm Sulfur (Thousand Barrels)": "WD0ST_NUS_1",
+     "WD1ST_NUS_1|Weekly U.S. Ending Stocks of Distillate Fuel Oil, Greater than 15 to 500 ppm Sulfur (Thousand Barrels)": "WD1ST_NUS_1",
+     "WDGSTUS1|Weekly U.S. Ending Stocks of Distillate Fuel Oil, Greater Than 500 ppm Sulfur (Thousand Barrels)": "WDGSTUS1",
+     "WRESTUS1|Weekly U.S. Ending Stocks of Residual Fuel Oil (Thousand Barrels)": "WRESTUS1",
+     "WPRSTUS1|Weekly U.S. Propane and Propylene Ending Stocks Excluding Propylene at Terminal (Thousand Barrels)": "WPRSTUS1",
+     "W_EPPO6_SAE_NUS_MBBL|Weekly U.S. Ending Stocks of Other Oils (Excluding Fuel Ethanol) (Thousand Barrels)": "W_EPPO6_SAE_NUS_MBBL",
+     "WUOSTUS1|Weekly U.S. Ending Stocks of Unfinished Oils (Thousand Barrels)": "WUOSTUS1",
+     "WTTSTUS1|Weekly U.S. Ending Stocks of Crude Oil and Petroleum Products (Thousand Barrels)": "WTTSTUS1",
+     "WTESTUS1|Weekly U.S. Ending Stocks excluding SPR of Crude Oil and Petroleum Products (Thousand Barrels)": "WTESTUS1"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "product_name",
+   "args": {
+    "source": "dim2",
+    "mapping": {
+     "WCRSTUS1|Weekly U.S. Ending Stocks of Crude Oil (Thousand Barrels)": "Weekly U.S. Ending Stocks of Crude Oil  (Thousand Barrels)",
+     "WCESTUS1|Weekly U.S. Ending Stocks excluding SPR of Crude Oil (Thousand Barrels)": "Weekly U.S. Ending Stocks excluding SPR of Crude Oil  (Thousand Barrels)",
+     "WCESTP11|Weekly East Coast (PADD 1) Ending Stocks excluding SPR of Crude Oil (Thousand Barrels)": "Weekly East Coast (PADD 1) Ending Stocks excluding SPR of Crude Oil  (Thousand Barrels)",
+     "WCESTP21|Weekly Midwest (PADD 2) Ending Stocks excluding SPR of Crude Oil (Thousand Barrels)": "Weekly Midwest (PADD 2) Ending Stocks excluding SPR of Crude Oil  (Thousand Barrels)",
+     "W_EPC0_SAX_YCUOK_MBBL|Weekly Cushing, OK Ending Stocks excluding SPR of Crude Oil (Thousand Barrels)": "Weekly Cushing, OK Ending Stocks excluding SPR of Crude Oil  (Thousand Barrels)",
+     "WCESTP31|Weekly Gulf Coast (PADD 3) Ending Stocks excluding SPR of Crude Oil (Thousand Barrels)": "Weekly Gulf Coast (PADD 3) Ending Stocks excluding SPR of Crude Oil  (Thousand Barrels)",
+     "WCESTP41|Weekly Rocky Mountain (PADD 4) Ending Stocks excluding SPR of Crude Oil (Thousand Barrels)": "Weekly Rocky Mountain (PADD 4) Ending Stocks excluding SPR of Crude Oil  (Thousand Barrels)",
+     "WCESTP51|Weekly West Coast (PADD 5) Ending Stocks excluding SPR of Crude Oil (Thousand Barrels)": "Weekly West Coast (PADD 5) Ending Stocks excluding SPR of Crude Oil  (Thousand Barrels)",
+     "W_EPC0_SKA_NUS_MBBL|Weekly U.S. Crude Oil Stocks in Transit (on Ships) from Alaska (Thousand Barrels)": "Weekly U.S. Crude Oil Stocks in Transit (on Ships) from Alaska  (Thousand Barrels)",
+     "WCSSTUS1|Weekly U.S. Ending Stocks of Crude Oil in SPR (Thousand Barrels)": "Weekly U.S. Ending Stocks of Crude Oil in SPR  (Thousand Barrels)",
+     "WGTSTUS1|Weekly U.S. Ending Stocks of Total Gasoline (Thousand Barrels)": "Weekly U.S. Ending Stocks of Total Gasoline  (Thousand Barrels)",
+     "WGRSTUS1|Weekly U.S. Ending Stocks of Reformulated Motor Gasoline (Thousand Barrels)": "Weekly U.S. Ending Stocks of Reformulated Motor Gasoline  (Thousand Barrels)",
+     "WG4ST_NUS_1|Weekly U.S. Ending Stocks of Conventional Motor Gasoline (Thousand Barrels)": "Weekly U.S. Ending Stocks of Conventional Motor Gasoline  (Thousand Barrels)",
+     "WBCSTUS1|Weekly U.S. Ending Stocks of Gasoline Blending Components (Thousand Barrels)": "Weekly U.S. Ending Stocks of Gasoline Blending Components  (Thousand Barrels)",
+     "W_EPOOXE_SAE_NUS_MBBL|Weekly U.S. Ending Stocks of Fuel Ethanol (Thousand Barrels)": "Weekly U.S. Ending Stocks of Fuel Ethanol  (Thousand Barrels)",
+     "WKJSTUS1|Weekly U.S. Ending Stocks of Kerosene-Type Jet Fuel (Thousand Barrels)": "Weekly U.S. Ending Stocks of Kerosene-Type Jet Fuel  (Thousand Barrels)",
+     "WDISTUS1|Weekly U.S. Ending Stocks of Distillate Fuel Oil (Thousand Barrels)": "Weekly U.S. Ending Stocks of Distillate Fuel Oil  (Thousand Barrels)",
+     "WD0ST_NUS_1|Weekly U.S. Ending Stocks of Distillate Fuel Oil, 0 to 15 ppm Sulfur (Thousand Barrels)": "Weekly U.S. Ending Stocks of Distillate Fuel Oil, 0 to 15 ppm Sulfur  (Thousand Barrels)",
+     "WD1ST_NUS_1|Weekly U.S. Ending Stocks of Distillate Fuel Oil, Greater than 15 to 500 ppm Sulfur (Thousand Barrels)": "Weekly U.S. Ending Stocks of Distillate Fuel Oil, Greater than 15 to 500 ppm Sulfur  (Thousand Barrels)",
+     "WDGSTUS1|Weekly U.S. Ending Stocks of Distillate Fuel Oil, Greater Than 500 ppm Sulfur (Thousand Barrels)": "Weekly U.S. Ending Stocks of Distillate Fuel Oil, Greater Than 500 ppm Sulfur  (Thousand Barrels)",
+     "WRESTUS1|Weekly U.S. Ending Stocks of Residual Fuel Oil (Thousand Barrels)": "Weekly U.S. Ending Stocks of Residual Fuel Oil  (Thousand Barrels)",
+     "WPRSTUS1|Weekly U.S. Propane and Propylene Ending Stocks Excluding Propylene at Terminal (Thousand Barrels)": "Weekly U.S. Propane and Propylene Ending Stocks Excluding Propylene at Terminal (Thousand Barrels)",
+     "W_EPPO6_SAE_NUS_MBBL|Weekly U.S. Ending Stocks of Other Oils (Excluding Fuel Ethanol) (Thousand Barrels)": "Weekly U.S. Ending Stocks of Other Oils (Excluding Fuel Ethanol)  (Thousand Barrels)",
+     "WUOSTUS1|Weekly U.S. Ending Stocks of Unfinished Oils (Thousand Barrels)": "Weekly U.S. Ending Stocks of Unfinished Oils  (Thousand Barrels)",
+     "WTTSTUS1|Weekly U.S. Ending Stocks of Crude Oil and Petroleum Products (Thousand Barrels)": "Weekly U.S. Ending Stocks of Crude Oil and Petroleum Products  (Thousand Barrels)",
+     "WTESTUS1|Weekly U.S. Ending Stocks excluding SPR of Crude Oil and Petroleum Products (Thousand Barrels)": "Weekly U.S. Ending Stocks excluding SPR of Crude Oil and Petroleum Products  (Thousand Barrels)"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "series_label",
+   "args": {
+    "source": "dim2",
+    "mapping": {
+     "WCRSTUS1|Weekly U.S. Ending Stocks of Crude Oil (Thousand Barrels)": "Weekly U.S. Ending Stocks of Crude Oil  (Thousand Barrels)",
+     "WCESTUS1|Weekly U.S. Ending Stocks excluding SPR of Crude Oil (Thousand Barrels)": "Weekly U.S. Ending Stocks excluding SPR of Crude Oil  (Thousand Barrels)",
+     "WCESTP11|Weekly East Coast (PADD 1) Ending Stocks excluding SPR of Crude Oil (Thousand Barrels)": "Weekly East Coast (PADD 1) Ending Stocks excluding SPR of Crude Oil  (Thousand Barrels)",
+     "WCESTP21|Weekly Midwest (PADD 2) Ending Stocks excluding SPR of Crude Oil (Thousand Barrels)": "Weekly Midwest (PADD 2) Ending Stocks excluding SPR of Crude Oil  (Thousand Barrels)",
+     "W_EPC0_SAX_YCUOK_MBBL|Weekly Cushing, OK Ending Stocks excluding SPR of Crude Oil (Thousand Barrels)": "Weekly Cushing, OK Ending Stocks excluding SPR of Crude Oil  (Thousand Barrels)",
+     "WCESTP31|Weekly Gulf Coast (PADD 3) Ending Stocks excluding SPR of Crude Oil (Thousand Barrels)": "Weekly Gulf Coast (PADD 3) Ending Stocks excluding SPR of Crude Oil  (Thousand Barrels)",
+     "WCESTP41|Weekly Rocky Mountain (PADD 4) Ending Stocks excluding SPR of Crude Oil (Thousand Barrels)": "Weekly Rocky Mountain (PADD 4) Ending Stocks excluding SPR of Crude Oil  (Thousand Barrels)",
+     "WCESTP51|Weekly West Coast (PADD 5) Ending Stocks excluding SPR of Crude Oil (Thousand Barrels)": "Weekly West Coast (PADD 5) Ending Stocks excluding SPR of Crude Oil  (Thousand Barrels)",
+     "W_EPC0_SKA_NUS_MBBL|Weekly U.S. Crude Oil Stocks in Transit (on Ships) from Alaska (Thousand Barrels)": "Weekly U.S. Crude Oil Stocks in Transit (on Ships) from Alaska  (Thousand Barrels)",
+     "WCSSTUS1|Weekly U.S. Ending Stocks of Crude Oil in SPR (Thousand Barrels)": "Weekly U.S. Ending Stocks of Crude Oil in SPR  (Thousand Barrels)",
+     "WGTSTUS1|Weekly U.S. Ending Stocks of Total Gasoline (Thousand Barrels)": "Weekly U.S. Ending Stocks of Total Gasoline  (Thousand Barrels)",
+     "WGRSTUS1|Weekly U.S. Ending Stocks of Reformulated Motor Gasoline (Thousand Barrels)": "Weekly U.S. Ending Stocks of Reformulated Motor Gasoline  (Thousand Barrels)",
+     "WG4ST_NUS_1|Weekly U.S. Ending Stocks of Conventional Motor Gasoline (Thousand Barrels)": "Weekly U.S. Ending Stocks of Conventional Motor Gasoline  (Thousand Barrels)",
+     "WBCSTUS1|Weekly U.S. Ending Stocks of Gasoline Blending Components (Thousand Barrels)": "Weekly U.S. Ending Stocks of Gasoline Blending Components  (Thousand Barrels)",
+     "W_EPOOXE_SAE_NUS_MBBL|Weekly U.S. Ending Stocks of Fuel Ethanol (Thousand Barrels)": "Weekly U.S. Ending Stocks of Fuel Ethanol  (Thousand Barrels)",
+     "WKJSTUS1|Weekly U.S. Ending Stocks of Kerosene-Type Jet Fuel (Thousand Barrels)": "Weekly U.S. Ending Stocks of Kerosene-Type Jet Fuel  (Thousand Barrels)",
+     "WDISTUS1|Weekly U.S. Ending Stocks of Distillate Fuel Oil (Thousand Barrels)": "Weekly U.S. Ending Stocks of Distillate Fuel Oil  (Thousand Barrels)",
+     "WD0ST_NUS_1|Weekly U.S. Ending Stocks of Distillate Fuel Oil, 0 to 15 ppm Sulfur (Thousand Barrels)": "Weekly U.S. Ending Stocks of Distillate Fuel Oil, 0 to 15 ppm Sulfur  (Thousand Barrels)",
+     "WD1ST_NUS_1|Weekly U.S. Ending Stocks of Distillate Fuel Oil, Greater than 15 to 500 ppm Sulfur (Thousand Barrels)": "Weekly U.S. Ending Stocks of Distillate Fuel Oil, Greater than 15 to 500 ppm Sulfur  (Thousand Barrels)",
+     "WDGSTUS1|Weekly U.S. Ending Stocks of Distillate Fuel Oil, Greater Than 500 ppm Sulfur (Thousand Barrels)": "Weekly U.S. Ending Stocks of Distillate Fuel Oil, Greater Than 500 ppm Sulfur  (Thousand Barrels)",
+     "WRESTUS1|Weekly U.S. Ending Stocks of Residual Fuel Oil (Thousand Barrels)": "Weekly U.S. Ending Stocks of Residual Fuel Oil  (Thousand Barrels)",
+     "WPRSTUS1|Weekly U.S. Propane and Propylene Ending Stocks Excluding Propylene at Terminal (Thousand Barrels)": "Weekly U.S. Propane and Propylene Ending Stocks Excluding Propylene at Terminal (Thousand Barrels)",
+     "W_EPPO6_SAE_NUS_MBBL|Weekly U.S. Ending Stocks of Other Oils (Excluding Fuel Ethanol) (Thousand Barrels)": "Weekly U.S. Ending Stocks of Other Oils (Excluding Fuel Ethanol)  (Thousand Barrels)",
+     "WUOSTUS1|Weekly U.S. Ending Stocks of Unfinished Oils (Thousand Barrels)": "Weekly U.S. Ending Stocks of Unfinished Oils  (Thousand Barrels)",
+     "WTTSTUS1|Weekly U.S. Ending Stocks of Crude Oil and Petroleum Products (Thousand Barrels)": "Weekly U.S. Ending Stocks of Crude Oil and Petroleum Products  (Thousand Barrels)",
+     "WTESTUS1|Weekly U.S. Ending Stocks excluding SPR of Crude Oil and Petroleum Products (Thousand Barrels)": "Weekly U.S. Ending Stocks excluding SPR of Crude Oil and Petroleum Products  (Thousand Barrels)"
+    }
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "metric",
+   "args": {
+    "value": "stock_on_hand"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "inventory_basis",
+   "args": {
+    "value": "source_series_definition"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "unit",
+   "args": {
+    "value": "barrel"
+   }
+  },
+  {
+   "kind": "scale",
+   "target": "value",
+   "args": {
+    "source": "cell_value",
+    "factor": 1000
+   }
+  },
+  {
+   "kind": "column",
+   "target": "source_row",
+   "args": {
+    "source": "_src_row"
+   }
+  },
+  {
+   "kind": "grid_scope",
+   "args": {
+    "dimension": "dim1",
+    "include": [
+     "Data 1: Stocks of Crude Oil by PAD District, and Stocks of Petroleum Products"
+    ]
+   }
+  },
+  {
+   "kind": "column",
+   "target": "location_level",
+   "args": {
+    "source": "dim2",
+    "mapping": {
+     "WCRSTUS1|Weekly U.S. Ending Stocks of Crude Oil (Thousand Barrels)": "national",
+     "WCESTUS1|Weekly U.S. Ending Stocks excluding SPR of Crude Oil (Thousand Barrels)": "national",
+     "WCESTP11|Weekly East Coast (PADD 1) Ending Stocks excluding SPR of Crude Oil (Thousand Barrels)": "regional_or_subset",
+     "WCESTP21|Weekly Midwest (PADD 2) Ending Stocks excluding SPR of Crude Oil (Thousand Barrels)": "regional_or_subset",
+     "W_EPC0_SAX_YCUOK_MBBL|Weekly Cushing, OK Ending Stocks excluding SPR of Crude Oil (Thousand Barrels)": "regional_or_subset",
+     "WCESTP31|Weekly Gulf Coast (PADD 3) Ending Stocks excluding SPR of Crude Oil (Thousand Barrels)": "regional_or_subset",
+     "WCESTP41|Weekly Rocky Mountain (PADD 4) Ending Stocks excluding SPR of Crude Oil (Thousand Barrels)": "regional_or_subset",
+     "WCESTP51|Weekly West Coast (PADD 5) Ending Stocks excluding SPR of Crude Oil (Thousand Barrels)": "regional_or_subset",
+     "W_EPC0_SKA_NUS_MBBL|Weekly U.S. Crude Oil Stocks in Transit (on Ships) from Alaska (Thousand Barrels)": "regional_or_subset",
+     "WCSSTUS1|Weekly U.S. Ending Stocks of Crude Oil in SPR (Thousand Barrels)": "national",
+     "WGTSTUS1|Weekly U.S. Ending Stocks of Total Gasoline (Thousand Barrels)": "national",
+     "WGRSTUS1|Weekly U.S. Ending Stocks of Reformulated Motor Gasoline (Thousand Barrels)": "national",
+     "WG4ST_NUS_1|Weekly U.S. Ending Stocks of Conventional Motor Gasoline (Thousand Barrels)": "national",
+     "WBCSTUS1|Weekly U.S. Ending Stocks of Gasoline Blending Components (Thousand Barrels)": "national",
+     "W_EPOOXE_SAE_NUS_MBBL|Weekly U.S. Ending Stocks of Fuel Ethanol (Thousand Barrels)": "national",
+     "WKJSTUS1|Weekly U.S. Ending Stocks of Kerosene-Type Jet Fuel (Thousand Barrels)": "national",
+     "WDISTUS1|Weekly U.S. Ending Stocks of Distillate Fuel Oil (Thousand Barrels)": "national",
+     "WD0ST_NUS_1|Weekly U.S. Ending Stocks of Distillate Fuel Oil, 0 to 15 ppm Sulfur (Thousand Barrels)": "national",
+     "WD1ST_NUS_1|Weekly U.S. Ending Stocks of Distillate Fuel Oil, Greater than 15 to 500 ppm Sulfur (Thousand Barrels)": "national",
+     "WDGSTUS1|Weekly U.S. Ending Stocks of Distillate Fuel Oil, Greater Than 500 ppm Sulfur (Thousand Barrels)": "national",
+     "WRESTUS1|Weekly U.S. Ending Stocks of Residual Fuel Oil (Thousand Barrels)": "national",
+     "WPRSTUS1|Weekly U.S. Propane and Propylene Ending Stocks Excluding Propylene at Terminal (Thousand Barrels)": "national",
+     "W_EPPO6_SAE_NUS_MBBL|Weekly U.S. Ending Stocks of Other Oils (Excluding Fuel Ethanol) (Thousand Barrels)": "national",
+     "WUOSTUS1|Weekly U.S. Ending Stocks of Unfinished Oils (Thousand Barrels)": "national",
+     "WTTSTUS1|Weekly U.S. Ending Stocks of Crude Oil and Petroleum Products (Thousand Barrels)": "national",
+     "WTESTUS1|Weekly U.S. Ending Stocks excluding SPR of Crude Oil and Petroleum Products (Thousand Barrels)": "national"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "value_status",
+   "args": {
+    "template": "missing",
+    "where": {
+     "cell_value": {
+      "isnull": true
+     }
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "value_status",
+   "args": {
+    "template": "reported",
+    "where": {
+     "cell_value": {
+      "notnull": true
+     }
+    }
+   }
+  }
+ ]
+}

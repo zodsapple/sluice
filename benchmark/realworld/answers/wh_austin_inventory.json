@@ -1,0 +1,180 @@
+{
+ "*": [
+  {
+   "kind": "constant",
+   "target": "location_id",
+   "args": {
+    "value": "austin_tpw_arterial_management"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "location_level",
+   "args": {
+    "value": "department_materials_warehouse"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "period_end",
+   "args": {
+    "source": "published_date"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "product_id",
+   "args": {
+    "source": "id"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "series_id",
+   "args": {
+    "source": "stock_number"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "product_name",
+   "args": {
+    "source": "financial_name",
+    "verbatim": true
+   }
+  },
+  {
+   "kind": "column",
+   "target": "series_label",
+   "args": {
+    "source": "common_name",
+    "verbatim": true
+   }
+  },
+  {
+   "kind": "template",
+   "target": "inventory_basis",
+   "args": {
+    "template": "{tracking_type};{status}"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "source_record_modified",
+   "args": {
+    "source": "modified_date"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "record_kind",
+   "args": {
+    "source": "dim1",
+    "mapping": {
+     "total_on_hand": "inventory_snapshot",
+     "unit_cost": "inventory_valuation",
+     "total_value": "inventory_valuation",
+     "re_order_threshold": "inventory_policy"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "metric",
+   "args": {
+    "source": "dim1",
+    "mapping": {
+     "total_on_hand": "stock_on_hand",
+     "unit_cost": "unit_cost",
+     "total_value": "inventory_value",
+     "re_order_threshold": "reorder_threshold"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "unit",
+   "args": {
+    "template": "{unit_of_measure}",
+    "where": {
+     "dim1": {
+      "in": [
+       "total_on_hand",
+       "re_order_threshold"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "unit",
+   "args": {
+    "template": "native_currency/{unit_of_measure}",
+    "where": {
+     "dim1": "unit_cost"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "unit",
+   "args": {
+    "template": "native_currency",
+    "where": {
+     "dim1": "total_value"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "source_cell",
+   "args": {
+    "template": "{dim1}:record_{_src_row-1}"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "source_row",
+   "args": {
+    "source": "_src_row"
+   }
+  },
+  {
+   "kind": "template",
+   "target": "value_status",
+   "args": {
+    "template": "missing",
+    "where": {
+     "cell_value": {
+      "isnull": true
+     }
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "value_status",
+   "args": {
+    "template": "reported",
+    "where": {
+     "cell_value": {
+      "notnull": true
+     }
+    }
+   }
+  },
+  {
+   "kind": "grid_scope",
+   "args": {
+    "dimension": "dim1",
+    "include": [
+     "total_on_hand",
+     "unit_cost",
+     "total_value",
+     "re_order_threshold"
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,1384 @@
+{
+ "*": [],
+ "Tab 1 - Financial Year 2024-25": [
+  {
+   "kind": "constant",
+   "target": "table_id",
+   "args": {
+    "value": "dispenser_payments"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "service_group",
+   "args": {
+    "value": "all_dispensing"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "period_start",
+   "args": {
+    "value": "2024-04-01"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "period_end",
+   "args": {
+    "value": "2025-03-31"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "dispenser_type",
+   "args": {
+    "source": "dim1",
+    "mapping": {
+     "Community pharmacies (exc stock orders and oxygen) (£)": "community_pharmacies_excluding_stock_oxygen",
+     "Stock orders (£)": "stock_orders",
+     "Oxygen (£)": "oxygen",
+     "Total community pharmacy payments (£)": "community_pharmacy_total",
+     "Appliance suppliers         (£) (1)": "appliance_suppliers",
+     "Dispensing doctors (£)": "dispensing_doctors",
+     "Scotland total payments (£)": "scotland_total"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "metric_label",
+   "args": {
+    "source": "fee_payment_category"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "parent_metric",
+   "args": {
+    "source": "fee_payment_category",
+    "mapping": {
+     "Number of Prescriptions (Items)": "",
+     "Number of MC:R Items": "Number of Prescriptions (Items)",
+     "Number of PHS Items": "Number of Prescriptions (Items)",
+     "Number of Pharmacy First Items (13)": "Number of Prescriptions (Items)",
+     "Number of Stock Order Forms": "",
+     "Gross Ingredient Cost (GIC)": "",
+     "Discountable GIC": "",
+     "(Discount) (2)": "",
+     "Zero Discountable GIC": "",
+     "Part 7 GIC, includes:": "",
+     "Part 7 Discountable GIC": "Part 7 GIC, includes:",
+     "Part 7 Zero Discountable GIC": "Part 7 GIC, includes:",
+     "(Part 7 Discount) (3)": "",
+     "Oxygen GIC (Gas, Tubing & Masks)": "",
+     "Special Payments": "",
+     "Net Ingredient Cost (NIC)": "",
+     "Appliance Measured & Fitted Fees": "",
+     "Container Allowance": "",
+     "Covid-19 Vaccines": "",
+     "Dispensing Doctor Fees": "",
+     "Dispensing Pool Payment": "",
+     "Essential Small Pharmacy Additional Payments": "",
+     "Establishment Payment": "",
+     "Flu and Pneumococcal Vaccine Fees (7)": "",
+     "Gluten Free Food Service Payment": "",
+     "Medicine: Care and Review Service Payment": "",
+     "Methadone Fees (Including Supervisory) (5)": "",
+     "nDCVP Reconciliation": "",
+     "Dispensing Doctor Discount": "nDCVP Reconciliation",
+     "Elastic Hosiery": "nDCVP Reconciliation",
+     "Hepatitis C Drugs Discount": "nDCVP Reconciliation",
+     "January 2024 GIC Discount": "nDCVP Reconciliation",
+     "Oncost (exc Oxygen)": "",
+     "Out of Pocket Expenses": "",
+     "Oxygen Fees (16)": "",
+     "Pharmaceutical Needs Weighting Payment": "",
+     "Pharmacy First Payment": "",
+     "Pharmacy First Plus Payment": "",
+     "Public Health Services:": "",
+     "Bridging Contraception": "Public Health Services:",
+     "Bridging Contraception and EHC": "Public Health Services:",
+     "Emergency Hormonal Contraceptive (EHC)": "Public Health Services:",
+     "Emergency Naloxone Supply": "Public Health Services:",
+     "Smoking Cessation": "Public Health Services:",
+     "Support for Meningitis B Vaccination Programme": "Public Health Services:",
+     "Quality and Service Development Payment": "",
+     "Total Other Adjustments": "",
+     "Service Efficiency Payment": "",
+     "Stoma Fees (4)": "",
+     "Unscheduled Care Service Payment": "",
+     "Value Added Tax": "",
+     "Gross Total": "",
+     "Advance Payment Previous": "",
+     "Advance Payment Current": "",
+     "Patient Charges (8)": "",
+     "Net Total": ""
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "aggregation_role",
+   "args": {
+    "source": "fee_payment_category",
+    "mapping": {
+     "Number of Prescriptions (Items)": "aggregate",
+     "Number of MC:R Items": "submeasure",
+     "Number of PHS Items": "submeasure",
+     "Number of Pharmacy First Items (13)": "submeasure",
+     "Number of Stock Order Forms": "line_measure",
+     "Gross Ingredient Cost (GIC)": "aggregate",
+     "Discountable GIC": "aggregate",
+     "(Discount) (2)": "line_measure",
+     "Zero Discountable GIC": "aggregate",
+     "Part 7 GIC, includes:": "aggregate",
+     "Part 7 Discountable GIC": "submeasure",
+     "Part 7 Zero Discountable GIC": "submeasure",
+     "(Part 7 Discount) (3)": "line_measure",
+     "Oxygen GIC (Gas, Tubing & Masks)": "line_measure",
+     "Special Payments": "line_measure",
+     "Net Ingredient Cost (NIC)": "aggregate",
+     "Appliance Measured & Fitted Fees": "line_measure",
+     "Container Allowance": "line_measure",
+     "Covid-19 Vaccines": "line_measure",
+     "Dispensing Doctor Fees": "line_measure",
+     "Dispensing Pool Payment": "line_measure",
+     "Essential Small Pharmacy Additional Payments": "line_measure",
+     "Establishment Payment": "line_measure",
+     "Flu and Pneumococcal Vaccine Fees (7)": "line_measure",
+     "Gluten Free Food Service Payment": "line_measure",
+     "Medicine: Care and Review Service Payment": "line_measure",
+     "Methadone Fees (Including Supervisory) (5)": "line_measure",
+     "nDCVP Reconciliation": "aggregate",
+     "Dispensing Doctor Discount": "submeasure",
+     "Elastic Hosiery": "submeasure",
+     "Hepatitis C Drugs Discount": "submeasure",
+     "January 2024 GIC Discount": "submeasure",
+     "Oncost (exc Oxygen)": "line_measure",
+     "Out of Pocket Expenses": "line_measure",
+     "Oxygen Fees (16)": "line_measure",
+     "Pharmaceutical Needs Weighting Payment": "line_measure",
+     "Pharmacy First Payment": "line_measure",
+     "Pharmacy First Plus Payment": "line_measure",
+     "Public Health Services:": "aggregate",
+     "Bridging Contraception": "submeasure",
+     "Bridging Contraception and EHC": "submeasure",
+     "Emergency Hormonal Contraceptive (EHC)": "submeasure",
+     "Emergency Naloxone Supply": "submeasure",
+     "Smoking Cessation": "submeasure",
+     "Support for Meningitis B Vaccination Programme": "submeasure",
+     "Quality and Service Development Payment": "line_measure",
+     "Total Other Adjustments": "aggregate",
+     "Service Efficiency Payment": "line_measure",
+     "Stoma Fees (4)": "line_measure",
+     "Unscheduled Care Service Payment": "line_measure",
+     "Value Added Tax": "line_measure",
+     "Gross Total": "aggregate",
+     "Advance Payment Previous": "line_measure",
+     "Advance Payment Current": "line_measure",
+     "Patient Charges (8)": "line_measure",
+     "Net Total": "aggregate"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "unit",
+   "args": {
+    "source": "fee_payment_category",
+    "mapping": {
+     "Number of Prescriptions (Items)": "prescription_items",
+     "Number of MC:R Items": "prescription_items",
+     "Number of PHS Items": "prescription_items",
+     "Number of Pharmacy First Items (13)": "prescription_items",
+     "Number of Stock Order Forms": "stock_order_forms",
+     "Gross Ingredient Cost (GIC)": "GBP",
+     "Discountable GIC": "GBP",
+     "(Discount) (2)": "GBP",
+     "Zero Discountable GIC": "GBP",
+     "Part 7 GIC, includes:": "GBP",
+     "Part 7 Discountable GIC": "GBP",
+     "Part 7 Zero Discountable GIC": "GBP",
+     "(Part 7 Discount) (3)": "GBP",
+     "Oxygen GIC (Gas, Tubing & Masks)": "GBP",
+     "Special Payments": "GBP",
+     "Net Ingredient Cost (NIC)": "GBP",
+     "Appliance Measured & Fitted Fees": "GBP",
+     "Container Allowance": "GBP",
+     "Covid-19 Vaccines": "GBP",
+     "Dispensing Doctor Fees": "GBP",
+     "Dispensing Pool Payment": "GBP",
+     "Essential Small Pharmacy Additional Payments": "GBP",
+     "Establishment Payment": "GBP",
+     "Flu and Pneumococcal Vaccine Fees (7)": "GBP",
+     "Gluten Free Food Service Payment": "GBP",
+     "Medicine: Care and Review Service Payment": "GBP",
+     "Methadone Fees (Including Supervisory) (5)": "GBP",
+     "nDCVP Reconciliation": "GBP",
+     "Dispensing Doctor Discount": "GBP",
+     "Elastic Hosiery": "GBP",
+     "Hepatitis C Drugs Discount": "GBP",
+     "January 2024 GIC Discount": "GBP",
+     "Oncost (exc Oxygen)": "GBP",
+     "Out of Pocket Expenses": "GBP",
+     "Oxygen Fees (16)": "GBP",
+     "Pharmaceutical Needs Weighting Payment": "GBP",
+     "Pharmacy First Payment": "GBP",
+     "Pharmacy First Plus Payment": "GBP",
+     "Public Health Services:": "GBP",
+     "Bridging Contraception": "GBP",
+     "Bridging Contraception and EHC": "GBP",
+     "Emergency Hormonal Contraceptive (EHC)": "GBP",
+     "Emergency Naloxone Supply": "GBP",
+     "Smoking Cessation": "GBP",
+     "Support for Meningitis B Vaccination Programme": "GBP",
+     "Quality and Service Development Payment": "GBP",
+     "Total Other Adjustments": "GBP",
+     "Service Efficiency Payment": "GBP",
+     "Stoma Fees (4)": "GBP",
+     "Unscheduled Care Service Payment": "GBP",
+     "Value Added Tax": "GBP",
+     "Gross Total": "GBP",
+     "Advance Payment Previous": "GBP",
+     "Advance Payment Current": "GBP",
+     "Patient Charges (8)": "GBP",
+     "Net Total": "GBP"
+    }
+   }
+  },
+  {
+   "kind": "scale",
+   "target": "value",
+   "args": {
+    "source": "cell_value",
+    "factor": 1
+   }
+  }
+ ],
+ "Tab 2 - Pharmacy Services": [
+  {
+   "kind": "constant",
+   "target": "table_id",
+   "args": {
+    "value": "pharmacy_services"
+   }
+  },
+  {
+   "kind": "constant",
+   "target": "dispenser_type",
+   "args": {
+    "value": "all_service_providers"
+   }
+  },
+  {
+   "kind": "column",
+   "target": "period_start",
+   "args": {
+    "source": "dim1",
+    "mapping": {
+     "2023/24": "2023-04-01",
+     "2024/25": "2024-04-01"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "period_end",
+   "args": {
+    "source": "dim1",
+    "mapping": {
+     "2023/24": "2024-03-31",
+     "2024/25": "2025-03-31"
+    }
+   }
+  },
+  {
+   "kind": "column",
+   "target": "metric_label",
+   "args": {
+    "source": "medicine_care_and_review_service_m_cr"
+   }
+  },
+  {
+   "kind": "scale",
+   "target": "value",
+   "args": {
+    "source": "cell_value",
+    "factor": 1
+   }
+  },
+  {
+   "kind": "template",
+   "target": "service_group",
+   "args": {
+    "template": "medicine_care_review",
+    "where": {
+     "b1": {
+      "isnull": true
+     }
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "service_group",
+   "args": {
+    "template": "public_health_service",
+    "where": {
+     "b1": "Public Health Service (PHS) - EHC, NRT, BRC and EBC"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "service_group",
+   "args": {
+    "template": "pharmacy_first",
+    "where": {
+     "b1": "Pharmacy First Service (9)"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "service_group",
+   "args": {
+    "template": "pharmacy_first_consultations",
+    "where": {
+     "b1": "Pharmacy First Service: Consultations (11)"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "service_group",
+   "args": {
+    "template": "gluten_free_food",
+    "where": {
+     "b1": "Gluten Free Food Service"
+    }
+   }
+  },
+  {
+   "kind": "keep_rows",
+   "args": {
+    "labels": [
+     "Total Pharmacy First Consultations - Item Supplied",
+     "Total Pharmacy First Consultations - Advice Given",
+     "Total Pharmacy First Consultations - GP Referral"
+    ]
+   }
+  },
+  {
+   "kind": "template",
+   "target": "aggregation_role",
+   "args": {
+    "template": "line_measure",
+    "where": {
+     "_src_row": "13"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "unit",
+   "args": {
+    "template": "prescription_items",
+    "where": {
+     "_src_row": "13"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "aggregation_role",
+   "args": {
+    "template": "line_measure",
+    "where": {
+     "_src_row": "14"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "unit",
+   "args": {
+    "template": "GBP",
+    "where": {
+     "_src_row": "14"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "aggregation_role",
+   "args": {
+    "template": "line_measure",
+    "where": {
+     "_src_row": "15"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "unit",
+   "args": {
+    "template": "GBP",
+    "where": {
+     "_src_row": "15"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "aggregation_role",
+   "args": {
+    "template": "line_measure",
+    "where": {
+     "_src_row": "16"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "unit",
+   "args": {
+    "template": "registrations",
+    "where": {
+     "_src_row": "16"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "parent_metric",
+   "args": {
+    "template": "Number of Prescriptions (Items)",
+    "where": {
+     "_src_row": "21"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "aggregation_role",
+   "args": {
+    "template": "aggregate",
+    "where": {
+     "_src_row": "21"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "unit",
+   "args": {
+    "template": "prescription_items",
+    "where": {
+     "_src_row": "21"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "parent_metric",
+   "args": {
+    "template": "Number of Prescriptions (Items)",
+    "where": {
+     "_src_row": "22"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "aggregation_role",
+   "args": {
+    "template": "submeasure",
+    "where": {
+     "_src_row": "22"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "unit",
+   "args": {
+    "template": "prescription_items",
+    "where": {
+     "_src_row": "22"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "parent_metric",
+   "args": {
+    "template": "Number of Prescriptions (Items)",
+    "where": {
+     "_src_row": "23"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "aggregation_role",
+   "args": {
+    "template": "submeasure",
+    "where": {
+     "_src_row": "23"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "unit",
+   "args": {
+    "template": "prescription_items",
+    "where": {
+     "_src_row": "23"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "parent_metric",
+   "args": {
+    "template": "Number of Prescriptions (Items)",
+    "where": {
+     "_src_row": "24"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "aggregation_role",
+   "args": {
+    "template": "submeasure",
+    "where": {
+     "_src_row": "24"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "unit",
+   "args": {
+    "template": "prescription_items",
+    "where": {
+     "_src_row": "24"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "parent_metric",
+   "args": {
+    "template": "Number of Prescriptions (Items)",
+    "where": {
+     "_src_row": "25"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "aggregation_role",
+   "args": {
+    "template": "submeasure",
+    "where": {
+     "_src_row": "25"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "unit",
+   "args": {
+    "template": "prescription_items",
+    "where": {
+     "_src_row": "25"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "parent_metric",
+   "args": {
+    "template": "Number of Prescriptions (Items)",
+    "where": {
+     "_src_row": "26"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "aggregation_role",
+   "args": {
+    "template": "submeasure",
+    "where": {
+     "_src_row": "26"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "unit",
+   "args": {
+    "template": "prescription_items",
+    "where": {
+     "_src_row": "26"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "parent_metric",
+   "args": {
+    "template": "Number of Prescriptions (Items)",
+    "where": {
+     "_src_row": "27"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "aggregation_role",
+   "args": {
+    "template": "submeasure",
+    "where": {
+     "_src_row": "27"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "unit",
+   "args": {
+    "template": "prescription_items",
+    "where": {
+     "_src_row": "27"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "parent_metric",
+   "args": {
+    "template": "Gross Ingredient Cost (£)",
+    "where": {
+     "_src_row": "28"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "aggregation_role",
+   "args": {
+    "template": "aggregate",
+    "where": {
+     "_src_row": "28"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "unit",
+   "args": {
+    "template": "GBP",
+    "where": {
+     "_src_row": "28"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "parent_metric",
+   "args": {
+    "template": "Gross Ingredient Cost (£)",
+    "where": {
+     "_src_row": "29"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "aggregation_role",
+   "args": {
+    "template": "submeasure",
+    "where": {
+     "_src_row": "29"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "unit",
+   "args": {
+    "template": "GBP",
+    "where": {
+     "_src_row": "29"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "parent_metric",
+   "args": {
+    "template": "Gross Ingredient Cost (£)",
+    "where": {
+     "_src_row": "30"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "aggregation_role",
+   "args": {
+    "template": "submeasure",
+    "where": {
+     "_src_row": "30"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "unit",
+   "args": {
+    "template": "GBP",
+    "where": {
+     "_src_row": "30"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "parent_metric",
+   "args": {
+    "template": "Gross Ingredient Cost (£)",
+    "where": {
+     "_src_row": "31"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "aggregation_role",
+   "args": {
+    "template": "submeasure",
+    "where": {
+     "_src_row": "31"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "unit",
+   "args": {
+    "template": "GBP",
+    "where": {
+     "_src_row": "31"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "parent_metric",
+   "args": {
+    "template": "Gross Ingredient Cost (£)",
+    "where": {
+     "_src_row": "32"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "aggregation_role",
+   "args": {
+    "template": "submeasure",
+    "where": {
+     "_src_row": "32"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "unit",
+   "args": {
+    "template": "GBP",
+    "where": {
+     "_src_row": "32"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "parent_metric",
+   "args": {
+    "template": "Gross Ingredient Cost (£)",
+    "where": {
+     "_src_row": "33"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "aggregation_role",
+   "args": {
+    "template": "submeasure",
+    "where": {
+     "_src_row": "33"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "unit",
+   "args": {
+    "template": "GBP",
+    "where": {
+     "_src_row": "33"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "parent_metric",
+   "args": {
+    "template": "Gross Ingredient Cost (£)",
+    "where": {
+     "_src_row": "34"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "aggregation_role",
+   "args": {
+    "template": "submeasure",
+    "where": {
+     "_src_row": "34"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "unit",
+   "args": {
+    "template": "GBP",
+    "where": {
+     "_src_row": "34"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "parent_metric",
+   "args": {
+    "template": "Remuneration (£)",
+    "where": {
+     "_src_row": "35"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "aggregation_role",
+   "args": {
+    "template": "aggregate",
+    "where": {
+     "_src_row": "35"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "unit",
+   "args": {
+    "template": "GBP",
+    "where": {
+     "_src_row": "35"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "parent_metric",
+   "args": {
+    "template": "Remuneration (£)",
+    "where": {
+     "_src_row": "36"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "aggregation_role",
+   "args": {
+    "template": "submeasure",
+    "where": {
+     "_src_row": "36"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "unit",
+   "args": {
+    "template": "GBP",
+    "where": {
+     "_src_row": "36"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "parent_metric",
+   "args": {
+    "template": "Remuneration (£)",
+    "where": {
+     "_src_row": "37"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "aggregation_role",
+   "args": {
+    "template": "submeasure",
+    "where": {
+     "_src_row": "37"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "unit",
+   "args": {
+    "template": "GBP",
+    "where": {
+     "_src_row": "37"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "parent_metric",
+   "args": {
+    "template": "Remuneration (£)",
+    "where": {
+     "_src_row": "38"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "aggregation_role",
+   "args": {
+    "template": "submeasure",
+    "where": {
+     "_src_row": "38"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "unit",
+   "args": {
+    "template": "GBP",
+    "where": {
+     "_src_row": "38"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "parent_metric",
+   "args": {
+    "template": "Remuneration (£)",
+    "where": {
+     "_src_row": "39"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "aggregation_role",
+   "args": {
+    "template": "submeasure",
+    "where": {
+     "_src_row": "39"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "unit",
+   "args": {
+    "template": "GBP",
+    "where": {
+     "_src_row": "39"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "parent_metric",
+   "args": {
+    "template": "Remuneration (£)",
+    "where": {
+     "_src_row": "40"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "aggregation_role",
+   "args": {
+    "template": "submeasure",
+    "where": {
+     "_src_row": "40"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "unit",
+   "args": {
+    "template": "GBP",
+    "where": {
+     "_src_row": "40"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "parent_metric",
+   "args": {
+    "template": "Remuneration (£)",
+    "where": {
+     "_src_row": "41"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "aggregation_role",
+   "args": {
+    "template": "submeasure",
+    "where": {
+     "_src_row": "41"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "unit",
+   "args": {
+    "template": "GBP",
+    "where": {
+     "_src_row": "41"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "aggregation_role",
+   "args": {
+    "template": "line_measure",
+    "where": {
+     "_src_row": "45"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "unit",
+   "args": {
+    "template": "prescription_items",
+    "where": {
+     "_src_row": "45"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "aggregation_role",
+   "args": {
+    "template": "line_measure",
+    "where": {
+     "_src_row": "46"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "unit",
+   "args": {
+    "template": "GBP",
+    "where": {
+     "_src_row": "46"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "aggregation_role",
+   "args": {
+    "template": "line_measure",
+    "where": {
+     "_src_row": "47"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "unit",
+   "args": {
+    "template": "GBP",
+    "where": {
+     "_src_row": "47"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "aggregation_role",
+   "args": {
+    "template": "line_measure",
+    "where": {
+     "_src_row": "51"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "unit",
+   "args": {
+    "template": "consultations",
+    "where": {
+     "_src_row": "51"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "aggregation_role",
+   "args": {
+    "template": "line_measure",
+    "where": {
+     "_src_row": "52"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "unit",
+   "args": {
+    "template": "consultations",
+    "where": {
+     "_src_row": "52"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "aggregation_role",
+   "args": {
+    "template": "line_measure",
+    "where": {
+     "_src_row": "53"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "unit",
+   "args": {
+    "template": "consultations",
+    "where": {
+     "_src_row": "53"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "aggregation_role",
+   "args": {
+    "template": "line_measure",
+    "where": {
+     "_src_row": "55"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "unit",
+   "args": {
+    "template": "consultations",
+    "where": {
+     "_src_row": "55"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "aggregation_role",
+   "args": {
+    "template": "line_measure",
+    "where": {
+     "_src_row": "56"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "unit",
+   "args": {
+    "template": "consultations",
+    "where": {
+     "_src_row": "56"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "aggregation_role",
+   "args": {
+    "template": "line_measure",
+    "where": {
+     "_src_row": "57"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "unit",
+   "args": {
+    "template": "consultations",
+    "where": {
+     "_src_row": "57"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "aggregation_role",
+   "args": {
+    "template": "aggregate",
+    "where": {
+     "_src_row": "59"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "unit",
+   "args": {
+    "template": "consultations",
+    "where": {
+     "_src_row": "59"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "aggregation_role",
+   "args": {
+    "template": "aggregate",
+    "where": {
+     "_src_row": "60"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "unit",
+   "args": {
+    "template": "consultations",
+    "where": {
+     "_src_row": "60"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "aggregation_role",
+   "args": {
+    "template": "aggregate",
+    "where": {
+     "_src_row": "61"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "unit",
+   "args": {
+    "template": "consultations",
+    "where": {
+     "_src_row": "61"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "aggregation_role",
+   "args": {
+    "template": "line_measure",
+    "where": {
+     "_src_row": "65"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "unit",
+   "args": {
+    "template": "prescription_items",
+    "where": {
+     "_src_row": "65"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "aggregation_role",
+   "args": {
+    "template": "line_measure",
+    "where": {
+     "_src_row": "66"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "unit",
+   "args": {
+    "template": "GBP",
+    "where": {
+     "_src_row": "66"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "aggregation_role",
+   "args": {
+    "template": "line_measure",
+    "where": {
+     "_src_row": "67"
+    }
+   }
+  },
+  {
+   "kind": "template",
+   "target": "unit",
+   "args": {
+    "template": "GBP",
+    "where": {
+     "_src_row": "67"
+    }
+   }
+  }
+ ]
+}
