@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Sluice — Spreadsheet Playground</title>
+  <meta name="description" content="Convert Excel and CSV with explicit rules, reconciliation and review. Runs on your device.">
+  <link rel="stylesheet" href="style.css"><script src="app.js" defer></script>
+</head>
+<body>
+  <header class="nav"><a class="brand" href="./" aria-label="Sluice home"><span class="mark" aria-hidden="true"><i></i><i></i><i></i></span>Sluice<span class="nav-tag">PLAYGROUND</span></a><a class="github" href="https://github.com/zodsapple/sluice" target="_blank" rel="noopener">Source on GitHub ↗</a></header>
+  <main>
+    <section class="hero"><div><p class="eyebrow">EXPLICIT RULES. VISIBLE CHECKS.</p><h1>Messy spreadsheets.<br><span>Clear evidence.</span></h1><p class="intro">Turn Excel and CSV into the format you need. Review the rules, reconcile the numbers, and take the result with you.</p></div><aside class="local-note"><span class="local-icon" aria-hidden="true">◉</span><strong>Your files stay here.</strong><p>Python runs in your browser. Input files, specs and results stay on this device. No model is called.</p><small>Runtime packages download on first use.</small></aside></section>
+    <section class="demo-strip" aria-label="Example selection"><span class="demo-title">Start with a real run</span><div class="demo-buttons"><button class="demo" data-demo="quickstart">01 <strong>Three deliveries</strong><span>CSV · precise totals</span></button><button class="demo" data-demo="transport">02 <strong>Freight invoice</strong><span>Excel · reshape & reconcile</span></button><button class="demo" data-demo="failure">03 <strong>A tiny mismatch</strong><span>See validation stop a run</span></button></div></section>
+    <div class="workbench">
+      <section class="panel input-panel"><div class="panel-heading"><span class="step">1</span><div><h2>Choose your data</h2><p>CSV or XLSX · up to 5 MB / 20,000 rows</p></div></div>
+        <label class="upload" data-upload="input"><input id="input-file" type="file" accept=".csv,.xlsx"><span class="upload-icon" aria-hidden="true">↑</span><strong id="input-label">Choose or drop an input file</strong><span>Processed locally in browser memory</span></label>
+        <label class="upload compact" data-upload="template"><input id="template-file" type="file" accept=".csv,.xlsx"><strong id="template-label">Optional output template</strong><span>CSV headers or Excel workbook</span></label>
+        <details class="draft-details"><summary>Draft rules for a new format</summary><p>Choose a JSON target schema with field types, an example row and declared controls. Review every assumption after drafting.</p><label class="upload compact" data-upload="schema"><input id="schema-file" type="file" accept=".json"><strong id="schema-label">Choose target schema</strong></label><label class="small-label" for="sheet-names">Sheets to include (optional, one per line)</label><textarea id="sheet-names" rows="2" placeholder="All sheets by default"></textarea><button id="draft" class="secondary wide" disabled>Draft a spec</button></details>
+        <div class="limits"><strong>For repeatable work</strong><p>Use the local CLI for larger files, batch conversion and saved approvals.</p><code>python -m pip install .</code></div>
+      </section>
+      <section class="panel spec-panel"><div class="panel-heading"><span class="step">2</span><div><h2>Review the rules</h2><p>YAML is the conversion contract</p></div><label class="text-button">Load spec<input id="spec-file" type="file" accept=".yaml,.yml"></label></div>
+        <label class="sr-only" for="spec">Conversion spec in YAML</label><textarea id="spec" class="code-editor" spellcheck="false" placeholder="# Load an example, upload a YAML spec,
+# or draft one from a target schema.
+
+# Check mappings, row scope and controls
+# before approving a conversion."></textarea>
+        <details id="draft-review" hidden><summary>Draft questions and review</summary><pre id="draft-notes"></pre><button id="download-prompts" class="text-button" hidden>Download chat prompts</button></details>
+        <div class="spec-footer"><span>Validation checks the constraints you declare.</span><button id="download-spec" class="text-button" disabled>Download YAML ↓</button></div>
+      </section>
+    </div>
+    <section class="run-bar"><div class="run-actions"><button id="preview" class="primary" disabled>Preview & validate <span aria-hidden="true">→</span></button><label class="approval"><input id="reviewed" type="checkbox">I reviewed the mapping, scope and controls.</label><button id="convert" class="secondary" disabled>Approve & convert</button><button id="cancel" class="text-button" hidden>Stop / reset runtime</button></div><div id="status" class="status" role="status" aria-live="polite"><span class="status-dot"></span><span id="status-text">Choose an example or a local file to start.</span></div></section>
+    <section id="results" class="panel results-panel" hidden><div class="result-header"><div><p class="eyebrow">RUN EVIDENCE</p><h2 id="result-title">Validation report</h2></div><div id="downloads" class="download-actions"></div></div><div id="metrics" class="metrics"></div><div id="diagnosis" class="diagnosis" hidden></div><div id="controls" class="controls"></div><div class="tabs" role="tablist" aria-label="Run detail"><button class="tab active" role="tab" aria-selected="true" data-tab="output">Output preview</button><button class="tab" role="tab" aria-selected="false" data-tab="input">Source preview</button><button class="tab" role="tab" aria-selected="false" data-tab="issues">Issues</button><button class="tab" role="tab" aria-selected="false" data-tab="trace">Step trace</button></div><div id="detail" class="table-wrap" role="tabpanel"></div><p class="table-note">Previews show a few rows. Reports include all declared control results. A passing check does not establish business meaning.</p></section>
+    <section class="how"><div><span class="step">01</span><h3>Declare the conversion.</h3><p>Mappings, transforms, keys and controls live in a readable spec.</p></div><div><span class="step">02</span><h3>Inspect the evidence.</h3><p>See input and output rows, removed values and reconciliation checks.</p></div><div><span class="step">03</span><h3>Keep what you reviewed.</h3><p>Download your result, spec and report. Repeat the same rules in the CLI.</p></div></section>
+  </main><footer><span>Sluice <span id="version">0.1.0</span> · MIT licensed</span><span>Browser playground · CSV / XLSX · No API key required</span><a href="quickstart.html">CLI quickstart ↗</a></footer>
+</body></html>

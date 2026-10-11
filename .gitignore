@@ -1,4 +1,14 @@
 __pycache__/
+.venv/
+.cache/
+build/
+dist/
+*.egg-info/
+sites/*/dist/
+sites/*/.sites-local/
+sites/*/.sites-checkout/
+sites/*/.sites-checkout-*/
+sites/*/vendor/
 .pytest_cache/
 *.pyc
 _etl_logs/

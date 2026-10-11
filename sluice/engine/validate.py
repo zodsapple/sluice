@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import re
+import math
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -46,7 +47,17 @@ def evaluate_agg(df: pd.DataFrame, agg: Agg, where: str) -> float:
             raise EngineError("control_column_missing", f"Control {where} column {c!r} does not exist",
                               stage="output_validation", available=list(df.columns))
     if agg.sum is not None:
-        return round(float(sum(pd.to_numeric(df[c], errors="coerce").fillna(0).sum() for c in agg.sum)), 2)
+        values = []
+        for c in agg.sum:
+            raw = df[c]
+            n = pd.to_numeric(raw, errors="coerce")
+            present = raw.notna() & raw.astype(str).str.strip().ne("")
+            invalid = present & (n.isna() | ~n.map(lambda v: pd.isna(v) or math.isfinite(v)))
+            if invalid.any():
+                raise EngineError("malformed_amount", f"Control {where} column {c!r} contains non-numeric or non-finite values",
+                                  stage="output_validation", sample=raw[invalid].head(5).tolist())
+            values.extend(n.dropna().tolist())
+        return math.fsum(values)
     tokens: set[str] = set()
     splitter = re.compile("|".join(re.escape(s) for s in agg.split)) if agg.split else None
     rx = re.compile(agg.pattern) if agg.pattern else None
@@ -89,27 +100,33 @@ def evaluate_controls(stages: dict[str, pd.DataFrame], out: pd.DataFrame, ctx: R
         o = evaluate_agg(out, c.output, "output")
         override = (expect or {}).get(c.name)
         declared = resolve_expected(c.expected, ctx, override) if c.expected else override
+        if c.expected is not None and declared is None:
+            raise EngineError("declared_mismatch", f"Control {c.name!r}: declared value could not be read",
+                              stage="output_validation")
+        if declared is not None and not math.isfinite(declared):
+            raise EngineError("declared_mismatch", f"Control {c.name!r}: declared value must be finite",
+                              stage="output_validation")
         reasons: list[str] = []
         if c.source is None:                       # declared-only control: the output must match the declared value
             if declared is None:
                 raise EngineError("control_column_missing", f"Control {c.name!r} has neither source nor expected value",
                                   stage="output_validation")
-            s, dropped, diff = declared, 0.0, round(o - declared, 2)
+            s, dropped, diff = declared, 0.0, o - declared
             if abs(diff) > c.tol:
-                reasons.append(f"output {o:,.2f} != declared {declared:,.2f} (diff {diff:+,.2f})")
+                reasons.append(f"output {o:.12g} != declared {declared:.12g} (diff {diff:+.10g})")
             kind = "declared"
         else:
             s = evaluate_agg(stages[c.source.stage], c.source, "source")
             is_sum = c.source.sum is not None
-            dropped = ctx.dropped_amount if (is_sum and c.allow_dropped) else 0.0
-            diff = round(o - (s - dropped), 2)
+            dropped = ctx.dropped_controls.get(c.name, 0.0) if c.allow_dropped else 0.0
+            diff = o - (s - dropped)
             if abs(diff) > c.tol:
-                reasons.append(f"output {o:,.2f} != source {s:,.2f} - dropped {dropped:,.2f} (diff {diff:+,.2f})")
+                reasons.append(f"output {o:.12g} != source {s:.12g} - dropped {dropped:.12g} (diff {diff:+.10g})")
             if c.max_dropped_ratio is not None and s and dropped / s > c.max_dropped_ratio:
-                reasons.append(f"dropped value {dropped:,.2f} is {dropped / s:.1%} of source, above the "
+                reasons.append(f"dropped value {dropped:.12g} is {dropped / s:.1%} of source, above the "
                                f"{c.max_dropped_ratio:.1%} limit")
             if declared is not None and abs(s - declared) > c.tol:
-                reasons.append(f"source {s:,.2f} != declared {declared:,.2f} (diff {s - declared:+,.2f})")
+                reasons.append(f"source {s:.12g} != declared {declared:.12g} (diff {s - declared:+.10g})")
             kind = "sum" if is_sum else ("count_unique" if c.source.count_unique else
                                          "duplicates" if c.source.duplicates else "count_rows")
         passed = not reasons
@@ -125,7 +142,9 @@ def evaluate_controls(stages: dict[str, pd.DataFrame], out: pd.DataFrame, ctx: R
 
 def evaluate_rules(out: pd.DataFrame, ctx: RunContext) -> list[ControlResult]:
     results: list[ControlResult] = []
-    for i, r in enumerate(ctx.spec.rules):
+    required = [h for h, e in ctx.spec.template.columns.items() if e.required]
+    rules = [*ctx.spec.rules, *([RuleSpec(name="required_output", type="not_null", cols=required, on_fail="halt")] if required else [])]
+    for r in rules:
         name = r.name or f"{r.type}:{','.join(r.cols)}"
         bad = _rule_violations(out, r)
         passed = bad.sum() == 0
@@ -154,7 +173,7 @@ def _rule_violations(out: pd.DataFrame, r: RuleSpec) -> pd.Series:
         return ~col.astype(str).str.fullmatch(r.pattern or ".*", na=False) & col.notna()
     if r.type == "range":
         n = pd.to_numeric(col, errors="coerce")
-        bad = pd.Series(False, index=out.index)
+        bad = col.notna() & (n.isna() | ~n.map(lambda v: pd.isna(v) or math.isfinite(v)))
         if r.min is not None:
             bad |= n < r.min
         if r.max is not None:

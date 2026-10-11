@@ -1,0 +1,86 @@
+# Port of ctd/transport/carriers/dhl_de.yaml onto the sluice spec. Raw headers appear only under `map`.
+name: dhl_de_transport
+workflow: transport
+description: DHL Freight Germany monthly transport billing -> CTD EMEA transport template
+match:
+  filename: [DHL_DE, DHL DE]
+
+locate:
+  sheet: {strategy: best_header}
+  header: auto
+
+map:
+  Shipment ID:       {to: shipment_id}
+  Delivery Number:   {to: delivery_number, required: true}
+  Loading Date:      {to: shipping_date, required: true}
+  Carrier:           carrier
+  Country:           country
+  Zip Code:          zip
+  Ship-to:           load_id
+  Gross Weight:      gross_weight
+  Chargeable Weight: chargeable_weight
+  Pallets:           pallets
+  Lifts:             lifts
+  Base Freight:      {to: base_freight, required: true}
+  Fuel Surcharge:    {to: fuel_surcharge, required: true}
+
+const:
+  currency: EUR
+  chargeable_unit: PAL
+measures: [cost]
+
+shape:
+  - {op: strip, cols: [delivery_number]}
+  - {op: parse_date, cols: [shipping_date]}
+  - op: unpivot
+    cols: {base_freight: Transport, fuel_surcharge: Fuel}
+    type_col: cost_type
+    value_col: cost
+  - {op: explode, col: delivery_number, sep: [";"], pattern: '3\d{9}', allocate: [cost]}
+
+keys:
+  cols: [delivery_number]
+  pattern: '3\d{9}'
+  grain: [cost_type]
+  on_invalid: drop
+  on_duplicate: {exact: drop, conflict: error}
+
+template:
+  group_by: [delivery_number]
+  sort_by: [Actual Loading Date, Delivery Number]
+  filename: "CTD_EMEA_TRANSPORT_{col:Country/Region}_{col:Carrier}_{yyyymm:Actual Loading Date}.xlsx"
+  columns:
+    Actual Loading Date:   {col: shipping_date, type: date, required: true}
+    Carrier:               {col: carrier, agg: majority}
+    Delivery Number:       {col: delivery_number}
+    Ship-to:               {const: ""}          # ctd leaves this blank; load_id has no template column
+    Zip Code (Regional ID): zip
+    Country/Region:        {col: country, agg: majority}
+    TRA Chargeable Unit (Pal/KG): {col: chargeable_unit}
+    Total Pallet/Gross Weight: gross_weight
+    Total TRA Units (Pallet Loc / Chargeable Weight): chargeable_weight
+    TOTAL UNITS PAL:       pallets
+    TOTAL UNITS TO CHARGE: lifts
+    TOTAL GROSS WEIGHT:    gross_weight
+    TOTAL WEIGHT TO CHARGE: chargeable_weight
+    Transport Cost:        {col: cost, agg: sum, where: {cost_type: Transport}}
+    Fuel Cost:             {col: cost, agg: sum, where: {cost_type: Fuel}}
+    TRA Extra Cost:        {col: cost, agg: sum, where: {cost_type: Extra}}
+    TRA Extra Cost Type:   {const: ""}
+    Currency:              {col: currency, agg: majority}
+
+controls:
+  - name: total_cost
+    source: {sum: [base_freight, fuel_surcharge]}
+    dropped: {sum: [cost]}
+    output: {sum: [Transport Cost, Fuel Cost, TRA Extra Cost]}
+    on_fail: halt
+    hint: A mismatch with nothing dropped means a cost column is missing from `unpivot`.
+  - name: delivery_count
+    source: {count_unique: delivery_number, split: [";"], pattern: '3\d{9}'}
+    output: {count_unique: Delivery Number}
+    on_fail: halt
+
+rules:
+  - {type: not_null, cols: [Delivery Number, Actual Loading Date], on_fail: halt}
+  - {type: unique, cols: [Delivery Number], on_fail: halt}

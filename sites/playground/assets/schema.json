@@ -1,0 +1,16 @@
+{
+  "fields": [
+    {"name": "delivery_id", "type": "string", "nullable": false},
+    {"name": "shipping_date", "type": "date", "nullable": false},
+    {"name": "supplier", "type": "string", "nullable": false},
+    {"name": "amount", "type": "decimal", "nullable": false}
+  ],
+  "example_row": {"delivery_id": "A001", "shipping_date": "2026-04-01", "supplier": "Acme", "amount": "100.125"},
+  "rules": ["One output row per delivery. Keep the published amount without rounding."],
+  "keys": {"cols": ["delivery_id"], "on_invalid": "error"},
+  "controls": [
+    {"name": "declared_total", "output": {"sum": ["amount"]}, "expected": {"value": 165.5}, "tol": 0.000001},
+    {"name": "declared_rows", "output": {"count_rows": true}, "expected": {"value": 3}, "tol": 0}
+  ],
+  "output_rules": [{"type": "unique", "cols": ["delivery_id"], "on_fail": "halt"}]
+}

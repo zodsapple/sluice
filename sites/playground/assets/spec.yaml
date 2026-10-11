@@ -1,0 +1,34 @@
+name: quickstart
+locate:
+  header: 0
+map:
+  delivery_id: {to: delivery_id, required: true}
+  shipping_date: {to: shipping_date, required: true}
+  supplier: {to: supplier, required: true}
+  amount: {to: amount, required: true}
+shape:
+  - {op: strip, cols: [delivery_id, supplier]}
+  - {op: parse_date, cols: [shipping_date], as_text: true}
+keys:
+  cols: [delivery_id]
+  on_invalid: error
+template:
+  filename: deliveries.csv
+  columns:
+    delivery_id: {col: delivery_id, required: true}
+    shipping_date: {col: shipping_date, required: true}
+    supplier: {col: supplier, required: true}
+    amount: {col: amount, type: number, required: true}
+controls:
+  - name: total_amount
+    source: {sum: [amount]}
+    output: {sum: [amount]}
+    expected: {value: 165.5}
+    tol: 0.000001
+  - name: rows
+    source: {count_rows: true}
+    output: {count_rows: true}
+    expected: {value: 3}
+    tol: 0
+rules:
+  - {type: unique, cols: [delivery_id], on_fail: halt}

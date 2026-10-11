@@ -7,7 +7,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator, model_valida
 
 
 class _Strict(BaseModel):
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="forbid", allow_inf_nan=False)
 
 
 class SheetSel(_Strict):
@@ -116,10 +116,11 @@ class ControlSpec(_Strict):
     source: Agg | None = None         # omit for a declared-only control: output must equal `expected`
     output: Agg
     expected: Expected | None = None
-    tol: float = 0.01
+    dropped: Agg | None = None       # aggregate over removed rows when shaping changes the source columns
+    tol: float = Field(default=0.01, ge=0)
     on_fail: Literal["halt", "warn"] = "halt"
     allow_dropped: bool = True       # source - dropped == output (conservation), sums only
-    max_dropped_ratio: float | None = None
+    max_dropped_ratio: float | None = Field(default=None, ge=0, le=1)
     hint: str | None = None
 
 

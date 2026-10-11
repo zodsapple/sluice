@@ -72,6 +72,7 @@ template:
 controls:
   - name: total_cost
     source: {sum: [base_freight, fuel_surcharge]}
+    dropped: {sum: [cost]}
     output: {sum: [Transport Cost, Fuel Cost, TRA Extra Cost]}
     on_fail: halt
     hint: A mismatch with nothing dropped means a cost column is missing from `unpivot`.

@@ -2,7 +2,9 @@
 from __future__ import annotations
 
 import argparse
+import json
 import re
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -135,7 +137,60 @@ def _cmd_draft(a: argparse.Namespace) -> int:
 
 
 def _cmd_test(a: argparse.Namespace) -> int:
+    if not (Path(__file__).parent / "tests").exists():
+        raise ValueError("Tests are in the source checkout: install .[dev] and run python -m pytest")
     return subprocess.call([sys.executable, "-m", "pytest", str(Path(__file__).parent / "tests"), "-q"])
+
+
+def _cmd_demo(a: argparse.Namespace) -> int:
+    source = Path(__file__).parent / "examples" / "quickstart"
+    dest = Path(a.out)
+    dest.mkdir(parents=True, exist_ok=True)
+    for path in source.iterdir():
+        if (dest / path.name).exists():
+            raise ValueError(f"{dest / path.name} exists; choose an empty demo directory")
+    for path in source.iterdir():
+        shutil.copyfile(path, dest / path.name)
+    print(f"Example ready: {dest}. Run: sluice run {dest / 'spec.yaml'} {dest / 'input.csv'} --out {dest / 'output'}")
+    return 0
+
+
+def _cmd_workflow(a: argparse.Namespace) -> int:
+    from sluice import workflow
+    if a.cmd == "prepare":
+        params = {}
+        for item in a.param or []:
+            key, sep, value = item.partition("=")
+            if not sep or not key:
+                raise ValueError("--param must be NAME=VALUE")
+            params[key] = value
+        draft = workflow.prepare(a.input, a.schema, a.work, sheets=a.sheet, params=params,
+                                 filename=a.filename, store=a.store)
+        print(f"Draft: {Path(a.work) / 'spec.yaml'}; {len(draft.questions)} open questions. Review: sluice review {a.work}")
+        return 0
+    if a.cmd == "answer":
+        replies = {}
+        for item in a.reply:
+            sheet, sep, file = item.partition("=")
+            if not sep:
+                raise ValueError("--reply must be SHEET=FILE")
+            replies[sheet] = Path(file).read_text(encoding="utf-8")
+        draft = workflow.answer(a.work, replies)
+        print(f"Applied replies; {len(draft.questions)} open questions. Re-review the regenerated spec.")
+        return 0
+    if a.cmd == "review":
+        print((Path(a.work) / "review.md").read_text(encoding="utf-8"))
+        result = workflow.inspect_work(a.work)
+        _report(result, verbose=True)
+        return 0 if result.ok else 1
+    if a.cmd == "approve":
+        result = workflow.approve(a.work, by=a.by, reason=a.reason)
+        _report(result)
+        print(f"Approval recorded for {a.by}. Convert: sluice convert {a.work} --out OUTPUT_DIR")
+        return 0
+    result = workflow.convert(a.work, a.out)
+    _report(result)
+    return 0 if result.ok else 1
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -177,8 +232,37 @@ def main(argv: list[str] | None = None) -> int:
     i.set_defaults(fn=_cmd_draft)
     t = sub.add_parser("test", help="run the sluice test-suite")
     t.set_defaults(fn=_cmd_test)
+    demo = sub.add_parser("demo", help="copy the self-contained five-minute example")
+    demo.add_argument("--out", default="quickstart")
+    demo.set_defaults(fn=_cmd_demo)
+    prep = sub.add_parser("prepare", help="draft your own file against a JSON target schema")
+    prep.add_argument("input")
+    prep.add_argument("--schema", required=True)
+    prep.add_argument("--work", required=True)
+    prep.add_argument("--sheet", action="append", help="sheet to include; repeat for several sheets")
+    prep.add_argument("--param", action="append", metavar="NAME=VALUE")
+    prep.add_argument("--filename", default="result.csv")
+    prep.add_argument("--store", help="reuse confirmed bindings from a precedent store")
+    prep.set_defaults(fn=_cmd_workflow)
+    ans = sub.add_parser("answer", help="apply saved chat replies to a prepared workspace")
+    ans.add_argument("work")
+    ans.add_argument("--reply", action="append", required=True, metavar="SHEET=FILE")
+    ans.set_defaults(fn=_cmd_workflow)
+    for name in ("review", "approve", "convert"):
+        sp = sub.add_parser(name, help=f"{name} a prepared workspace")
+        sp.add_argument("work")
+        if name == "approve":
+            sp.add_argument("--by", required=True)
+            sp.add_argument("--reason", required=True, help="review conclusion, including any open questions resolved manually")
+        if name == "convert":
+            sp.add_argument("--out", default="out")
+        sp.set_defaults(fn=_cmd_workflow)
     args = p.parse_args(argv)
-    return args.fn(args)
+    try:
+        return args.fn(args)
+    except (OSError, ValueError, KeyError) as exc:
+        print(f"sluice: {exc}", file=sys.stderr)
+        return 2
 
 
 if __name__ == "__main__":

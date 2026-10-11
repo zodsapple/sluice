@@ -39,6 +39,7 @@ class RunContext:
     dropped_amount: float = 0.0
     dropped_rows: int = 0
     source_frame: pd.DataFrame | None = None
+    dropped_controls: dict[str, float] = field(default_factory=dict)
     stages: dict[str, pd.DataFrame] = field(default_factory=dict)      # mapped / shaped / keyed snapshots
     sources: dict[str, pd.DataFrame] = field(default_factory=dict)
     workbook_cache: dict[str, dict[str, pd.DataFrame]] = field(default_factory=dict)      # one read per file per run
@@ -68,6 +69,7 @@ class RunContext:
         if not mask.any():
             return df
         dropped = df[mask]
+        self._record_control_drops(dropped)
         amounts = self.amount_of(dropped)
         for i, (idx, row) in enumerate(dropped.iterrows()):
             if i >= MAX_ROW_ISSUES:
@@ -83,8 +85,20 @@ class RunContext:
                 dropped_amount=round(float(amounts.loc[idx]), 2), **details,
             )
         self.dropped_rows += len(dropped)
-        self.dropped_amount = round(self.dropped_amount + float(amounts.sum()), 2)
+        self.dropped_amount += float(amounts.sum())
         return df[~mask]
+
+    def _record_control_drops(self, dropped: pd.DataFrame) -> None:
+        from sluice.engine.validate import evaluate_agg
+
+        for c in self.spec.controls:
+            if c.source is None or not c.allow_dropped or c.source.stage not in self.stages:
+                continue   # auxiliary inputs and removals before the declared source stage are outside this control
+            if c.source.sum is None and not c.source.count_rows:
+                continue   # distinct counts and duplicate counts are not additive
+            agg = c.dropped or c.source
+            value = evaluate_agg(dropped, agg, f"dropped:{c.name}")
+            self.dropped_controls[c.name] = self.dropped_controls.get(c.name, 0.0) + value
 
     def traced(self, step: str, before: pd.DataFrame, after: pd.DataFrame, d_rows: int, d_amt: float) -> None:
         self.traces.append(StepTrace(

@@ -2,7 +2,9 @@
 from __future__ import annotations
 
 import math
+import os
 import re
+import tempfile
 from pathlib import Path
 from typing import Any
 
@@ -29,7 +31,13 @@ def _join(s: pd.Series) -> str:
 
 
 def _sum(s: pd.Series) -> float:
-    return round(float(pd.to_numeric(s, errors="coerce").fillna(0).sum()), 2)
+    n = pd.to_numeric(s, errors="coerce")
+    present = s.notna() & s.astype(str).str.strip().ne("")
+    bad = present & (n.isna() | ~n.map(lambda v: pd.isna(v) or math.isfinite(v)))
+    if bad.any():
+        raise EngineError("malformed_amount", "Output sum contains non-numeric or non-finite values",
+                          stage="transformation", sample=s[bad].head(5).tolist())
+    return math.fsum(n.dropna())
 
 
 AGGS = {
@@ -130,6 +138,19 @@ def _cell(v: Any) -> Any:
 
 
 def write_output(out: pd.DataFrame, t: TemplateSpec, template_path: Path | None, dest: Path) -> None:
+    """Replace the destination only after the complete file has been written successfully."""
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    fd, name = tempfile.mkstemp(prefix=".sluice-", suffix=dest.suffix, dir=dest.parent)
+    os.close(fd)
+    temp = Path(name)
+    try:
+        _write_output(out, t, template_path, temp)
+        os.replace(temp, dest)
+    finally:
+        temp.unlink(missing_ok=True)
+
+
+def _write_output(out: pd.DataFrame, t: TemplateSpec, template_path: Path | None, dest: Path) -> None:
     if dest.suffix.lower() == ".csv":          # flat-file target: the template is just the column list
         dest.parent.mkdir(parents=True, exist_ok=True)
         out.to_csv(dest, index=False, encoding="utf-8")

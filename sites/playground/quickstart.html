@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Sluice — CLI quickstart</title><link rel="stylesheet" href="style.css"></head>
+<body><header class="nav"><a class="brand" href="./">Sluice</a><a href="https://github.com/zodsapple/sluice">Source on GitHub ↗</a></header><main>
+<section class="hero"><div><p class="eyebrow">FROM PLAYGROUND TO REPEATABLE WORK</p><h1>Five minutes with <span>Sluice.</span></h1><p class="intro">Python 3.11 or later. Run the same declared rules locally, with saved review evidence.</p></div></section>
+<section class="panel input-panel"><h2>Install from the source checkout</h2><pre>git clone https://github.com/zodsapple/sluice.git
+cd sluice
+python -m pip install .</pre><p>The CLI and packaged example require the version of the source containing this playground. On Windows, use <code>py</code> if your shell has no <code>python</code> command.</p>
+<h2>Run the included example</h2><pre>sluice demo --out quickstart
+sluice run quickstart/spec.yaml quickstart/input.csv --out quickstart/output</pre><p>Three synthetic deliveries reconcile to an independent total of 165.5 and a row count of 3. Change 100.125 to 100.129 and run into a new output directory to see validation stop the conversion.</p>
+<h2>Draft, review and approve</h2><pre>sluice prepare quickstart/input.csv --schema quickstart/schema.json --work quickstart/work
+sluice review quickstart/work
+sluice approve quickstart/work --by ana --reason "Checked mappings, scope and independent controls"
+sluice convert quickstart/work --out quickstart/reviewed-output</pre><p>Use <code>python -m sluice</code> if the installed command is not on your PATH. For your own files, inspect the saved questions and prompts, apply answers with <code>sluice answer</code> or edit the YAML. Human review confirms the mapping and scope; validation checks the declared constraints.</p>
+<p>Changing the input, schema, spec or referenced files invalidates saved approval. The direct <code>run</code> command is available for already reviewed specs. See <code>docs/workflow.md</code> in the source for the schema format and full workflow.</p></section>
+</main><footer><a href="./">← Back to playground</a><span>Sluice · MIT licensed</span></footer></body></html>

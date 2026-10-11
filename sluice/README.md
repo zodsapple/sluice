@@ -13,7 +13,7 @@ One engine, one YAML spec per input format. The spec holds the four things a col
 py -m sluice run     SPEC INPUT --out OUT --template T.xlsx [--expect total_cost=1650]
 py -m sluice dry-run SPEC INPUT --template T.xlsx          # step trace, nothing written
 py -m sluice run-dir DIR --template T.xlsx                 # picks spec by `match.filename`
-py -m sluice init-spec INPUT --template T.xlsx             # draft a spec for a new format
+py -m sluice draft INPUT --template T.xlsx                 # draft a spec for a new format
 py -m sluice heal    SPEC INPUT --template T.xlsx [--mode auto]
 py -m sluice test
 ```

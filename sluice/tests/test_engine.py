@@ -84,7 +84,7 @@ def test_declared_total_mismatch_halts(tmp_path, spec):
     path = _write(tmp_path, _base())
     assert run(spec, path, tmp_path / "a", TEMPLATE, expect={"total_cost": 1650}).ok
     bad = run(spec, path, tmp_path / "b", TEMPLATE, expect={"total_cost": 1700})
-    assert not bad.ok and "declared 1,700.00" in bad.diagnosis.message
+    assert not bad.ok and "declared 1700" in bad.diagnosis.message
 
 
 def test_multi_delivery_cell_is_exploded_and_allocated_to_the_cent(tmp_path, spec):

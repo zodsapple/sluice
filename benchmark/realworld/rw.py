@@ -205,16 +205,18 @@ def main(argv: list[str]) -> int:
         save = "--save" in argv
         argv = [a for i, a in enumerate(argv) if not a.startswith("--") and not (i > 0 and argv[i - 1] == "--store")]
         ids = list(manifest()) if argv[1:] == ["all"] else argv[1:]
+        failed = 0
         for cid in ids:
             try:
                 res = evaluate(cid, mode, store_path, save)
             except Exception as exc:  # noqa: BLE001
                 res = {"case": cid, "status": "CRASH", "why": f"{type(exc).__name__}: {exc}"[:240]}
+            failed += res["status"] != "PASS"
             print(f"{res['case']:30} {res.get('mode', '-'):6} {res['status']:13} Q={res.get('open_questions', '-'):<4} "
                   f"missing={res.get('missing_key_count', '-'):<6} extra={res.get('extra_key_count', '-'):<6} "
                   f"mismatch={res.get('mismatched_rows', '-'):<5} {_fmt_fields(res)} {res.get('why', '')[:120]}"
                   + (" reused " + ",".join(res["reused"]) if res.get("reused") else "") + (" SAVED" if res.get("saved") else ""), flush=True)
-        return 0
+        return 1 if failed else 0
     return 0
 
 
