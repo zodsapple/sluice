@@ -98,3 +98,7 @@ sample/            只保留盲测的来源记录、冻结哈希、各轮结果�
 * 新能力以"绑定种类"(`sluice/infer/bindings.py`)或"ops"(`@register_op`)加入,**必须配测试**,并且在 `compile` 之前验证。
 * 不要为了某个样例在规则里写死特例;用 `answers/` 或先例库表达人的判断。
 * 改了起草规则后跑 `py -m sluice test` 和 `py benchmark/realworld/rw.py run all --human` 看回归。
+
+## 许可
+
+代码使用 MIT 许可(见 `LICENSE`)。盲测引用的公网数据不包含在仓库内,各自的许可与来源见 `sample/etl_blind_holdout_20261011/SOURCES.json`,使用前请按其许可条款处理。
