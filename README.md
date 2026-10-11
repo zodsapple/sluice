@@ -1,104 +1,102 @@
 # Sluice
 
-Excel/CSV → 模板转换框架。
+A framework for converting Excel/CSV files into a template you define, and proving the conversion is right.
 
-把**任意来源的 Excel/CSV** 转成**你给定模板**的输出,并且证明转对了。
+Three principles:
 
-三条原则:
+1. **The runtime is deterministic.** A conversion is driven by a YAML spec (data, not code). The same input always gives the same output.
+2. **A person approves the spec.** Rules draft it first; whatever is left over is put as questions to a person or a chat LLM. The LLM sees only headers, a few sample values and one example row, **never the file**.
+3. **Validation is the judge.** Every dropped row is logged, control totals must reconcile (`source - dropped = output`), and a failed run writes no output, only a structured error report.
 
-1. **运行时是确定性的。** 转换由一份 YAML spec(数据,不是代码)驱动,同样输入永远同样输出。
-2. **spec 由人确认。** 规则先起草,剩下的问题交给人或聊天 LLM 回答;LLM 只看表头、几个样例值和一行示例,**从不接触文件**。
-3. **校验当裁判。** 每一次删行都有记录,控制总数要对得上(`来源 − 丢弃 = 输出`),失败就不写输出,只写结构化的错误报告。
+## Status (read this first)
 
-## 现状(请先读,别高估)
-
-| 能力 | 状态 |
+| Capability | State |
 |---|---|
-| 跑已有 spec(`run` / `run-dir`) | 可用,`sluice/specs/` 有 2 份真实示例 |
-| 为新格式起草 spec | 规则起草**单靠规则通过率很低**(盲测 8 个公网文件:冻结规则 0/8,改通用机制后仍 0/8);加人工答案后 8/8 |
-| LLM 起草 | 复制粘贴方式(聊天窗口,无需 API)已验证;API 方式只有接口,没跑过真模型 |
-| 先例库(复用已确认的答案) | 可用,模拟下一年文件 13/20 错字段 → 0 |
-| 面向最终用户的命令行壳(draft→review→approve→run 一条龙) | **还没有**,现在通过 `benchmark/` 下的脚本走 |
+| Run an existing spec (`run` / `run-dir`) | Works. `sluice/specs/` has 2 real examples |
+| Draft a spec for a new format | Rules alone pass rarely: blind test on 8 public files, 0/8 with frozen rules, still 0/8 after generic fixes; 8/8 once human answers are added |
+| LLM drafting | Copy-paste mode (chat window, no API) is tested; an API client exists but has not been run against a real model |
+| Precedent store (reuse confirmed answers) | Works. On a simulated next-year file: 13 of 20 fields wrong -> 0 |
+| End-user CLI (draft -> review -> approve -> run in one flow) | **Not built yet.** Today you go through the scripts under `benchmark/` |
 
-结论:引擎和校验可信;"自动起草"目前是"规则 + 人/LLM 答题"的半自动。详细数据见 `sluice/README.md` 与 `sample/etl_blind_holdout_20261011/README.md`。
+Bottom line: the engine and the validation can be trusted; "automatic drafting" is currently semi-automatic (rules + a person/LLM answering questions). Detailed numbers: `sluice/README.md` and `sample/etl_blind_holdout_20261011/README.md`.
 
-## 安装
+## Install
 
-Python 3.11+(开发用 3.13,Windows 下用 `py`)。
+Python 3.11+ (developed on 3.13; on Windows use `py`).
 
 ```bash
 pip install -r requirements.txt
-py -m sluice test          # 48 个核心测试(另有 36 个需要样例包,没有样例包时自动跳过;有样例包时共 84 个,约 2 分钟)
+py -m sluice test          # 48 core tests; 36 more need the sample data packs and are skipped without them (84 with the packs, ~2 min)
 ```
 
-`.ods` 输入需要 `odfpy`(未列入 requirements)。
+`.ods` input needs `odfpy` (not in requirements).
 
-## 三种用法
+## Three ways to use it
 
-### A. 用现成 spec 转一个文件
+### A. Convert a file with an existing spec
 
 ```bash
-py -m sluice run sluice/specs/dhl_de_transport.yaml sluice/tests/fixtures/transport/input/DHL_DE_202604_Transport.xlsx --out 输出目录 --template sluice/tests/fixtures/transport/transport_template.xlsx
-py -m sluice dry-run  SPEC 输入.xlsx --template T.xlsx     # 只看步骤轨迹,不写文件
-py -m sluice run-dir  文件夹 --template T.xlsx              # 按文件名匹配 spec
+py -m sluice run sluice/specs/dhl_de_transport.yaml sluice/tests/fixtures/transport/input/DHL_DE_202604_Transport.xlsx --out OUT_DIR --template sluice/tests/fixtures/transport/transport_template.xlsx
+py -m sluice dry-run  SPEC INPUT.xlsx --template T.xlsx     # step trace only, nothing written
+py -m sluice run-dir  FOLDER --template T.xlsx              # picks the spec by file name
 ```
 
-失败时不写输出,看 `_etl_logs/<run>.feedback.md`(人话版原因)和 `dq_logs/issues.csv`。
+On failure nothing is written. Read `_etl_logs/<run>.feedback.md` (plain-language reason) and `dq_logs/issues.csv`.
 
-### B. 为新格式起草 spec(表头级模板)
+### B. Draft a spec for a new format (header-only template)
 
 ```bash
-py -m sluice draft 新文件.xlsx --template 目标模板.csv --key 列1,列2 --filename 输出名.csv --out spec.yaml
+py -m sluice draft NEW_FILE.xlsx --template TARGET.csv --key col1,col2 --filename out.csv --out spec.yaml
 ```
 
-做不了的部分会作为"问题"列出来,不会悄悄猜。人看过再 `run`。
+Whatever cannot be inferred is listed as a question; nothing is guessed silently. A person reviews the draft, then runs it.
 
-### C. 记录型模板(模板里有一行示例)+ 聊天 LLM 起草
+### C. Record template (the template carries one example row) + chat-LLM drafting
 
-这是更通用的路线:目标是"字段名 + 类型 + 规则说明 + 1 行示例"。流程:
+The more general route. The target is "field names + types + written rules + one example row". Flow:
 
-1. 生成提示词(只含结构,不含文件):
+1. Generate the prompt (structure only, no file):
    `py benchmark/realworld/prompt.py dump <case>`
-2. 粘到聊天窗口,拿回 JSON 答案,存成文件。
-3. 校验并评分:
-   `py benchmark/realworld/prompt.py apply <case> --reply "<sheet>=答案.txt"`
-   会打印**复核清单**(范围过滤保留/丢弃了什么、从示例复制的常量、低置信度规则猜测),风险高的在前面。
-4. 确认无误后存入先例库,下次同结构文件不用再问:
-   `... --store s.json --save --by 你的名字 [--confirm "理由"]`
+2. Paste it into a chat window, copy the JSON answer back into a file.
+3. Validate and score:
+   `py benchmark/realworld/prompt.py apply <case> --reply "<sheet>=answer.txt"`
+   This prints a **review list** (what a scope filter keeps/discards, constants copied from the example, low-confidence rule guesses), riskiest first.
+4. Once confirmed, save to the precedent store so the next file with the same structure needs no questions:
+   `... --store s.json --save --by YOUR_NAME [--confirm "reason"]`
 
-目前这些命令是以样例包的 case 为单位写的(`benchmark/realworld/rw.py`);接你自己的文件需要写一个 case 描述,可参考 `benchmark/realworld/` 与 `sample` 里的 manifest 格式。**这一层还没有产品化,是下一步要做的事。**
+These commands are written per case of the sample packs (`benchmark/realworld/rw.py`). To use your own file you need to write a case description; see `benchmark/realworld/` and the manifest format in `sample/`. **This layer is not productised yet; it is the next piece of work.**
 
-## 目录
+## Layout
 
 ```
-sluice/            引擎、起草、复核、先例库、测试(核心,详细文档见 sluice/README.md)
-  engine/          locate → map → shape(ops) → keys → template → controls → write
-  infer/           profile(读结构)、frame、columns、bindings、compile、blind(起草)、precedent_store
-  agent/           LLM 接口:提示词、响应校验、复核、自愈(只允许改"怎么读",不改控制值)
-  specs/           2 份真实 spec 示例
-  tests/fixtures/  测试用的小型合成运输文件
-benchmark/         评测与复制粘贴工具(realworld/ blind/ external/ specs/)
-sample/            只保留盲测的来源记录、冻结哈希、各轮结果和构建脚本;数据本身不在仓库里
+sluice/            engine, drafting, review, precedent store, tests (core; details in sluice/README.md)
+  engine/          locate -> map -> shape (ops) -> keys -> template -> controls -> write
+  infer/           profile (reads structure), frame, columns, bindings, compile, blind (drafting), precedent_store
+  agent/           LLM seam: prompts, response validation, review, self-healing (may change how a file is read, never control values)
+  specs/           2 real spec examples
+  tests/fixtures/  small synthetic transport files used by the tests
+benchmark/         evaluation and copy-paste tooling (realworld/ blind/ external/ specs/)
+sample/            only the blind holdout's source records, frozen hash, round results and build scripts; the data itself is not in the repo
 ```
 
-## 样例包
+## Sample packs
 
-评测用的公开数据包(约 270 MB)不在仓库里。需要时:
+The public evaluation packs (about 270 MB) are not in the repo. To get them:
 
-* `etl_realworld_noisy_20261011_v3`:`python sample/.../fetch_originals.py` 重新下载 20 个案例。
-* `etl_blind_holdout_20261011`:来源 URL 与 SHA-256 在 `SOURCES.json`,模板/期望输出由 `tools/build_holdout.py` 生成。
-* 跑评测:`py benchmark/realworld/rw.py run all --human`(需要先有对应样例包)。
+* `etl_realworld_noisy_20261011_v3`: `python sample/.../fetch_originals.py` downloads the 20 cases again.
+* `etl_blind_holdout_20261011`: source URLs and SHA-256 are in `SOURCES.json`; templates and expected outputs are generated by `tools/build_holdout.py`.
+* Run the evaluation: `py benchmark/realworld/rw.py run all --human` (needs the matching pack first).
 
-## 盲测规则(想自己验证泛化时)
+## Blind-test protocol (to check generalisation yourself)
 
-先冻结代码哈希,期望输出由不导入本仓库代码的独立脚本生成;第一轮不加任何答案;之后的修复要如实标注为"非盲测"。示例见 `sample/etl_blind_holdout_20261011/frozen.json`。
+Freeze a code hash first. Expected outputs come from an independent script that does not import this repo. Round 1 uses no answers. Any fix made afterwards must be labelled "not blind". Example: `sample/etl_blind_holdout_20261011/frozen.json`.
 
-## 贡献约定
+## Contributing
 
-* 新能力以"绑定种类"(`sluice/infer/bindings.py`)或"ops"(`@register_op`)加入,**必须配测试**,并且在 `compile` 之前验证。
-* 不要为了某个样例在规则里写死特例;用 `answers/` 或先例库表达人的判断。
-* 改了起草规则后跑 `py -m sluice test` 和 `py benchmark/realworld/rw.py run all --human` 看回归。
+* New capabilities arrive as a binding kind (`sluice/infer/bindings.py`) or an op (`@register_op`). They **must have tests** and are validated before `compile`.
+* Do not hard-code a special case for one sample into the rules; express human judgement through `answers/` or the precedent store.
+* After changing drafting rules, run `py -m sluice test` and `py benchmark/realworld/rw.py run all --human` to check for regressions.
 
-## 许可
+## License
 
-代码使用 MIT 许可(见 `LICENSE`)。盲测引用的公网数据不包含在仓库内,各自的许可与来源见 `sample/etl_blind_holdout_20261011/SOURCES.json`,使用前请按其许可条款处理。
+Code is MIT-licensed (see `LICENSE`). The public data used in the blind test is not included in the repo; its sources and licences are in `sample/etl_blind_holdout_20261011/SOURCES.json`, and its licence terms apply when you use it.
