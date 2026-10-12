@@ -35,7 +35,9 @@ A binding is {"kind","target","args","confidence","evidence"}; kinds and args (n
   period     {source, part}                part = start | end | type of the period a label names (2023, 2023 Q2, JAN 2023 ...)
   arith      {op, a, b, decimals?}         op = mul | add | sub | div of two sources or fields
   sheet_cell {cell, mapping?|date?}        a fact printed once on the sheet; mapping = substring -> value
-  template   {template, where?}            text with {source} placeholders; where = {source: value | {regex|not_regex|in|not_in|isnull|notnull: ..}}
+  template   {template, where?, verbatim?} text with {source} placeholders; {date_source:%Y-%m-%dT%H:%M:%S} formats date cells;
+                                           verbatim:[source_names] preserves their printed whitespace;
+                                           where = {source: value | {regex|not_regex|in|not_in|isnull|notnull: ..}}
   scale      {source, factor}              numeric source x factor
   group_flag {by:[names], repeated, otherwise}   repeated when another row has the same values in `by` (names = sources or fields), else otherwise
   row_scope  {conditions:[{column, equals|in|not_in|regex|not_regex|same_as}], mode:"all"|"any"}    (no target)

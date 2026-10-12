@@ -49,8 +49,11 @@ are exact, with no rounding tolerance. Leading-zero identifiers remain text. Mis
 Choose **Template / example** for headers or a partial illustration; it does not assert that all output rows match, and you must declare
 halting reconciliation controls before converting. An expected file is validation data, not a formatting workbook for the downloaded output.
 
-The drafter uses the generic workflow module and exports any unresolved copy-paste prompts.
-Apply answers in the CLI or edit YAML and validate again. Large files, batch runs, additional external sources and API-based LLM calls belong in the local CLI.
+The drafter uses the generic workflow module. The page generates a JSON config, presents copyable prompts, parses pasted JSON replies,
+and provides forms for manual decisions. Partial replies accumulate; invalid replies preserve the last applied config. Open questions
+block conversion even if the provisional output matches expected. Every config change clears validation and approval.
+Config JSON can be imported/exported and is cached for up to ten file pairs in the same tab session; the file bytes and approvals are never cached.
+See [the browser workflow](../../docs/browser-workflow.md) for the reply and cache behavior. Large files, batch runs, additional external sources and API-based LLM calls belong in the local CLI.
 
 Hosting configuration is in `.openai/hosting.json`. New Sites are owner-private by default.
 Publication uses the Sites source helper to commit/push the exact source and package `dist/`; only saved versions are deployed.

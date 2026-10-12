@@ -18,6 +18,12 @@ with zipfile.ZipFile(ASSETS / "sluice.zip", "w", compression=zipfile.ZIP_DEFLATE
             archive.writestr(info, path.read_bytes())
 for filename in ("input.csv", "template.csv", "schema.json", "spec.yaml"):
     shutil.copyfile(ROOT / "sluice" / "examples" / "quickstart" / filename, ASSETS / filename)
+schema = json.loads((ASSETS / 'schema.json').read_text())
+schema['fields'].append({'name': 'currency', 'type': 'string', 'nullable': False})
+schema['example_row']['currency'] = 'EUR'
+(ASSETS / 'decision-schema.json').write_text(json.dumps(schema, indent=2) + '\n', encoding='utf-8')
+rows = (ASSETS / 'input.csv').read_text().splitlines()
+(ASSETS / 'decision-expected.csv').write_text(rows[0] + ',currency\n' + '\n'.join(r + ',EUR' for r in rows[1:]) + '\n', encoding='utf-8')
 fixture = ROOT / "sluice" / "tests" / "fixtures" / "transport"
 shutil.copyfile(fixture / "input" / "DHL_DE_202604_Transport.xlsx", ASSETS / "transport.xlsx")
 shutil.copyfile(fixture / "transport_template.xlsx", ASSETS / "transport-template.xlsx")

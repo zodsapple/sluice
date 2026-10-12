@@ -1,5 +1,6 @@
 """Browser adapter around the same Sluice pipeline and reviewed workflow."""
 import json
+import hashlib
 import re
 import shutil
 import zipfile
@@ -17,6 +18,8 @@ from sluice.engine import template as output_template
 from sluice.spec import spec_from_dict
 from sluice.spec.models import LocateSpec
 from sluice import workflow
+from sluice.agent.prompting import build_packet, parse_response, render_single_prompt
+from sluice.infer.bindings import Binding, BindingError, validate
 
 SESSION = Path('/session')
 
@@ -130,6 +133,128 @@ def expected_control(expected, output):
     return control
 
 
+def file_identity(path):
+    return {'sha256': hashlib.sha256(path.read_bytes()).hexdigest(), 'extension': path.suffix.lower()}
+
+
+def build_workspace(config, path):
+    """Rebuild from portable decisions, rather than a worker's temporary filesystem state."""
+    schema = SESSION / 'schema.json'
+    schema.write_text(json.dumps(config['target_schema']), encoding='utf-8')
+    bindings = {}
+    for answer in config.get('answers', {}).values():
+        if not isinstance(answer, dict) or answer.get('status') not in ('answered', 'unknown') or not isinstance(answer.get('bindings'), list) or not isinstance(answer.get('sheet'), str):
+            raise ValueError('Saved answers need status, sheet and a bindings array.')
+        if answer['status'] == 'answered':
+            if not answer['bindings'] or any(not isinstance(b, dict) or b.get('kind') == 'unknown' for b in answer['bindings']):
+                raise ValueError('An answered decision needs concrete bindings; unknown decisions must remain open.')
+            bindings.setdefault(answer['sheet'], []).extend(answer['bindings'])
+    draft = workflow.prepare(path, schema, SESSION / 'work', sheets=config['sheets'], bindings=bindings)
+    if draft.rejected:
+        invalid = [(s, b, why) for s, b, why in draft.rejected if b.origin in ('human', 'llm')]
+        if invalid:
+            raise ValueError('Invalid saved decision: ' + '; '.join(f'{s}:{b.target or b.kind}: {why}' for s, b, why in invalid))
+    return draft, workflow.load_target(schema)
+
+
+def workspace_result(config, draft, target, notices=None):
+    prompts, contexts = [], {}
+    for frame, bindings in zip(draft.frames, draft.bindings):
+        questions = [q for q in draft.questions if q.frame == frame.sheet]
+        context = frame.context(target.fields)
+        contexts[frame.sheet] = {'sources': sorted(context.sources), 'dimensions': context.dim_values, 'cells': frame.facts,
+                                'labels': {n: s.origin for n, s in frame.sources.items()}}
+        if questions:
+            asked = {t for q in questions for t in q.targets}
+            packet = build_packet(frame, questions, target.fields, {b.target: f'{b.kind} {b.args}' for b in bindings if b.target and b.target not in asked},
+                                  conventions=target.notes, example=target.example)
+            samples = {t: config.get('target_samples', {})[t] for t in asked if t in config.get('target_samples', {})}
+            if samples:
+                packet['target_value_samples'] = samples
+            reply = {'answers': [{'question_id': q.id, 'status': 'unknown', 'bindings': []} for q in questions]}
+            prompts.append({'sheet': frame.sheet, 'text': render_single_prompt(packet), 'reply': reply})
+    review = (SESSION / 'work/review.md').read_text()
+    review += '\nDraft source sheets: ' + ', '.join(config['sheets']) + '. Review the extraction scope.\n'
+    if config['target_role'] == 'expected':
+        review = review.replace('No reconciliation controls declared. Add controls to spec.yaml before approval.',
+                                'The complete expected file supplies a halting row comparison.')
+    return {'config': config, 'spec': yaml.safe_dump(config['spec'], sort_keys=False, allow_unicode=True),
+            'questions': [asdict(q) for q in draft.questions], 'review': review, 'contexts': contexts,
+            'promptPackets': prompts, 'prompts': [p['text'] for p in prompts], 'notices': notices or []}
+
+
+def check_config(config, path, target_path, role):
+    if not isinstance(config, dict) or config.get('format') != 'sluice-playground' or config.get('version') != 1:
+        raise ValueError('Choose a Sluice playground config, version 1.')
+    identity = {'input': file_identity(path), 'target': file_identity(target_path) if target_path else None}
+    if config.get('files') != identity:
+        raise ValueError('This config belongs to a different input / target file pair. Load its original files or generate a new config.')
+    if config.get('target_role') != role:
+        raise ValueError('Config target role differs. Select its Expected result or Template / example mode first.')
+    if not isinstance(config.get('answers', {}), dict) or not isinstance(config.get('sheets'), list) or not config['sheets']:
+        raise ValueError('Config needs source sheets and an answers object.')
+    safe_spec(json.dumps(config['spec']))
+
+
+def apply_reply(config, text, base, target, *, manual=False):
+    answers = parse_response(text)
+    if not answers:
+        raise ValueError('The reply contains no answers.')
+    known = {q.id: q for q in base.questions}
+    frames = {f.sheet: f for f in base.frames}
+    proposed = {}
+    for answer in answers:
+        if isinstance(answer, dict) and answer.get('question_id') in known and answer.get('status') != 'unknown':
+            q = known[answer['question_id']]
+            for b in answer.get('bindings', []) if isinstance(answer.get('bindings'), list) else []:
+                if isinstance(b, dict) and b.get('target') in q.targets and b.get('kind') != 'unknown':
+                    proposed.setdefault(q.frame, set()).add(b['target'])
+    notices, seen = [], set()
+    for answer in answers:
+        if not isinstance(answer, dict) or answer.get('question_id') not in known:
+            raise ValueError('Reply contains an unknown question_id. Use the prompt for this file pair.')
+        q = known[answer['question_id']]
+        if q.id in seen:
+            raise ValueError(f'Duplicate answer for {q.id}.')
+        seen.add(q.id)
+        status = answer.get('status', 'answered' if answer.get('bindings') else 'unknown')
+        raw = answer.get('bindings', [])
+        if status not in ('answered', 'unknown') or not isinstance(raw, list):
+            raise ValueError(f'{q.id}: use status answered or unknown, and a bindings array.')
+        if status == 'unknown':
+            notices.append(f'{q.id}: still unknown; enter a manual decision.')
+            continue
+        if not raw:
+            raise ValueError(f'{q.id}: an answered question needs bindings.')
+        sheet_bindings = dict(zip((f.sheet for f in base.frames), base.bindings))[q.frame]
+        saved = {b.get('target') for a in config.get('answers', {}).values() if a['sheet'] == q.frame
+                 for b in a['bindings'] if b.get('target')}
+        context = frames[q.frame].context(target.fields, {b.target for b in sheet_bindings if b.target} | saved | proposed.get(q.frame, set()))
+        accepted = []
+        for item in raw:
+            if not isinstance(item, dict):
+                raise ValueError(f'{q.id}: each binding must be an object.')
+            b = Binding.from_dict({**item, 'origin': 'human' if manual else 'llm', **({'confidence': 1} if manual else {})})
+            if b.kind == 'unknown':
+                notices.append(f'{q.id}: still unknown; enter a manual decision.')
+                accepted = []
+                break
+            if q.kind == 'scope' and b.kind not in ('grid_scope', 'row_scope'):
+                raise ValueError(f'{q.id}: answer with a row_scope or grid_scope binding.')
+            if q.kind != 'scope' and b.target not in q.targets:
+                raise ValueError(f'{q.id}: binding target must be one of {q.targets}.')
+            validate(b, context)
+            if not manual and b.confidence < .7:
+                notices.append(f'{q.id}: confidence {b.confidence} needs manual confirmation.')
+                accepted = []
+                break
+            context.bound.add(b.target) if b.target else None
+            accepted.append(b.to_dict())
+        if accepted:
+            config.setdefault('answers', {})[q.id] = {'sheet': q.frame, 'status': 'answered', 'bindings': accepted}
+    return notices
+
+
 def execute(request_json):
     req = json.loads(request_json)
     path = SESSION / req['input']
@@ -140,6 +265,9 @@ def execute(request_json):
     expected = target_table(template) if template and req.get('targetRole') == 'expected' else None
     if expected is not None and expected.empty:
         raise ValueError('An expected result needs data rows. For headers only, choose Template / example.')
+    config = req.get('config')
+    if config is not None:
+        check_config(config, path, template, req.get('targetRole', 'template'))
     if req['action'] == 'draft':
         raw = read_workbook(path, LocateSpec())
         if sum(len(df) for df in raw.values()) > 20000:
@@ -155,21 +283,49 @@ def execute(request_json):
             if declared and all(s in raw for s in declared):
                 sheets = declared
         draft = workflow.prepare(path, schema, SESSION / 'work', sheets=sheets)
-        review = (SESSION / 'work/review.md').read_text()
-        review += '\nDraft source sheets: ' + ', '.join(sheets or raw) + '. Review the extraction scope.\n'
+        config = {'format': 'sluice-playground', 'version': 1,
+                  'files': {'input': file_identity(path), 'target': file_identity(template) if template else None},
+                  'target_role': req.get('targetRole', 'template'), 'target_schema': json.loads(schema.read_text()),
+                  'sheets': sheets or list(raw), 'answers': {}, 'spec': draft.spec}
+        if template:
+            table = expected if expected is not None else target_table(template)
+            config['target_samples'] = {}
+            for col in table:
+                values = table[col].dropna().astype(str).unique().tolist()
+                config['target_samples'][col] = {'values': [v[:120] for v in values[:8]], 'count': len(values), 'partial': len(values) > 8}
+        result = workspace_result(config, draft, workflow.load_target(schema))
         if not req.get('schema'):
-            review += '\nField types and example values were inferred from the target file. Check every mapping, constant and row scope.\n'
+            result['review'] += '\nField types and example values were inferred from the target file. Check every mapping, constant and row scope.\n'
         if expected is not None:
-            review = review.replace('No reconciliation controls declared. Add controls to spec.yaml before approval.',
-                                    'No reconciliation controls declared in YAML; the complete expected file supplies a halting comparison.')
-            review += '\nThe complete expected result will be checked before output is written. Row order is ignored; duplicate rows and all values must match.\n'
+            result['review'] += '\nThe complete expected result will be checked before output is written. Row order is ignored; duplicate rows and all values must match.\n'
         elif not draft.spec.get('controls'):
-            review += '\nA template describes the format only. Add halting reconciliation controls, or supply the complete expected result before converting.\n'
-        return json.dumps({'spec': (SESSION / 'work/spec.yaml').read_text(),
-                           'questions': [asdict(q) for q in draft.questions],
-                           'review': review,
-                           'prompts': [p.read_text() for p in sorted((SESSION / 'work/prompts').glob('*.txt'))]}, default=str)
-    spec = safe_spec(req['spec'])
+            result['review'] += '\nA template describes the format only. Add halting reconciliation controls, or supply the complete expected result before converting.\n'
+        return json.dumps(result, default=str)
+    questions = []
+    if config is not None:
+        if req['action'] == 'answer':
+            base_config = {**config, 'answers': {}}
+            base, target = build_workspace(base_config, path)
+            notices = apply_reply(config, req.get('reply', ''), base, target, manual=req.get('manual') is True)
+            draft, target = build_workspace(config, path)
+            # Decisions rebuild mapping/shape; keep independently edited controls and output settings.
+            for key in ('controls', 'keys', 'rules', 'description'):
+                if key in config['spec']:
+                    draft.spec[key] = config['spec'][key]
+            draft.spec['template'].update({k: v for k, v in config['spec']['template'].items() if k != 'columns'})
+            config['spec'] = draft.spec
+            safe_spec(json.dumps(config['spec']))
+            return json.dumps(workspace_result(config, draft, target, notices), default=str)
+        draft, target = build_workspace(config, path)
+        questions = draft.questions
+        if req['action'] == 'edit_yaml':
+            safe_spec(req['spec'])
+            config['spec'] = yaml.safe_load(req['spec'])
+        if req['action'] in ('load_config', 'edit_yaml'):
+            return json.dumps(workspace_result(config, draft, target), default=str)
+        if req['action'] == 'convert' and questions:
+            raise ValueError(f'Resolve the {len(questions)} open question(s) before converting.')
+    spec = safe_spec(json.dumps(config['spec']) if config is not None else req['spec'])
     if req['action'] == 'convert' and expected is None and not any(c.on_fail == 'halt' for c in spec.controls):
         raise ValueError('Add a halting reconciliation control before converting.')
     source = read_workbook(path, spec.locate)
@@ -179,9 +335,17 @@ def execute(request_json):
                for name, df in source.items()}
     # Dry-run first when checking expected data, so a mismatch can never create a downloadable output.
     result = run(spec, path, SESSION / 'out', template if expected is None else None,
-                 write_output=req['action'] == 'convert' and expected is None, write_logs=True)
+                 write_output=req['action'] == 'convert' and expected is None and config is None, write_logs=True)
     report = json.loads(Path(result.log_path).read_text())
     feedback = Path(result.feedback_path).read_text() if result.feedback_path else ''
+    if config is not None:
+        report['controls'].append(dict(name='configuration_questions', kind='config_questions', source=len(questions),
+                                       dropped=0, output=0, expected=0, diff=len(questions), passed=not questions,
+                                       on_fail='halt', reasons=[f'{len(questions)} unresolved decision(s).'] if questions else []))
+        if questions:
+            result.status = report['status'] = 'failed'
+            report['diagnosis'] = dict(stage='output_validation', code='unresolved_config',
+                                       message=f'Resolve {len(questions)} open question(s); use a chatbot reply or manual entry.')
     if expected is not None and result.output_frame is not None:
         control = expected_control(expected, result.output_frame)
         report['controls'].append(control)
@@ -189,11 +353,11 @@ def execute(request_json):
             result.status = report['status'] = 'failed'
             report['diagnosis'] = dict(stage='output_validation', code='expected_mismatch', message='; '.join(control['reasons']))
             feedback += '\n## Expected result mismatch\n\n' + '\n'.join(control['reasons']) + '\n'
-        if result.ok and req['action'] == 'convert':
-            dest = SESSION / 'out' / output_template.output_name(spec.template, result.output_frame, path.stem, spec.name)
-            output_template.write_output(result.output_frame, spec.template, None, dest)
-            result.output_path = report['output_path'] = str(dest)
-        Path(result.log_path).write_text(json.dumps(report, default=str), encoding='utf-8')
+    if result.ok and req['action'] == 'convert' and (expected is not None or config is not None):
+        dest = SESSION / 'out' / output_template.output_name(spec.template, result.output_frame, path.stem, spec.name)
+        output_template.write_output(result.output_frame, spec.template, template if expected is None else None, dest)
+        result.output_path = report['output_path'] = str(dest)
+    Path(result.log_path).write_text(json.dumps(report, default=str), encoding='utf-8')
     table = {'columns': list(result.output_frame.columns),
              'rows': result.output_frame.head(12).fillna('').astype(str).values.tolist()} if result.output_frame is not None else None
     return json.dumps({'ok': result.ok, 'report': report, 'inputPreview': preview, 'outputPreview': table,

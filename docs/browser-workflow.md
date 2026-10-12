@@ -1,0 +1,28 @@
+# Browser config workflow
+
+Start the local playground with `python scripts/serve_playground.py`, or open the hosted Site.
+
+1. Upload an input and the complete expected CSV/XLSX. The target's first row contains unique column names.
+   The page generates JSON containing file hashes, the target schema, source sheets, decisions and executable rules.
+2. Open **Resolve open questions**. Each worksheet has a prompt with source facts, target examples and the JSON reply shape.
+   **Copy prompt** lets you use your own chatbot; Sluice does not call a model. Review the facts before copying them elsewhere.
+3. Paste the chatbot JSON into **Chatbot JSON reply** and choose **Parse reply & update config**. JSON fences are accepted.
+   Replies may be partial. Valid decisions accumulate; unknown or low-confidence answers remain open. Invalid question IDs,
+   targets or sources reject the whole reply and preserve the previous config. Field dependencies do not depend on reply order.
+4. Enter remaining decisions manually. Forms support constants, source columns, conditional text, dates, banner cells,
+   row scope and value-column scope. The advanced form accepts bindings JSON. Apply each decision explicitly.
+5. **Preview & validate** checks the current config and the complete expected result. Unresolved questions, failed rules
+   or any expected-row mismatch block conversion. Review the mapping, scope and controls, then approve and convert.
+6. **Export config JSON** saves a portable browser config; **Import config** reloads it against the original file pair.
+   **Advanced: YAML rules** also exports the executable spec for CLI use. Browser config JSON is not a standalone CLI spec.
+
+Configs are cached by SHA-256 of both files, file formats, schema and drafting options. Re-uploading the same pair in the
+same tab session restores decisions, including after a page refresh. Filenames alone do not identify a file. The cache
+retains at most ten configs and never stores source files, output files, validation results or approvals. If session storage
+is unavailable or full, it falls back to in-memory caching. Export JSON for use after the tab session ends.
+
+Changing a config, reply, input, target or drafting option clears validation and approval. Config imports check the actual
+file hashes and target role. Use **Apply config edits** after editing JSON, or **Revert edits** to return to the applied config.
+Unapplied edits cannot be converted. A schema/example describes format; **Expected result** asserts the complete output.
+
+The **One open decision** example exercises prompt, reply and manual-entry flows without uploading a file.

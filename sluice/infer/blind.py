@@ -242,7 +242,9 @@ def draft_blind(path: str | Path, sheets: list[str], target: Target, params: dic
             reused.append((sh, m))
         merged: list[Binding] = []
         bound: set[str] = set()
-        ctx = fr.context(target.fields)
+        # Explicit decisions can refer to another decided field regardless of reply order;
+        # the compiler schedules dependencies before emitting derived operations.
+        ctx = fr.context(target.fields, {b.target for b in extra if b.target and b.kind != 'unknown'})
         for b in [*extra, *bs]:                     # explicit answers win over rules
             if b.target and b.target in bound and b.kind != "template" and not (b.kind == "scale" and b.args.get("where")):
                 continue

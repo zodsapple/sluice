@@ -130,3 +130,128 @@ def test_expected_sheet_provenance_limits_draft_scope(browser):
     spec = yaml.safe_load(draft['spec'])
     assert spec['locate']['sheet']['name'] == 'Data' and not spec['sources']
     assert 'Draft source sheets: Data' in draft['review']
+
+
+def decision_draft(browser, extra_fields=('currency',)):
+    import pandas as pd
+    schema = json.loads((ROOT / 'sluice/examples/quickstart/schema.json').read_text())
+    frame = pd.read_csv(browser.SESSION / 'input.csv', dtype=str)
+    for name in extra_fields:
+        schema['fields'].append({'name': name, 'type': 'string', 'nullable': False})
+        schema['example_row'][name] = 'EUR' if name == 'currency' else 'confirmed'
+        frame[name] = schema['example_row'][name]
+    frame.to_csv(browser.SESSION / 'expected.csv', index=False)
+    req = request(action='draft', template='expected.csv', targetRole='expected', schema=json.dumps(schema))
+    return req, json.loads(browser.execute(json.dumps(req)))
+
+
+def reply_for(question, value, confidence=1):
+    return {'question_id': question['id'], 'status': 'answered', 'bindings': [
+        {'kind': 'constant', 'target': question['targets'][0], 'args': {'value': value}, 'confidence': confidence}]}
+
+
+def test_json_config_prompt_fenced_reply_and_validated_conversion(browser):
+    req, draft = decision_draft(browser)
+    assert draft['config']['files']['input']['sha256'] and len(draft['questions']) == 1
+    prompt = draft['promptPackets'][0]
+    assert '"answers"' in prompt['text'] and 'example_row' in prompt['text'] and 'EUR' in prompt['text']
+    assert prompt['reply']['answers'][0]['status'] == 'unknown'
+    reply = '```json\n' + json.dumps({'answers': [reply_for(draft['questions'][0], 'EUR')]}) + '\n```'
+    resolved = json.loads(browser.execute(json.dumps({**req, 'action': 'answer', 'config': draft['config'], 'reply': reply})))
+    assert not resolved['questions'] and not resolved['prompts']
+    assert resolved['config']['spec']['template']['columns']['currency']['col'] == 'currency'
+    result = json.loads(browser.execute(json.dumps({**req, 'action': 'convert', 'config': resolved['config']})))
+    assert result['ok'] and Path(result['output']).exists()
+    controls = {c['name']: c['passed'] for c in result['report']['controls']}
+    assert controls['configuration_questions'] and controls['expected_result']
+
+
+def test_partial_reply_manual_entry_and_config_roundtrip(browser):
+    req, draft = decision_draft(browser, ('currency', 'review_status'))
+    q = {x['targets'][0]: x for x in draft['questions']}
+    partial = json.loads(browser.execute(json.dumps({**req, 'action': 'answer', 'config': draft['config'],
+                         'reply': json.dumps({'answers': [reply_for(q['currency'], 'EUR')]})})))
+    assert len(partial['questions']) == 1 and partial['questions'][0]['targets'] == ['review_status']
+    complete = json.loads(browser.execute(json.dumps({**req, 'action': 'answer', 'config': partial['config'], 'manual': True,
+                          'reply': json.dumps({'answers': [reply_for(q['review_status'], 'confirmed', .1)]})})))
+    assert not complete['questions']
+    assert complete['config']['answers'][q['review_status']['id']]['bindings'][0]['origin'] == 'human'
+    # Round-trip after a worker filesystem reset; no hidden worker state is needed.
+    original = {f.name: f.read_bytes() for f in browser.SESSION.glob('*.csv')}
+    browser.reset_session()
+    for name, data in original.items():
+        (browser.SESSION / name).write_bytes(data)
+    restored = json.loads(browser.execute(json.dumps({**req, 'action': 'load_config', 'config': complete['config']})))
+    assert restored['config'] == complete['config'] and not restored['questions']
+
+
+@pytest.mark.parametrize('mode', ['unknown', 'low_confidence'])
+def test_unknown_or_low_confidence_needs_manual_decision(browser, mode):
+    req, draft = decision_draft(browser)
+    q = draft['questions'][0]
+    answer = {'question_id': q['id'], 'status': 'unknown', 'bindings': []} if mode == 'unknown' else reply_for(q, 'EUR', .2)
+    result = json.loads(browser.execute(json.dumps({**req, 'action': 'answer', 'config': draft['config'],
+                       'reply': json.dumps({'answers': [answer]})})))
+    assert len(result['questions']) == 1 and result['notices'] and not result['config']['answers']
+    with pytest.raises(ValueError, match='open question'):
+        browser.execute(json.dumps({**req, 'action': 'convert', 'config': result['config']}))
+    assert not list((browser.SESSION / 'out').glob('*.csv'))
+
+
+@pytest.mark.parametrize('mode', ['bad_json', 'foreign_question', 'wrong_target', 'unknown_source', 'duplicate'])
+def test_bad_reply_is_rejected_atomically(browser, mode):
+    req, draft = decision_draft(browser)
+    original = json.dumps(draft['config'], sort_keys=True)
+    answer = reply_for(draft['questions'][0], 'EUR')
+    if mode == 'foreign_question':
+        answer['question_id'] = 'another-file:currency'
+    if mode == 'wrong_target':
+        answer['bindings'][0]['target'] = 'amount'
+    if mode == 'unknown_source':
+        answer['bindings'][0] = {'kind': 'column', 'target': 'currency', 'args': {'source': 'nonexistent'}}
+    reply = 'not JSON' if mode == 'bad_json' else json.dumps({'answers': [answer, answer] if mode == 'duplicate' else [answer]})
+    with pytest.raises(ValueError, match='JSON|question|target|source|Duplicate'):
+        browser.execute(json.dumps({**req, 'action': 'answer', 'config': draft['config'], 'reply': reply}))
+    assert json.dumps(draft['config'], sort_keys=True) == original
+
+
+def test_config_hash_and_expected_gate_survive_valid_answers(browser):
+    req, draft = decision_draft(browser)
+    wrong = json.loads(browser.execute(json.dumps({**req, 'action': 'answer', 'config': draft['config'], 'manual': True,
+                      'reply': json.dumps({'answers': [reply_for(draft['questions'][0], 'USD')]})})))
+    failed = json.loads(browser.execute(json.dumps({**req, 'action': 'convert', 'config': wrong['config']})))
+    assert not failed['ok'] and failed['output'] is None and failed['report']['diagnosis']['code'] == 'expected_mismatch'
+    path = browser.SESSION / 'input.csv'
+    path.write_text(path.read_text().replace('A001', 'A999'))
+    with pytest.raises(ValueError, match='different input'):
+        browser.execute(json.dumps({**req, 'action': 'load_config', 'config': wrong['config']}))
+
+
+def test_reply_field_dependencies_work_in_reverse_order(browser):
+    import pandas as pd
+    req, _ = decision_draft(browser, ('currency', 'review_status'))
+    schema = json.loads(req['schema'])
+    schema['example_row']['review_status'] = 'EUR'
+    req['schema'] = json.dumps(schema)
+    path = browser.SESSION / 'expected.csv'
+    frame = pd.read_csv(path, dtype=str)
+    frame['review_status'] = 'EUR'
+    frame.to_csv(path, index=False)
+    draft = json.loads(browser.execute(json.dumps(req)))
+    questions = {q['targets'][0]: q for q in draft['questions']}
+    dependent = {'question_id': questions['review_status']['id'], 'status': 'answered', 'bindings': [
+        {'kind': 'template', 'target': 'review_status', 'args': {'template': '{currency}'}, 'confidence': .95}]}
+    reply = {'answers': [dependent, reply_for(questions['currency'], 'EUR')]}
+    resolved = json.loads(browser.execute(json.dumps({**req, 'action': 'answer', 'config': draft['config'], 'reply': json.dumps(reply)})))
+    assert not resolved['questions']
+    converted = json.loads(browser.execute(json.dumps({**req, 'action': 'convert', 'config': resolved['config']})))
+    assert converted['ok'] and all(row[-2:] == ['EUR', 'EUR'] for row in converted['outputPreview']['rows'])
+
+
+def test_imported_unknown_binding_cannot_silently_close_a_question(browser):
+    req, draft = decision_draft(browser)
+    q = draft['questions'][0]
+    draft['config']['answers'][q['id']] = {'sheet': q['frame'], 'status': 'answered', 'bindings': [
+        {'kind': 'unknown', 'target': 'currency', 'args': {'reason': 'not decided'}, 'origin': 'human'}]}
+    with pytest.raises(ValueError, match='unknown decisions must remain open'):
+        browser.execute(json.dumps({**req, 'action': 'load_config', 'config': draft['config']}))

@@ -13,7 +13,7 @@ from sluice.agent.blind_resolve import draft_with_responder
 from sluice.agent.prompting import build_packet, render_single_prompt
 from sluice.agent.review import review
 from sluice.engine import run
-from sluice.infer.bindings import TargetField
+from sluice.infer.bindings import Binding, TargetField
 from sluice.infer.blind import Target, _profile, draft_blind
 from sluice.infer.precedent_store import PrecedentStore
 from sluice.spec import load_spec, spec_from_dict
@@ -48,7 +48,8 @@ def _build(config, replies=None):
     kwargs = dict(name=config["name"], filename=config["filename"],
                   store=PrecedentStore(config["store"]) if config.get("store") else None)
     if replies is None:
-        draft = draft_blind(config["input"], config["sheets"], target, config["params"], **kwargs)
+        bindings = {sheet: [Binding.from_dict(b) for b in values] for sheet, values in config.get("bindings", {}).items()}
+        draft = draft_blind(config["input"], config["sheets"], target, config["params"], answers=bindings, **kwargs)
         items = review(draft.frames, draft.bindings, target.fields, example=target.example)
         responder = None
     else:
@@ -92,7 +93,8 @@ def _save_draft(work, config, draft, items, target, responder):
         qs = [q for q in draft.questions if q.frame == fr.sheet]
         if not qs:
             continue
-        bound = {b.target: f"{b.kind} {b.args}" for b in bs if b.target}
+        asked = {t for q in qs for t in q.targets}
+        bound = {b.target: f"{b.kind} {b.args}" for b in bs if b.target and b.target not in asked}
         packet = build_packet(fr, qs, target.fields, bound, conventions=target.notes, example=target.example)
         (prompts / f"{index:02}.txt").write_text(render_single_prompt(packet), encoding="utf-8")
     lines = ["# Review the draft", "", "Validation checks declared constraints; a person must confirm the mapping and scope.", "",
@@ -104,11 +106,13 @@ def _save_draft(work, config, draft, items, target, responder):
     (work / "review.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
-def prepare(input_path, schema_path, work, *, sheets=None, params=None, filename="result.csv", store=None):
+def prepare(input_path, schema_path, work, *, sheets=None, params=None, filename="result.csv", store=None, bindings=None):
     config = {"input": str(Path(input_path).resolve()), "schema": str(Path(schema_path).resolve()),
               "sheets": sheets or list(_profile(input_path).sheets), "params": params or {},
               "name": Path(input_path).stem, "filename": filename,
               "store": str(Path(store).resolve()) if store else None}
+    if bindings:
+        config["bindings"] = bindings
     draft, items, target, responder = _build(config)
     _save_draft(work, config, draft, items, target, responder)
     return draft
