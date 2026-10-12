@@ -20,7 +20,11 @@ self.onmessage = async ({ data }) => {
     python.runPython('reset_session()');
     for (const file of data.files) python.FS.writeFile(`/session/${file.name}`, new Uint8Array(file.bytes));
     python.globals.set('request_json', JSON.stringify(data.request));
-    const result = JSON.parse(await python.runPythonAsync('execute(request_json)'));
+    const result = JSON.parse(await python.runPythonAsync('execute_browser(request_json)'));
+    if (result.error) {
+      postMessage({ id: data.id, error: result.error });
+      return;
+    }
     if (result.output) {
       const bytes = python.FS.readFile(result.output);
       result.download = { name: result.output.split('/').pop(), bytes: bytes.buffer };

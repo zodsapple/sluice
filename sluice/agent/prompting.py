@@ -28,7 +28,10 @@ SYSTEM_PROMPT = """You complete a data-mapping draft. A workbook sheet was alrea
 multi-level headers). You get the target fields that are still unbound, and the facts available on that sheet.
 Answer ONLY with JSON: {"answers":[{"question_id": str, "bindings":[...], "status": "answered"|"unknown"}]}.
 
-A binding is {"kind","target","args","confidence","evidence"}; kinds and args (nothing else exists):
+A field binding is {"kind","target","args","confidence","evidence"}; target is the field name.
+A row_scope or grid_scope binding is {"kind","args","confidence","evidence"}; omit target or use null.
+Never put a field name, dimension name, empty string or question id in a scope binding's target.
+Kinds and args (nothing else exists):
   constant   {value}                       same value on every row
   column     {source, mapping?, verbatim?, extract?} copy a listed source; mapping translates its values (list EVERY value you can);
                                            verbatim:true keeps the text untrimmed; extract = regex whose first group is the value
@@ -111,6 +114,18 @@ FEW_SHOT = [  # tiny, from an unrelated domain, only to show the shape
          {"question_id": "s1:is_gift", "status": "answered", "bindings": [
              {"kind": "template", "target": "is_gift", "args": {"template": "yes", "where": {"note": "GIFT"}}, "confidence": 0.9, "evidence": ["note"]},
              {"kind": "template", "target": "is_gift", "args": {"template": "no", "where": {"note": {"not_in": ["GIFT"]}}}, "confidence": 0.9, "evidence": ["note"]}]}]}},
+    {"packet_excerpt": {"questions": [{"id": "s1:grid_scope", "kind": "scope", "targets": []},
+                                        {"id": "s1:row_scope", "kind": "scope", "targets": []}],
+                        "sources": [{"name": "dim1", "kind": "dim", "n": 3, "distinct": ["North", "South", "All areas"]},
+                                    {"name": "year", "kind": "column", "n": 2, "distinct": ["2024", "2025"]}],
+                        "conventions": ["Include all areas, both detail and total, for year 2025 only."]},
+     "answer": {"answers": [
+         {"question_id": "s1:grid_scope", "status": "answered", "bindings": [
+             {"kind": "grid_scope", "args": {"dimension": "dim1", "include": ["North", "South", "All areas"]},
+              "confidence": 0.95, "evidence": ["dim1"]}]},
+         {"question_id": "s1:row_scope", "status": "answered", "bindings": [
+             {"kind": "row_scope", "args": {"conditions": [{"column": "year", "equals": "2025"}], "mode": "all"},
+              "confidence": 0.95, "evidence": ["year"]}]}]}},
 ]
 
 

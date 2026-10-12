@@ -234,6 +234,13 @@ def apply_reply(config, text, base, target, *, manual=False):
         for item in raw:
             if not isinstance(item, dict):
                 raise ValueError(f'{q.id}: each binding must be an object.')
+            # Chatbots often repeat the universal field-binding shape for a scope.
+            # Scope targets carry no meaning; normalize only on an actual scope question.
+            if q.kind == 'scope' and item.get('kind') in ('grid_scope', 'row_scope') and item.get('target') is not None:
+                if not isinstance(item['target'], str):
+                    raise ValueError(f'{q.id}: scope bindings omit target or use null, not an object or array.')
+                item = {k: v for k, v in item.items() if k != 'target'}
+                notices.append(f'{q.id}: removed the extra target from {item["kind"]}; scopes select rows or columns, not a target field.')
             b = Binding.from_dict({**item, 'origin': 'human' if manual else 'llm', **({'confidence': 1} if manual else {})})
             if b.kind == 'unknown':
                 notices.append(f'{q.id}: still unknown; enter a manual decision.')
@@ -243,7 +250,10 @@ def apply_reply(config, text, base, target, *, manual=False):
                 raise ValueError(f'{q.id}: answer with a row_scope or grid_scope binding.')
             if q.kind != 'scope' and b.target not in q.targets:
                 raise ValueError(f'{q.id}: binding target must be one of {q.targets}.')
-            validate(b, context)
+            try:
+                validate(b, context)
+            except BindingError as exc:
+                raise ValueError(f'{q.id}: {exc}') from exc
             if not manual and b.confidence < .7:
                 notices.append(f'{q.id}: confidence {b.confidence} needs manual confirmation.')
                 accepted = []
@@ -253,6 +263,14 @@ def apply_reply(config, text, base, target, *, manual=False):
         if accepted:
             config.setdefault('answers', {})[q.id] = {'sheet': q.frame, 'status': 'answered', 'bindings': accepted}
     return notices
+
+
+def execute_browser(request_json):
+    """Return expected input errors without a Pyodide traceback in the user interface."""
+    try:
+        return execute(request_json)
+    except (ValueError, TypeError, KeyError) as exc:
+        return json.dumps({'error': str(exc)})
 
 
 def execute(request_json):

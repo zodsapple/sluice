@@ -156,7 +156,12 @@ $('preview').addEventListener('click',()=>execute('preview')); $('convert').addE
 $('draft').addEventListener('click',()=>draftOrRestore().catch(e=>status(e.message,'bad')));
 $('cancel').addEventListener('click',()=>{worker?.terminate();worker=null;if(pending){pending.reject(new Error('Stopped. Config is kept; the next run starts fresh Python.'));pending=null;}});
 function renderPrompts() {
-  $('resolve').hidden=!workspace.questions.length; $('question-summary').textContent=`${workspace.questions.length} decision(s) remain. Each config update clears prior validation and approval.`;
+  const open=workspace.questions.length;
+  $('resolve').hidden=!open&&!Object.keys(workspace.config.answers).length;
+  $('resolve-title').textContent=open?'Resolve open questions':'Revise saved decisions';
+  $('question-summary').textContent=open?`${open} decision(s) remain. Each config update clears prior validation and approval.`:'All questions are resolved. Paste a corrected JSON reply to replace saved decisions, then validate again.';
+  $('prompt-tools').hidden=!workspace.promptPackets.length;
+  $('manual-decisions').hidden=!open; $('resolve-grid').classList.toggle('single',!open);
   const previous=$('prompt-sheet').value; $('prompt-sheet').replaceChildren();
   for(const p of workspace.promptPackets){const o=node('option',p.sheet);o.value=p.sheet;$('prompt-sheet').append(o);}
   if(workspace.promptPackets.some(p=>p.sheet===previous))$('prompt-sheet').value=previous;

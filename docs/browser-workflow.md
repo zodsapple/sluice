@@ -9,6 +9,11 @@ Start the local playground with `python scripts/serve_playground.py`, or open th
 3. Paste the chatbot JSON into **Chatbot JSON reply** and choose **Parse reply & update config**. JSON fences are accepted.
    Replies may be partial. Valid decisions accumulate; unknown or low-confidence answers remain open. Invalid question IDs,
    targets or sources reject the whole reply and preserve the previous config. Field dependencies do not depend on reply order.
+   `grid_scope` and `row_scope` select source columns/rows, so omit their `target` or use `null`. For scope questions,
+   the browser removes a chatbot's extra text `target` with a notice; the actual dimension, values and conditions must still validate.
+   Rejected replies show the question ID and reason without a Python traceback.
+   Once all questions are resolved, **Revise saved decisions** keeps the reply box available. If validation finds a mismatch,
+   paste a correction using the original question IDs; corrected decisions replace their previous bindings and clear approval.
 4. Enter remaining decisions manually. Forms support constants, source columns, conditional text, dates, banner cells,
    row scope and value-column scope. The advanced form accepts bindings JSON. Apply each decision explicitly.
 5. **Preview & validate** checks the current config and the complete expected result. Unresolved questions, failed rules

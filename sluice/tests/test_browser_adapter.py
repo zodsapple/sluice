@@ -255,3 +255,73 @@ def test_imported_unknown_binding_cannot_silently_close_a_question(browser):
         {'kind': 'unknown', 'target': 'currency', 'args': {'reason': 'not decided'}, 'origin': 'human'}]}
     with pytest.raises(ValueError, match='unknown decisions must remain open'):
         browser.execute(json.dumps({**req, 'action': 'load_config', 'config': draft['config']}))
+
+
+@pytest.fixture
+def scope_context():
+    from types import SimpleNamespace
+    from sluice.infer.bindings import TargetField, ValidationContext
+    fields = {'value': TargetField('value', 'decimal')}
+    def context(*_):
+        return ValidationContext(fields, {'year', 'dim1'}, dim_values={'dim1': ['North', 'South']})
+    frame = SimpleNamespace(sheet='s1', context=context)
+    questions = [SimpleNamespace(id='s1:' + kind, frame='s1', targets=[], kind='scope')
+                 for kind in ('grid_scope', 'row_scope')]
+    return SimpleNamespace(frames=[frame], bindings=[[]], questions=questions), SimpleNamespace(fields=fields)
+
+
+@pytest.mark.parametrize('extra_target', ['', 'dim1', 'value', 's1:grid_scope', None])
+def test_scope_reply_normalizes_redundant_target_and_keeps_scope(browser, scope_context, extra_target):
+    base, target = scope_context
+    config = {'answers': {}}
+    bindings = [{'kind': 'grid_scope', 'target': extra_target, 'args': {'dimension': 'dim1', 'include': ['North']}},
+                {'kind': 'row_scope', 'target': extra_target, 'args': {'conditions': [{'column': 'year', 'equals': '2025'}]}}]
+    answers = [{'question_id': q.id, 'status': 'answered', 'bindings': [b]} for q, b in zip(base.questions, bindings)]
+    notices = browser.apply_reply(config, json.dumps({'answers': answers}), base, target)
+    for q, binding in zip(base.questions, bindings):
+        saved = config['answers'][q.id]['bindings'][0]
+        assert saved['target'] is None and saved['args'] == binding['args']
+    assert len(notices) == (0 if extra_target is None else 2)
+
+
+@pytest.mark.parametrize('args', [{'dimension': 'dim9', 'include': ['North']},
+                                  {'dimension': 'dim1', 'include': ['Invented']}])
+def test_scope_target_normalization_does_not_accept_invented_scope(browser, scope_context, args):
+    base, target = scope_context
+    config = {'answers': {}}
+    reply = {'answers': [{'question_id': 's1:grid_scope', 'status': 'answered', 'bindings': [
+        {'kind': 'grid_scope', 'target': 'value', 'args': args}]}]}
+    with pytest.raises(ValueError, match='s1:grid_scope:'):
+        browser.apply_reply(config, json.dumps(reply), base, target)
+    assert config['answers'] == {}
+
+
+def test_browser_user_error_has_question_id_without_traceback(browser):
+    req, draft = decision_draft(browser)
+    answer = reply_for(draft['questions'][0], 'EUR')
+    answer['bindings'][0] = {'kind': 'column', 'target': 'currency', 'args': {'source': 'invented'}}
+    request_json = json.dumps({**req, 'action': 'answer', 'config': draft['config'], 'reply': json.dumps({'answers': [answer]})})
+    result = json.loads(browser.execute_browser(request_json))
+    assert 'input:currency:' in result['error'] and 'unknown source' in result['error']
+    assert 'Traceback' not in result['error'] and draft['config']['answers'] == {}
+    # Success follows the same worker entry point.
+    good = reply_for(draft['questions'][0], 'EUR')
+    result = json.loads(browser.execute_browser(json.dumps({**req, 'action': 'answer', 'config': draft['config'],
+                       'reply': json.dumps({'answers': [good]})})))
+    assert 'error' not in result and not result['questions']
+
+
+def test_completed_decision_can_be_corrected_after_failed_validation(browser):
+    req, draft = decision_draft(browser)
+    q = draft['questions'][0]
+    def answer(config, value):
+        return json.loads(browser.execute(json.dumps({**req, 'action': 'answer', 'config': config,
+                          'reply': json.dumps({'answers': [reply_for(q, value)]})})))
+    wrong = answer(draft['config'], 'USD')
+    assert not wrong['questions']
+    stopped = json.loads(browser.execute(json.dumps({**req, 'action': 'convert', 'config': wrong['config']})))
+    assert not stopped['ok'] and stopped['output'] is None
+    corrected = answer(wrong['config'], 'EUR')
+    assert not corrected['questions'] and len(corrected['config']['answers']) == 1
+    passed = json.loads(browser.execute(json.dumps({**req, 'action': 'convert', 'config': corrected['config']})))
+    assert passed['ok'] and Path(passed['output']).exists()
