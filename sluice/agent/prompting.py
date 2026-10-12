@@ -254,7 +254,7 @@ def render_messages(packet: dict[str, Any], *, examples: bool = True) -> list[di
     return msgs
 
 
-def render_single_prompt(packet: dict[str, Any], *, examples: bool = True) -> str:
+def render_single_prompt(packet: dict[str, Any], *, examples: bool = True, partial: bool = False) -> str:
     """The same content as `render_messages`, as ONE text block to paste into a chat window (no system role, no API)."""
     body = {k: v for k, v in packet.items() if not k.startswith("_")}
     parts = ["### INSTRUCTIONS", SYSTEM_PROMPT]
@@ -263,9 +263,10 @@ def render_single_prompt(packet: dict[str, Any], *, examples: bool = True) -> st
         for i, ex in enumerate(FEW_SHOT, 1):
             parts += [f"Example {i} input:", json.dumps(ex["packet_excerpt"], ensure_ascii=False),
                       f"Example {i} reply:", json.dumps(ex["answer"], ensure_ascii=False)]
+    coverage = ('Return entries only for decisions that need changing; use status "unknown" when evidence is insufficient.' if partial
+                else 'It must contain one entry in "answers" for EVERY question id in the packet (use status "unknown" when you cannot decide).')
     parts += ["### PACKET (answer this one)", json.dumps(body, ensure_ascii=False, indent=1),
-              "### YOUR REPLY\nOne JSON object only, no prose, no code fence. It must contain one entry in \"answers\" for EVERY "
-              "question id in the packet (use status \"unknown\" when you cannot decide). Do not return an empty list."]
+              "### YOUR REPLY\nOne JSON object only, no prose, no code fence. " + coverage + " Do not return an empty list."]
     return "\n\n".join(parts)
 
 

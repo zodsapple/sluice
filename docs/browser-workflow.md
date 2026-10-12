@@ -18,6 +18,13 @@ Start the local playground with `python scripts/serve_playground.py`, or open th
    row scope and value-column scope. The advanced form accepts bindings JSON. Apply each decision explicitly.
 5. **Preview & validate** checks the current config and the complete expected result. Unresolved questions, failed rules
    or any expected-row mismatch block conversion. Review the mapping, scope and controls, then approve and convert.
+   On failure, **Fix validation with a chatbot** provides **Copy repair prompt** and a text download, per worksheet.
+   The prompt contains file facts, current bindings, failed checks and a few expected/output differences. Review it before
+   sharing. Differences are paired only when source provenance uniquely identifies rows; other examples are unpaired.
+   Paste the returned JSON in the existing reply box and validate again. Partial corrections replace the whole binding
+   list for each mentioned question, preserving other decisions. Corrections can include initially confident fields or
+   additional row scopes. An unknown or low-confidence correction reopens the decision for manual entry.
+   Config/file changes clear the feedback prompt along with validation, so it cannot describe an outdated run.
 6. **Export config JSON** saves a portable browser config; **Import config** reloads it against the original file pair.
    **Advanced: YAML rules** also exports the executable spec for CLI use. Browser config JSON is not a standalone CLI spec.
 

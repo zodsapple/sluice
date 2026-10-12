@@ -22,6 +22,7 @@ function updateButtons() {
   $('revert-config').disabled = busy || !workspace || !(configDirty || yamlDirty);
   $('apply-yaml').disabled = busy || !workspace || !yamlDirty;
   $('apply-reply').disabled = busy || !workspace || configDirty || yamlDirty || !$('reply').value.trim();
+  for(const id of ['copy-repair','download-repair','paste-correction']) $(id).disabled=busy||configDirty||yamlDirty||!evidence||!$('repair-prompt').value;
   for (const el of document.querySelectorAll('input[type=file], .demo, #config, #spec, #reply, #sheet-names, #target-role, #target-layout, #reviewed, .manual-control')) el.disabled = busy || (el.classList.contains('manual-control') && (configDirty || yamlDirty));
   $('config-file').disabled = busy || !inputFile;
   $('cancel').hidden = !busy;
@@ -29,6 +30,7 @@ function updateButtons() {
 function invalidate() {
   clearDownloads(); validated = false; evidence = null; $('reviewed').checked = false;
   $('results').hidden = true; $('downloads').replaceChildren(); updateButtons();
+  $('repair-feedback').hidden=true; $('repair-prompt').value=''; $('repair-sheet').replaceChildren(); $('repair-notice').textContent='';
 }
 function resetWorkspace() {
   if (configUrl) URL.revokeObjectURL(configUrl); configUrl = undefined; $('download-config').removeAttribute('href');
@@ -168,9 +170,13 @@ function renderPrompts() {
   $('prompt-text').value=workspace.promptPackets.find(p=>p.sheet===$('prompt-sheet').value)?.text||'';
 }
 $('prompt-sheet').addEventListener('change',()=>{$('prompt-text').value=workspace.promptPackets.find(p=>p.sheet===$('prompt-sheet').value)?.text||'';});
-async function copyText(text) { try { await navigator.clipboard.writeText(text); $('reply-notice').textContent='Copied. Paste into your chosen chatbot; Sluice sends no request.'; } catch { $('prompt-text').focus();$('prompt-text').select();$('reply-notice').textContent='Clipboard unavailable. Select the text and copy with Ctrl+C.'; } }
+async function copyText(text,field='prompt-text',notice='reply-notice') { try { await navigator.clipboard.writeText(text); $(notice).textContent='Copied. Paste into your chosen chatbot; Sluice sends no request.'; } catch { $(field).focus();$(field).select();$(notice).textContent='Clipboard unavailable. Select the text and copy with Ctrl+C.'; } }
 $('copy-prompt').addEventListener('click',()=>copyText($('prompt-text').value));
 $('copy-reply-template').addEventListener('click',()=>copyText(JSON.stringify(workspace.promptPackets.find(p=>p.sheet===$('prompt-sheet').value)?.reply,null,2)));
+$('repair-sheet').addEventListener('change',()=>{$('repair-prompt').value=evidence?.repairPrompts?.find(p=>p.sheet===$('repair-sheet').value)?.text||''; $('repair-notice').textContent='';});
+$('copy-repair').addEventListener('click',()=>copyText($('repair-prompt').value,'repair-prompt','repair-notice'));
+$('download-repair').addEventListener('click',()=>download('validation-repair-prompt.txt',$('repair-prompt').value,'text/plain'));
+$('paste-correction').addEventListener('click',()=>{$('reply').scrollIntoView({block:'center'});$('reply').focus();});
 function renderQuestions() {
   $('questions').replaceChildren();
   for(const q of workspace.questions) {
@@ -242,6 +248,10 @@ function renderEvidence(result, action) {
     if (c.reasons.length) row.append(node('small', c.reasons.join('; '))); $('controls').append(row);
   }
   if (!report.controls.length) $('controls').append(node('p', 'No controls declared. Review and add reconciliation checks to the spec.', 'empty'));
+  const repairs=result.repairPrompts||[]; $('repair-feedback').hidden=!repairs.length;
+  $('repair-sheet').replaceChildren(); for(const p of repairs){const o=node('option',p.sheet);o.value=p.sheet;$('repair-sheet').append(o);}
+  $('repair-prompt').value=repairs[0]?.text||''; $('repair-notice').textContent='';
+  if(repairs.length){$('resolve').hidden=false;if(!workspace.questions.length){$('resolve-title').textContent='Revise decisions';$('question-summary').textContent='Validation found a mismatch. Paste a corrected JSON reply, then validate again.';}}
   clearDownloads(); $('downloads').replaceChildren();
   const addDownload = (label, name, bytes, type = 'application/octet-stream') => {
     const a = node('a', label, 'text-button'); a.href = URL.createObjectURL(new Blob([bytes], { type }));

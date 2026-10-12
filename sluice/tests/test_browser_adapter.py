@@ -264,7 +264,7 @@ def scope_context():
     fields = {'value': TargetField('value', 'decimal')}
     def context(*_):
         return ValidationContext(fields, {'year', 'dim1'}, dim_values={'dim1': ['North', 'South']})
-    frame = SimpleNamespace(sheet='s1', context=context)
+    frame = SimpleNamespace(sheet='s1', layout='grid', context=context)
     questions = [SimpleNamespace(id='s1:' + kind, frame='s1', targets=[], kind='scope')
                  for kind in ('grid_scope', 'row_scope')]
     return SimpleNamespace(frames=[frame], bindings=[[]], questions=questions), SimpleNamespace(fields=fields)
@@ -325,3 +325,104 @@ def test_completed_decision_can_be_corrected_after_failed_validation(browser):
     assert not corrected['questions'] and len(corrected['config']['answers']) == 1
     passed = json.loads(browser.execute(json.dumps({**req, 'action': 'convert', 'config': corrected['config']})))
     assert passed['ok'] and Path(passed['output']).exists()
+
+
+def test_validation_repair_prompt_current_decision_partial_reply_and_success(browser):
+    req, draft = decision_draft(browser)
+    q = draft['questions'][0]
+    def call(action, config, **extra):
+        return json.loads(browser.execute(json.dumps({**req, 'action': action, 'config': config, **extra})))
+    wrong = call('answer', draft['config'], reply=json.dumps({'answers': [reply_for(q, 'USD')]}))
+    failed = call('preview', wrong['config'])
+    assert not failed['ok'] and failed['output'] is None
+    prompt = failed['repairPrompts'][0]
+    assert prompt['sheet'] == 'input' and 'REPAIR A FAILED VALIDATION' in prompt['text']
+    packet = json.loads(prompt['text'].split('### PACKET (answer this one)\n\n')[1].split('\n\n### YOUR REPLY')[0])
+    assert any(b['target'] == 'currency' and b['args']['value'] == 'USD' for b in packet['current_bindings'])
+    assert any(x['id'] == q['id'] for x in packet['questions'])
+    assert packet['validation']['failed_checks'][0]['examples']['missing'][0]['row']['currency'] == 'EUR'
+    assert 'Return entries only for decisions that need changing' in prompt['text']
+    assert 'EVERY question id' not in prompt['text']
+    fixed = call('answer', wrong['config'], reply='```json\n'+json.dumps({'answers': [reply_for(q, 'EUR')]})+'\n```')
+    passed = call('preview', fixed['config'])
+    assert passed['ok'] and not passed['repairPrompts']
+    assert call('convert', fixed['config'])['ok']
+
+
+def test_repair_can_correct_initially_confident_field_and_defer_to_manual(browser):
+    req, draft = decision_draft(browser)
+    # delivery_id was already bound by rules, so it has no initial question.
+    assert all('delivery_id' not in q['targets'] for q in draft['questions'])
+    qid = 'input:delivery_id'
+    def answer(config, status, bindings):
+        return json.loads(browser.execute(json.dumps({**req, 'action': 'answer', 'config': config,
+            'reply': json.dumps({'answers': [{'question_id': qid, 'status': status, 'bindings': bindings}]})})))
+    deferred = answer(draft['config'], 'unknown', [])
+    assert any(q['id'] == qid for q in deferred['questions'])
+    imported = json.loads(browser.execute(json.dumps({**req, 'action': 'load_config', 'config': deferred['config']})))
+    assert any(q['id'] == qid for q in imported['questions'])
+    with pytest.raises(ValueError, match='open question'):
+        browser.execute(json.dumps({**req, 'action': 'convert', 'config': imported['config']}))
+    fixed = answer(imported['config'], 'answered', [{'kind': 'column', 'target': 'delivery_id', 'args': {'source': 'delivery_id'}}])
+    assert not any(q['id'] == qid for q in fixed['questions'])
+
+
+def test_repair_unknown_reopens_saved_decision_without_approving_old_value(browser):
+    req, draft = decision_draft(browser)
+    q = draft['questions'][0]
+    wrong = json.loads(browser.execute(json.dumps({**req, 'action': 'answer', 'config': draft['config'],
+                      'reply': json.dumps({'answers': [reply_for(q, 'USD')]})})))
+    assert not wrong['questions']
+    unknown = {'question_id': q['id'], 'status': 'unknown', 'bindings': []}
+    deferred = json.loads(browser.execute(json.dumps({**req, 'action': 'answer', 'config': wrong['config'],
+                         'reply': json.dumps({'answers': [unknown]})})))
+    assert any(x['id'] == q['id'] for x in deferred['questions'])
+    assert deferred['config']['answers'][q['id']]['status'] == 'unknown'
+    failed = json.loads(browser.execute(json.dumps({**req, 'action': 'preview', 'config': deferred['config']})))
+    assert not failed['ok']
+    packet = json.loads(failed['repairPrompts'][0]['text'].split('### PACKET (answer this one)\n\n')[1].split('\n\n### YOUR REPLY')[0])
+    assert q['id'] in packet['unresolved_question_ids']
+
+
+def test_expected_field_differences_use_unique_provenance_not_row_order(browser):
+    import pandas as pd
+    expected = pd.DataFrame({'source_sheet': ['Data', 'Data'], 'source_cell': ['B2', 'B3'], 'date': ['2022-11-02', '2022-10-26']})
+    actual = expected.iloc[::-1].copy()
+    actual['date'] = ['2022-10-22', '2022-10-29']
+    result = browser.expected_control(expected, actual)
+    assert not result['passed']
+    diff = result['field_differences'][0]
+    assert diff['source']['source_cell'] == 'B2'
+    assert diff['fields']['date'] == {'expected': '2022-11-02T00:00:00', 'actual': '2022-10-29T00:00:00'}
+    duplicate = pd.concat([expected, expected.iloc[[0]]], ignore_index=True)
+    result = browser.expected_control(duplicate, duplicate.assign(date='2022-01-01'))
+    assert not result['passed'] and 'field_differences' not in result
+
+
+def test_repair_prompts_follow_affected_worksheet_and_clear_after_correction(browser):
+    import pandas as pd
+    with pd.ExcelWriter(browser.SESSION / 'input.xlsx') as writer:
+        for sheet, identifier in [('First', 'A001'), ('Second', 'B001')]:
+            pd.DataFrame({'id': [identifier], 'amount': [1]}).to_excel(writer, sheet_name=sheet, index=False)
+    pd.DataFrame({'id': ['A001', 'B001'], 'amount': [1, 1], 'currency': ['EUR', 'EUR'],
+                  'source_sheet': ['First', 'Second']}).to_csv(browser.SESSION / 'expected.csv', index=False)
+    req = request(action='draft', input='input.xlsx', template='expected.csv', schema='', targetRole='expected')
+    draft = json.loads(browser.execute(json.dumps(req)))
+    qs = [q for q in draft['questions'] if q['targets'] == ['currency']]
+    wrong = json.loads(browser.execute(json.dumps({**req, 'action': 'answer', 'config': draft['config'],
+                      'reply': json.dumps({'answers': [reply_for(q, 'USD') for q in qs]})})))
+    def preview(config):
+        return json.loads(browser.execute(json.dumps({**req, 'action': 'preview', 'config': config})))
+    failed = preview(wrong['config'])
+    assert {p['sheet'] for p in failed['repairPrompts']} == {'First', 'Second'}
+    for prompt in failed['repairPrompts']:
+        packet = json.loads(prompt['text'].split('### PACKET (answer this one)\n\n')[1].split('\n\n### YOUR REPLY')[0])
+        assert all(q['id'].startswith(prompt['sheet'] + ':') for q in packet['questions'])
+        examples = packet['validation']['failed_checks'][0]['examples']['missing']
+        assert all(x['row']['source_sheet'] == prompt['sheet'] for x in examples)
+    for index, q in enumerate(qs):
+        wrong = json.loads(browser.execute(json.dumps({**req, 'action': 'answer', 'config': wrong['config'],
+                          'reply': json.dumps({'answers': [reply_for(q, 'EUR')]})})))
+        result = preview(wrong['config'])
+        assert [p['sheet'] for p in result['repairPrompts']] == ([qs[1]['frame']] if index == 0 else [])
+    assert result['ok']
