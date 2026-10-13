@@ -432,6 +432,7 @@ def test_guided_usda_review_requires_correct_business_choice(browser):
     """The POC's preset reply and manual choice drive the real engine, not canned results."""
     assets = ROOT / 'sites/playground/assets'
     fixture = json.loads((assets / 'review-usda.json').read_text(encoding='utf-8'))
+    fixture['correction'] = json.loads((ROOT / 'sluice/tests/fixtures/review/usda-correction.json').read_text(encoding='utf-8'))
     shutil.copyfile(assets / 'review-usda.xlsx', browser.SESSION / 'input.xlsx')
     shutil.copyfile(assets / 'review-expected.csv', browser.SESSION / 'expected.csv')
     req = dict(input='input.xlsx', template='expected.csv', targetRole='expected', targetLayout='auto')
@@ -468,3 +469,75 @@ def test_guided_usda_review_requires_correct_business_choice(browser):
     got = browser.target_table(Path(converted['output']))
     expected = browser.target_table(browser.SESSION / 'expected.csv')
     assert len(got) == 54 and browser.expected_control(expected, got)['passed']
+
+
+def test_usda_reply_stages_actual_changes_without_committing(browser):
+    import copy
+    assets = ROOT / 'sites/playground/assets'
+    fixture = json.loads((assets / 'review-usda.json').read_text(encoding='utf-8'))
+    fixture['correction'] = json.loads((ROOT / 'sluice/tests/fixtures/review/usda-correction.json').read_text(encoding='utf-8'))
+    shutil.copyfile(assets / 'review-usda.xlsx', browser.SESSION / 'input.xlsx')
+    shutil.copyfile(assets / 'review-expected.csv', browser.SESSION / 'expected.csv')
+    config = fixture['initialConfig']
+    original = copy.deepcopy(config)
+    req = dict(input='input.xlsx', template='expected.csv', targetRole='expected', guided=True, config=config)
+    def call(action, **extra):
+        return json.loads(browser.execute(json.dumps({**req, 'action': action, **extra})))
+
+    reply = '```json\n' + json.dumps(fixture['correction']) + '\n```'
+    staged = call('prepare_reply', reply=reply)
+    assert config == original and 'config' not in staged and 'output' not in staged
+    assert len(staged['changes']) == 4 and staged['preview']['ok']
+    assert staged['preview']['output'] is None and not staged['questions']
+    assert staged['impact'] == dict(paired=True, rowsBefore=54, rowsAfter=54, changedRows=39, addedRows=0, removedRows=0)
+    year = next(c for c in staged['changes'] if c['field'] == 'reporting_year')
+    assert year['affectedRows'] == 12 and year['examples']
+    # A different valid reply must produce different real suggestions, not the fixture correction.
+    other = {'answers': [{'question_id': 'New Table 3:reporting_year', 'status': 'answered',
+                         'bindings': [{'kind': 'constant', 'target': 'reporting_year',
+                                       'args': {'value': '2023'}, 'confidence': .95}]}]}
+    different = call('prepare_reply', reply=json.dumps(other))
+    assert len(different['changes']) == 1 and different['changes'][0]['after'][0]['args']['value'] == '2023'
+    assert different['changes'][0]['affectedRows'] == 54 and not different['preview']['ok']
+    scope = {'answers': [{'question_id': 'New Table 3:grid_scope', 'status': 'answered',
+                         'bindings': [{'kind': 'grid_scope', 'args': {'dimension': 'dim2',
+                                       'include': ['Gulf', 'Texas Gulf', 'Northwest', 'East Gulf', 'Mexico3']}}]}]}
+    filtered = call('prepare_reply', reply=json.dumps(scope))
+    assert filtered['impact']['removedRows'] == 9 and filtered['impact']['rowsAfter'] == 45
+    fixed = call('answer', reply=reply)['config']
+    assert call('preview', config=fixed)['ok']
+    assert call('preview', config=fixed)['reviewPrompts']  # Business feedback also works after checks pass.
+    with pytest.raises(ValueError, match='does not change'):
+        call('prepare_reply', config=fixed, reply=reply)
+
+
+@pytest.mark.parametrize('status,confidence', [('unknown', 1), ('answered', .2)])
+def test_staged_uncertain_reply_keeps_config_and_requires_followup(browser, status, confidence):
+    req, draft = decision_draft(browser)
+    q = draft['questions'][0]
+    answered = reply_for(q, 'USD')
+    original = json.loads(browser.execute(json.dumps({**req, 'action': 'answer', 'config': draft['config'],
+                                                    'reply': json.dumps({'answers': [answered]})})))['config']
+    answer = reply_for(q, 'EUR')
+    answer['status'] = status
+    answer['bindings'][0]['confidence'] = confidence
+    staged = json.loads(browser.execute(json.dumps({**req, 'action': 'prepare_reply', 'config': original,
+                                                   'reply': json.dumps({'answers': [answer]})})))
+    assert staged['changes'][0]['status'] == 'unknown' and staged['questions']
+    assert not staged['preview']['ok'] and staged['preview']['output'] is None
+    assert original['answers'][q['id']]['bindings'][0]['args']['value'] == 'USD'
+    rejected = json.loads(browser.execute_browser(json.dumps({**req, 'action': 'prepare_reply',
+                           'config': original, 'reply': '{bad JSON'})))
+    assert 'error' in rejected and 'Traceback' not in rejected['error']
+
+
+def test_review_impact_does_not_pair_ambiguous_rows(browser):
+    import pandas as pd
+    before = pd.DataFrame({'source_cell': ['A1', 'A1'], 'value': [1, 2]})
+    after = before.assign(value=[3, 4])
+    changes = [{'field': 'value', 'sheet': 'Data'}]
+    impact = browser.review_impact(before, after, changes, {'fields': [{'name': 'value', 'type': 'decimal'}]})
+    assert not impact['paired'] and 'affectedRows' not in changes[0]
+    unique = before.assign(source_cell=['A1', 'A2'])
+    impact = browser.review_impact(unique, unique.iloc[::-1], changes, {'fields': [{'name': 'value', 'type': 'decimal'}]})
+    assert impact['paired'] and impact['changedRows'] == 0 and changes[0]['affectedRows'] == 0

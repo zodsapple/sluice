@@ -1,0 +1,242 @@
+{
+  "answers": [
+    {
+      "question_id": "New Table 3:report_row_label",
+      "status": "answered",
+      "bindings": [
+        {
+          "kind": "template",
+          "target": "report_row_label",
+          "args": {
+            "template": "{for_the_week_ending}",
+            "where": {
+              "dim2": {
+                "not_in": [
+                  "Mexico3"
+                ]
+              }
+            },
+            "verbatim": [
+              "for_the_week_ending"
+            ]
+          },
+          "confidence": 0.95,
+          "evidence": [
+            "source headers and published row labels",
+            "expected target samples"
+          ]
+        },
+        {
+          "kind": "template",
+          "target": "report_row_label",
+          "args": {
+            "template": "{week_ending:%Y-%m-%dT%H:%M:%S}",
+            "where": {
+              "dim2": "Mexico3"
+            },
+            "verbatim": [
+              "week_ending"
+            ]
+          },
+          "confidence": 0.95,
+          "evidence": [
+            "source headers and published row labels",
+            "expected target samples"
+          ]
+        }
+      ]
+    },
+    {
+      "question_id": "New Table 3:reporting_year",
+      "status": "answered",
+      "bindings": [
+        {
+          "kind": "template",
+          "target": "reporting_year",
+          "args": {
+            "template": "2021",
+            "where": {
+              "for_the_week_ending": {
+                "regex": "^(?:2021 YTD|Total 2021)"
+              }
+            }
+          },
+          "confidence": 0.95,
+          "evidence": [
+            "source headers and published row labels",
+            "expected target samples"
+          ]
+        },
+        {
+          "kind": "template",
+          "target": "reporting_year",
+          "args": {
+            "template": "2020",
+            "where": {
+              "for_the_week_ending": {
+                "regex": "^Total 2020"
+              }
+            }
+          },
+          "confidence": 0.95,
+          "evidence": [
+            "source headers and published row labels",
+            "expected target samples"
+          ]
+        },
+        {
+          "kind": "template",
+          "target": "reporting_year",
+          "args": {
+            "template": "2022",
+            "where": {
+              "for_the_week_ending": {
+                "not_regex": "^(?:2021 YTD|Total 2021|Total 2020)"
+              }
+            }
+          },
+          "confidence": 0.95,
+          "evidence": [
+            "source headers and published row labels",
+            "expected target samples"
+          ]
+        }
+      ]
+    },
+    {
+      "question_id": "New Table 3:period_end",
+      "status": "answered",
+      "bindings": [
+        {
+          "kind": "template",
+          "target": "period_end",
+          "args": {
+            "template": "2022-11-02",
+            "where": {
+              "dim2": {
+                "not_in": [
+                  "Mexico3"
+                ]
+              },
+              "for_the_week_ending": "11/2/2022p"
+            }
+          },
+          "confidence": 0.95,
+          "evidence": [
+            "source headers and published row labels",
+            "expected target samples"
+          ]
+        },
+        {
+          "kind": "template",
+          "target": "period_end",
+          "args": {
+            "template": "2022-10-26",
+            "where": {
+              "dim2": {
+                "not_in": [
+                  "Mexico3"
+                ]
+              },
+              "for_the_week_ending": "10/26/2022r"
+            }
+          },
+          "confidence": 0.95,
+          "evidence": [
+            "source headers and published row labels",
+            "expected target samples"
+          ]
+        },
+        {
+          "kind": "template",
+          "target": "period_end",
+          "args": {
+            "template": "2022-10-29",
+            "where": {
+              "dim2": "Mexico3",
+              "week_ending": "2022-10-29"
+            }
+          },
+          "confidence": 0.95,
+          "evidence": [
+            "source headers and published row labels",
+            "expected target samples"
+          ]
+        },
+        {
+          "kind": "template",
+          "target": "period_end",
+          "args": {
+            "template": "2022-10-22",
+            "where": {
+              "dim2": "Mexico3",
+              "week_ending": "2022-10-22"
+            }
+          },
+          "confidence": 0.95,
+          "evidence": [
+            "source headers and published row labels",
+            "expected target samples"
+          ]
+        }
+      ]
+    },
+    {
+      "question_id": "New Table 3:revision_status",
+      "status": "answered",
+      "bindings": [
+        {
+          "kind": "template",
+          "target": "revision_status",
+          "args": {
+            "template": "provisional",
+            "where": {
+              "report_row_label": {
+                "regex": "p$"
+              }
+            }
+          },
+          "confidence": 0.95,
+          "evidence": [
+            "source headers and published row labels",
+            "expected target samples"
+          ]
+        },
+        {
+          "kind": "template",
+          "target": "revision_status",
+          "args": {
+            "template": "revised",
+            "where": {
+              "report_row_label": {
+                "regex": "r$"
+              }
+            }
+          },
+          "confidence": 0.95,
+          "evidence": [
+            "source headers and published row labels",
+            "expected target samples"
+          ]
+        },
+        {
+          "kind": "template",
+          "target": "revision_status",
+          "args": {
+            "template": "reported",
+            "where": {
+              "report_row_label": {
+                "not_regex": "[pr]$"
+              }
+            }
+          },
+          "confidence": 0.95,
+          "evidence": [
+            "source headers and published row labels",
+            "expected target samples"
+          ]
+        }
+      ]
+    }
+  ]
+}
