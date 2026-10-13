@@ -1,0 +1,55 @@
+source_id,report_row_label,reporting_year,period_basis,period_end,port_region,metric,unit,value,revision_status,aggregation_level,source_sheet,source_cell
+transport_usda_rail_ports,11/2/2022p,2022,week,2022-11-02,Mississippi Gulf,rail_carloads,carloads,1959,provisional,region,New Table 3,B6
+transport_usda_rail_ports,11/2/2022p,2022,week,2022-11-02,Texas Gulf,rail_carloads,carloads,574,provisional,region,New Table 3,C6
+transport_usda_rail_ports,11/2/2022p,2022,week,2022-11-02,Pacific Northwest,rail_carloads,carloads,7731,provisional,region,New Table 3,D6
+transport_usda_rail_ports,11/2/2022p,2022,week,2022-11-02,Atlantic & East Gulf,rail_carloads,carloads,1155,provisional,region,New Table 3,E6
+transport_usda_rail_ports,11/2/2022p,2022,week,2022-11-02,Total US port regions,rail_carloads,carloads,11419,provisional,total,New Table 3,F6
+transport_usda_rail_ports,2022-10-29T00:00:00,2022,week,2022-10-29,Cross-border Mexico,rail_carloads,carloads,2094,reported,region,New Table 3,H6
+transport_usda_rail_ports,10/26/2022r,2022,week,2022-10-26,Mississippi Gulf,rail_carloads,carloads,2760,revised,region,New Table 3,B7
+transport_usda_rail_ports,10/26/2022r,2022,week,2022-10-26,Texas Gulf,rail_carloads,carloads,448,revised,region,New Table 3,C7
+transport_usda_rail_ports,10/26/2022r,2022,week,2022-10-26,Pacific Northwest,rail_carloads,carloads,8658,revised,region,New Table 3,D7
+transport_usda_rail_ports,10/26/2022r,2022,week,2022-10-26,Atlantic & East Gulf,rail_carloads,carloads,952,revised,region,New Table 3,E7
+transport_usda_rail_ports,10/26/2022r,2022,week,2022-10-26,Total US port regions,rail_carloads,carloads,12818,revised,total,New Table 3,F7
+transport_usda_rail_ports,2022-10-22T00:00:00,2022,week,2022-10-22,Cross-border Mexico,rail_carloads,carloads,2429,reported,region,New Table 3,H7
+transport_usda_rail_ports,2022 YTDr,2022,year_to_date,,Mississippi Gulf,rail_carloads,carloads,52611,revised,region,New Table 3,B8
+transport_usda_rail_ports,2022 YTDr,2022,year_to_date,,Texas Gulf,rail_carloads,carloads,33451,revised,region,New Table 3,C8
+transport_usda_rail_ports,2022 YTDr,2022,year_to_date,,Pacific Northwest,rail_carloads,carloads,221977,revised,region,New Table 3,D8
+transport_usda_rail_ports,2022 YTDr,2022,year_to_date,,Atlantic & East Gulf,rail_carloads,carloads,20129,revised,region,New Table 3,E8
+transport_usda_rail_ports,2022 YTDr,2022,year_to_date,,Total US port regions,rail_carloads,carloads,328168,revised,total,New Table 3,F8
+transport_usda_rail_ports,2022 YTD,2022,year_to_date,,Cross-border Mexico,rail_carloads,carloads,116010.75,reported,region,New Table 3,H8
+transport_usda_rail_ports,2021 YTDr,2021,year_to_date,,Mississippi Gulf,rail_carloads,carloads,42781,revised,region,New Table 3,B9
+transport_usda_rail_ports,2021 YTDr,2021,year_to_date,,Texas Gulf,rail_carloads,carloads,56581,revised,region,New Table 3,C9
+transport_usda_rail_ports,2021 YTDr,2021,year_to_date,,Pacific Northwest,rail_carloads,carloads,247927,revised,region,New Table 3,D9
+transport_usda_rail_ports,2021 YTDr,2021,year_to_date,,Atlantic & East Gulf,rail_carloads,carloads,15508,revised,region,New Table 3,E9
+transport_usda_rail_ports,2021 YTDr,2021,year_to_date,,Total US port regions,rail_carloads,carloads,362797,revised,total,New Table 3,F9
+transport_usda_rail_ports,2021 YTD,2021,year_to_date,,Cross-border Mexico,rail_carloads,carloads,122360,reported,region,New Table 3,H9
+transport_usda_rail_ports,2022 YTD as % of 2021 YTD,2022,comparison_ratio,,Mississippi Gulf,carload_ratio_percent,percent,122.9774900072462,reported,region,New Table 3,B10
+transport_usda_rail_ports,2022 YTD as % of 2021 YTD,2022,comparison_ratio,,Texas Gulf,carload_ratio_percent,percent,59.12055283575759,reported,region,New Table 3,C10
+transport_usda_rail_ports,2022 YTD as % of 2021 YTD,2022,comparison_ratio,,Pacific Northwest,carload_ratio_percent,percent,89.53320937211356,reported,region,New Table 3,D10
+transport_usda_rail_ports,2022 YTD as % of 2021 YTD,2022,comparison_ratio,,Atlantic & East Gulf,carload_ratio_percent,percent,129.7975238586536,reported,region,New Table 3,E10
+transport_usda_rail_ports,2022 YTD as % of 2021 YTD,2022,comparison_ratio,,Total US port regions,carload_ratio_percent,percent,90.45499273698515,reported,total,New Table 3,F10
+transport_usda_rail_ports,% of 2021 YTD,2022,comparison_ratio,,Cross-border Mexico,carload_ratio_percent,percent,94.81100849950964,reported,region,New Table 3,H10
+transport_usda_rail_ports,Last 4 weeks as % of 20212,2022,comparison_ratio,,Mississippi Gulf,carload_ratio_percent,percent,181.0914216673379,reported,region,New Table 3,B11
+transport_usda_rail_ports,Last 4 weeks as % of 20212,2022,comparison_ratio,,Texas Gulf,carload_ratio_percent,percent,33.484087102177554,reported,region,New Table 3,C11
+transport_usda_rail_ports,Last 4 weeks as % of 20212,2022,comparison_ratio,,Pacific Northwest,carload_ratio_percent,percent,91.43291787877979,reported,region,New Table 3,D11
+transport_usda_rail_ports,Last 4 weeks as % of 20212,2022,comparison_ratio,,Atlantic & East Gulf,carload_ratio_percent,percent,101.38142747505756,reported,region,New Table 3,E11
+transport_usda_rail_ports,Last 4 weeks as % of 20212,2022,comparison_ratio,,Total US port regions,carload_ratio_percent,percent,94.07424398822495,reported,total,New Table 3,F11
+transport_usda_rail_ports,Last 4wks. % 2021,2022,comparison_ratio,,Cross-border Mexico,carload_ratio_percent,percent,80.3336422613531,reported,region,New Table 3,H11
+transport_usda_rail_ports,Last 4 weeks as % of 4-year avg.2,2022,comparison_ratio,,Mississippi Gulf,carload_ratio_percent,percent,213.28115735799832,reported,region,New Table 3,B12
+transport_usda_rail_ports,Last 4 weeks as % of 4-year avg.2,2022,comparison_ratio,,Texas Gulf,carload_ratio_percent,percent,41.133803179175885,reported,region,New Table 3,C12
+transport_usda_rail_ports,Last 4 weeks as % of 4-year avg.2,2022,comparison_ratio,,Pacific Northwest,carload_ratio_percent,percent,120.92941166088653,reported,region,New Table 3,D12
+transport_usda_rail_ports,Last 4 weeks as % of 4-year avg.2,2022,comparison_ratio,,Atlantic & East Gulf,carload_ratio_percent,percent,129.74300212800787,reported,region,New Table 3,E12
+transport_usda_rail_ports,Last 4 weeks as % of 4-year avg.2,2022,comparison_ratio,,Total US port regions,carload_ratio_percent,percent,121.63468073800374,reported,total,New Table 3,F12
+transport_usda_rail_ports,Last 4wks. % 4 yr.,2022,comparison_ratio,,Cross-border Mexico,carload_ratio_percent,percent,83.02681992337165,reported,region,New Table 3,H12
+transport_usda_rail_ports,Total 2021 ,2021,year,,Mississippi Gulf,rail_carloads,carloads,53554,reported,region,New Table 3,B13
+transport_usda_rail_ports,Total 2021 ,2021,year,,Texas Gulf,rail_carloads,carloads,68335,reported,region,New Table 3,C13
+transport_usda_rail_ports,Total 2021 ,2021,year,,Pacific Northwest,rail_carloads,carloads,305865,reported,region,New Table 3,D13
+transport_usda_rail_ports,Total 2021 ,2021,year,,Atlantic & East Gulf,rail_carloads,carloads,21913,reported,region,New Table 3,E13
+transport_usda_rail_ports,Total 2021 ,2021,year,,Total US port regions,rail_carloads,carloads,449667,reported,total,New Table 3,F13
+transport_usda_rail_ports,Total 2021 ,2021,year,,Cross-border Mexico,rail_carloads,carloads,145883,reported,region,New Table 3,H13
+transport_usda_rail_ports,Total 2020 ,2020,year,,Mississippi Gulf,rail_carloads,carloads,45177,reported,region,New Table 3,B14
+transport_usda_rail_ports,Total 2020 ,2020,year,,Texas Gulf,rail_carloads,carloads,63348,reported,region,New Table 3,C14
+transport_usda_rail_ports,Total 2020 ,2020,year,,Pacific Northwest,rail_carloads,carloads,296060,reported,region,New Table 3,D14
+transport_usda_rail_ports,Total 2020 ,2020,year,,Atlantic & East Gulf,rail_carloads,carloads,24202,reported,region,New Table 3,E14
+transport_usda_rail_ports,Total 2020 ,2020,year,,Total US port regions,rail_carloads,carloads,428787,reported,total,New Table 3,F14
+transport_usda_rail_ports,Total 2020 ,2020,year,,Cross-border Mexico,rail_carloads,carloads,126407,reported,region,New Table 3,H14

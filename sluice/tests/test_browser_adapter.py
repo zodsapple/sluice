@@ -426,3 +426,45 @@ def test_repair_prompts_follow_affected_worksheet_and_clear_after_correction(bro
         result = preview(wrong['config'])
         assert [p['sheet'] for p in result['repairPrompts']] == ([qs[1]['frame']] if index == 0 else [])
     assert result['ok']
+
+
+def test_guided_usda_review_requires_correct_business_choice(browser):
+    """The POC's preset reply and manual choice drive the real engine, not canned results."""
+    assets = ROOT / 'sites/playground/assets'
+    fixture = json.loads((assets / 'review-usda.json').read_text(encoding='utf-8'))
+    shutil.copyfile(assets / 'review-usda.xlsx', browser.SESSION / 'input.xlsx')
+    shutil.copyfile(assets / 'review-expected.csv', browser.SESSION / 'expected.csv')
+    req = dict(input='input.xlsx', template='expected.csv', targetRole='expected', targetLayout='auto')
+
+    def call(action, config, **extra):
+        return json.loads(browser.execute(json.dumps({**req, 'action': action, 'config': config, **extra})))
+
+    config = fixture['initialConfig']
+    assert call('load_config', config)['config']['files'] == config['files']
+    failed = call('preview', config)
+    control = next(c for c in failed['report']['controls'] if c['name'] == 'expected_result')
+    assert not failed['ok'] and control['dropped'] == 39
+    automatic = [a for a in fixture['correction']['answers'] if not a['question_id'].endswith(':reporting_year')]
+    config = call('answer', config, reply=json.dumps({'answers': automatic}))['config']
+    assert not call('preview', config)['ok']
+    year = next(a for a in fixture['correction']['answers'] if a['question_id'].endswith(':reporting_year'))
+    deferred = call('answer', config, reply=json.dumps({'answers': [
+        {'question_id': year['question_id'], 'status': 'unknown', 'bindings': []}
+    ]}), manual=True)
+    assert any(q['id'] == year['question_id'] for q in deferred['questions'])
+    with pytest.raises(ValueError, match='open question'):
+        call('convert', deferred['config'])
+    original = fixture['initialConfig']['answers'][year['question_id']]
+    wrong = call('answer', deferred['config'], reply=json.dumps({'answers': [
+        {'question_id': year['question_id'], 'status': 'answered', 'bindings': original['bindings']}
+    ]}), manual=True)
+    assert not call('preview', wrong['config'])['ok']
+    fixed = call('answer', wrong['config'], reply=json.dumps({'answers': [year]}), manual=True)
+    assert call('preview', fixed['config'])['ok']
+    # A JSON round trip simulates restoring the config from session storage; validation is fresh.
+    restored = call('load_config', json.loads(json.dumps(fixed['config'])))['config']
+    converted = call('convert', restored)
+    assert converted['ok'] and Path(converted['output']).exists()
+    got = browser.target_table(Path(converted['output']))
+    expected = browser.target_table(browser.SESSION / 'expected.csv')
+    assert len(got) == 54 and browser.expected_control(expected, got)['passed']

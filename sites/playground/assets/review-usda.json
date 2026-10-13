@@ -1,0 +1,1251 @@
+{
+  "initialConfig": {
+    "format": "sluice-playground",
+    "version": 1,
+    "files": {
+      "input": {
+        "sha256": "9a522b87d36cd27fd2e0c5cf3b62d42ce08ecc65633d61160ec7069a2b6a24f8",
+        "extension": ".xlsx"
+      },
+      "target": {
+        "sha256": "b6590d5c9a3a8a9ffdb2aa9e44e3c1c145667688fa009f2eefad64cc4b9018b7",
+        "extension": ".csv"
+      }
+    },
+    "target_role": "expected",
+    "target_schema": {
+      "mode": "stats",
+      "fields": [
+        {
+          "name": "source_id",
+          "type": "string",
+          "nullable": true
+        },
+        {
+          "name": "report_row_label",
+          "type": "string",
+          "nullable": true
+        },
+        {
+          "name": "reporting_year",
+          "type": "decimal",
+          "nullable": true
+        },
+        {
+          "name": "period_basis",
+          "type": "string",
+          "nullable": true
+        },
+        {
+          "name": "period_end",
+          "type": "date",
+          "nullable": true
+        },
+        {
+          "name": "port_region",
+          "type": "string",
+          "nullable": true
+        },
+        {
+          "name": "metric",
+          "type": "string",
+          "nullable": true
+        },
+        {
+          "name": "unit",
+          "type": "string",
+          "nullable": true
+        },
+        {
+          "name": "value",
+          "type": "decimal",
+          "nullable": true
+        },
+        {
+          "name": "revision_status",
+          "type": "string",
+          "nullable": true
+        },
+        {
+          "name": "aggregation_level",
+          "type": "string",
+          "nullable": true
+        },
+        {
+          "name": "source_sheet",
+          "type": "string",
+          "nullable": true
+        },
+        {
+          "name": "source_cell",
+          "type": "string",
+          "nullable": true
+        }
+      ],
+      "example_row": {
+        "source_id": "transport_usda_rail_ports",
+        "report_row_label": "11/2/2022p",
+        "reporting_year": "2022",
+        "period_basis": "week",
+        "period_end": "2022-11-02",
+        "port_region": "Mississippi Gulf",
+        "metric": "rail_carloads",
+        "unit": "carloads",
+        "value": "1959",
+        "revision_status": "provisional",
+        "aggregation_level": "region",
+        "source_sheet": "New Table 3",
+        "source_cell": "B6"
+      }
+    },
+    "sheets": [
+      "New Table 3"
+    ],
+    "answers": {
+      "New Table 3:source_id": {
+        "sheet": "New Table 3",
+        "status": "answered",
+        "bindings": [
+          {
+            "kind": "constant",
+            "target": "source_id",
+            "args": {
+              "value": "transport_usda_rail_ports"
+            },
+            "confidence": 0.99,
+            "origin": "llm",
+            "evidence": [
+              "target_value_samples.source_id",
+              "example_row"
+            ]
+          }
+        ]
+      },
+      "New Table 3:report_row_label": {
+        "sheet": "New Table 3",
+        "status": "answered",
+        "bindings": [
+          {
+            "kind": "column",
+            "target": "report_row_label",
+            "args": {
+              "source": "for_the_week_ending"
+            },
+            "confidence": 0.99,
+            "origin": "llm",
+            "evidence": [
+              "for_the_week_ending",
+              "example_row"
+            ]
+          }
+        ]
+      },
+      "New Table 3:reporting_year": {
+        "sheet": "New Table 3",
+        "status": "answered",
+        "bindings": [
+          {
+            "kind": "column",
+            "target": "reporting_year",
+            "args": {
+              "source": "for_the_week_ending",
+              "extract": "(20[0-9]{2})"
+            },
+            "confidence": 0.97,
+            "origin": "llm",
+            "evidence": [
+              "for_the_week_ending",
+              "target_value_samples.reporting_year"
+            ]
+          }
+        ]
+      },
+      "New Table 3:period_basis": {
+        "sheet": "New Table 3",
+        "status": "answered",
+        "bindings": [
+          {
+            "kind": "column",
+            "target": "period_basis",
+            "args": {
+              "source": "for_the_week_ending",
+              "mapping": {
+                "11/2/2022p": "week",
+                "10/26/2022r": "week",
+                "2022 YTDr": "year_to_date",
+                "2021 YTDr": "year_to_date",
+                "2022 YTD as % of 2021 YTD": "comparison_ratio",
+                "Last 4 weeks as % of 20212": "comparison_ratio",
+                "Last 4 weeks as % of 4-year avg.2": "comparison_ratio",
+                "Total 2021": "year",
+                "Total 2020": "year"
+              }
+            },
+            "confidence": 0.99,
+            "origin": "llm",
+            "evidence": [
+              "for_the_week_ending",
+              "target_value_samples.period_basis"
+            ]
+          }
+        ]
+      },
+      "New Table 3:period_end": {
+        "sheet": "New Table 3",
+        "status": "answered",
+        "bindings": [
+          {
+            "kind": "template",
+            "target": "period_end",
+            "args": {
+              "template": "2022-11-02",
+              "where": {
+                "for_the_week_ending": "11/2/2022p"
+              }
+            },
+            "confidence": 0.99,
+            "origin": "llm",
+            "evidence": [
+              "for_the_week_ending",
+              "example_row"
+            ]
+          },
+          {
+            "kind": "template",
+            "target": "period_end",
+            "args": {
+              "template": "2022-10-26",
+              "where": {
+                "for_the_week_ending": "10/26/2022r"
+              }
+            },
+            "confidence": 0.99,
+            "origin": "llm",
+            "evidence": [
+              "for_the_week_ending",
+              "target_value_samples.period_end"
+            ]
+          },
+          {
+            "kind": "template",
+            "target": "period_end",
+            "args": {
+              "template": "2022-10-29",
+              "where": {
+                "week_ending": "2022-10-29"
+              }
+            },
+            "confidence": 0.99,
+            "origin": "llm",
+            "evidence": [
+              "week_ending",
+              "target_value_samples.period_end"
+            ]
+          },
+          {
+            "kind": "template",
+            "target": "period_end",
+            "args": {
+              "template": "2022-10-22",
+              "where": {
+                "week_ending": "2022-10-22"
+              }
+            },
+            "confidence": 0.99,
+            "origin": "llm",
+            "evidence": [
+              "week_ending",
+              "target_value_samples.period_end"
+            ]
+          }
+        ]
+      },
+      "New Table 3:port_region": {
+        "sheet": "New Table 3",
+        "status": "answered",
+        "bindings": [
+          {
+            "kind": "column",
+            "target": "port_region",
+            "args": {
+              "source": "dim2",
+              "mapping": {
+                "Gulf": "Mississippi Gulf",
+                "Texas Gulf": "Texas Gulf",
+                "Northwest": "Pacific Northwest",
+                "East Gulf": "Atlantic & East Gulf",
+                "Total": "Total US port regions",
+                "Mexico3": "Cross-border Mexico"
+              }
+            },
+            "confidence": 0.9,
+            "origin": "llm",
+            "evidence": [
+              "dim1",
+              "dim2",
+              "header_dimensions",
+              "target_value_samples.port_region"
+            ]
+          }
+        ]
+      },
+      "New Table 3:metric": {
+        "sheet": "New Table 3",
+        "status": "answered",
+        "bindings": [
+          {
+            "kind": "template",
+            "target": "metric",
+            "args": {
+              "template": "carload_ratio_percent",
+              "where": {
+                "for_the_week_ending": {
+                  "regex": "(as %|as % of)"
+                }
+              }
+            },
+            "confidence": 0.97,
+            "origin": "llm",
+            "evidence": [
+              "for_the_week_ending",
+              "target_value_samples.metric"
+            ]
+          },
+          {
+            "kind": "template",
+            "target": "metric",
+            "args": {
+              "template": "rail_carloads",
+              "where": {
+                "for_the_week_ending": {
+                  "not_regex": "(as %|as % of)"
+                }
+              }
+            },
+            "confidence": 0.97,
+            "origin": "llm",
+            "evidence": [
+              "for_the_week_ending",
+              "A2",
+              "target_value_samples.metric"
+            ]
+          }
+        ]
+      },
+      "New Table 3:unit": {
+        "sheet": "New Table 3",
+        "status": "answered",
+        "bindings": [
+          {
+            "kind": "template",
+            "target": "unit",
+            "args": {
+              "template": "percent",
+              "where": {
+                "for_the_week_ending": {
+                  "regex": "as %"
+                }
+              }
+            },
+            "confidence": 0.99,
+            "origin": "llm",
+            "evidence": [
+              "for_the_week_ending",
+              "target_value_samples.unit"
+            ]
+          },
+          {
+            "kind": "template",
+            "target": "unit",
+            "args": {
+              "template": "carloads",
+              "where": {
+                "for_the_week_ending": {
+                  "not_regex": "as %"
+                }
+              }
+            },
+            "confidence": 0.99,
+            "origin": "llm",
+            "evidence": [
+              "for_the_week_ending",
+              "A2",
+              "target_value_samples.unit"
+            ]
+          }
+        ]
+      },
+      "New Table 3:revision_status": {
+        "sheet": "New Table 3",
+        "status": "answered",
+        "bindings": [
+          {
+            "kind": "template",
+            "target": "revision_status",
+            "args": {
+              "template": "provisional",
+              "where": {
+                "for_the_week_ending": {
+                  "regex": "p$"
+                }
+              }
+            },
+            "confidence": 0.99,
+            "origin": "llm",
+            "evidence": [
+              "for_the_week_ending",
+              "example_row"
+            ]
+          },
+          {
+            "kind": "template",
+            "target": "revision_status",
+            "args": {
+              "template": "revised",
+              "where": {
+                "for_the_week_ending": {
+                  "regex": "r$"
+                }
+              }
+            },
+            "confidence": 0.99,
+            "origin": "llm",
+            "evidence": [
+              "for_the_week_ending",
+              "target_value_samples.revision_status"
+            ]
+          },
+          {
+            "kind": "template",
+            "target": "revision_status",
+            "args": {
+              "template": "reported",
+              "where": {
+                "for_the_week_ending": {
+                  "not_regex": "[pr]$"
+                }
+              }
+            },
+            "confidence": 0.95,
+            "origin": "llm",
+            "evidence": [
+              "for_the_week_ending",
+              "target_value_samples.revision_status"
+            ]
+          }
+        ]
+      },
+      "New Table 3:aggregation_level": {
+        "sheet": "New Table 3",
+        "status": "answered",
+        "bindings": [
+          {
+            "kind": "template",
+            "target": "aggregation_level",
+            "args": {
+              "template": "total",
+              "where": {
+                "dim2": "Total"
+              }
+            },
+            "confidence": 0.99,
+            "origin": "llm",
+            "evidence": [
+              "dim2",
+              "target_value_samples.aggregation_level"
+            ]
+          },
+          {
+            "kind": "template",
+            "target": "aggregation_level",
+            "args": {
+              "template": "region",
+              "where": {
+                "dim2": {
+                  "not_in": [
+                    "Total"
+                  ]
+                }
+              }
+            },
+            "confidence": 0.97,
+            "origin": "llm",
+            "evidence": [
+              "dim2",
+              "target_value_samples.aggregation_level"
+            ]
+          }
+        ]
+      },
+      "New Table 3:grid_scope": {
+        "sheet": "New Table 3",
+        "status": "answered",
+        "bindings": [
+          {
+            "kind": "grid_scope",
+            "target": null,
+            "args": {
+              "dimension": "dim2",
+              "include": [
+                "Gulf",
+                "Texas Gulf",
+                "Northwest",
+                "East Gulf",
+                "Total",
+                "Mexico3"
+              ]
+            },
+            "confidence": 0.94,
+            "origin": "llm",
+            "evidence": [
+              "dim1",
+              "dim2",
+              "header_dimensions",
+              "target_value_samples.port_region"
+            ]
+          }
+        ]
+      },
+      "New Table 3:row_scope": {
+        "sheet": "New Table 3",
+        "status": "answered",
+        "bindings": [
+          {
+            "kind": "row_scope",
+            "target": null,
+            "args": {
+              "conditions": [
+                {
+                  "column": "for_the_week_ending",
+                  "in": [
+                    "11/2/2022p",
+                    "10/26/2022r",
+                    "2022 YTDr",
+                    "2021 YTDr",
+                    "2022 YTD as % of 2021 YTD",
+                    "Last 4 weeks as % of 20212",
+                    "Last 4 weeks as % of 4-year avg.2",
+                    "Total 2021",
+                    "Total 2020"
+                  ]
+                }
+              ],
+              "mode": "all"
+            },
+            "confidence": 0.97,
+            "origin": "llm",
+            "evidence": [
+              "for_the_week_ending",
+              "week_ending",
+              "target_value_samples.period_basis"
+            ]
+          }
+        ]
+      }
+    },
+    "spec": {
+      "name": "input",
+      "workflow": "generic",
+      "locate": {
+        "sheet": {
+          "name": "New Table 3"
+        },
+        "header_rows": [
+          2,
+          3
+        ],
+        "skip_rows_matching": [
+          "^1Data\\ is\\ incomplet",
+          "^2\\ Compared\\ with\\ sa",
+          "^3\\ Cross\\-border\\ wee",
+          "^Source:\\ \\ USDA,\\ Agr",
+          "^YTD\\ =\\ year\\-to\\-date",
+          "^to\\ reflect\\ switchi"
+        ]
+      },
+      "map": {
+        "For the week ending": {
+          "to": "for_the_week_ending",
+          "required": false
+        }
+      },
+      "sources": [],
+      "shape": [
+        {
+          "op": "strip",
+          "cols": [
+            "for_the_week_ending"
+          ]
+        },
+        {
+          "op": "copy_col",
+          "source": "Atlantic &|Week ending",
+          "to": "week_ending"
+        },
+        {
+          "op": "flag",
+          "out": "_keep_0",
+          "any_of": [
+            {
+              "for_the_week_ending": {
+                "in": [
+                  "11/2/2022p",
+                  "10/26/2022r",
+                  "2022 YTDr",
+                  "2021 YTDr",
+                  "2022 YTD as % of 2021 YTD",
+                  "Last 4 weeks as % of 20212",
+                  "Last 4 weeks as % of 4-year avg.2",
+                  "Total 2021",
+                  "Total 2020"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "op": "filter",
+          "col": "_keep_0",
+          "equals": "True",
+          "reason": "outside the requested scope"
+        },
+        {
+          "op": "melt_families",
+          "families": [
+            {
+              "pattern": "^([^|]+)\\|(Gulf|Texas\\s+Gulf|Northwest|East\\s+Gulf|Total|Mexico3)$",
+              "value": "cell_value",
+              "type": "text"
+            }
+          ],
+          "id": [
+            "for_the_week_ending",
+            "week_ending"
+          ],
+          "index": [
+            "dim1",
+            "dim2"
+          ],
+          "cell_col": "source_cell"
+        },
+        {
+          "op": "derive",
+          "col": "source_id",
+          "template": "transport_usda_rail_ports"
+        },
+        {
+          "op": "derive",
+          "col": "report_row_label",
+          "template": "{for_the_week_ending}"
+        },
+        {
+          "op": "extract",
+          "col": "for_the_week_ending",
+          "to": "reporting_year",
+          "pattern": "(20[0-9]{2})"
+        },
+        {
+          "op": "parse_number",
+          "cols": [
+            "reporting_year"
+          ],
+          "decimals": 10
+        },
+        {
+          "op": "map_values",
+          "col": "for_the_week_ending",
+          "into": "period_basis",
+          "mapping": {
+            "11/2/2022p": "week",
+            "10/26/2022r": "week",
+            "2022 YTDr": "year_to_date",
+            "2021 YTDr": "year_to_date",
+            "2022 YTD as % of 2021 YTD": "comparison_ratio",
+            "Last 4 weeks as % of 20212": "comparison_ratio",
+            "Last 4 weeks as % of 4-year avg.2": "comparison_ratio",
+            "Total 2021": "year",
+            "Total 2020": "year"
+          }
+        },
+        {
+          "op": "map_values",
+          "col": "dim2",
+          "into": "port_region",
+          "mapping": {
+            "Gulf": "Mississippi Gulf",
+            "Texas Gulf": "Texas Gulf",
+            "Northwest": "Pacific Northwest",
+            "East Gulf": "Atlantic & East Gulf",
+            "Total": "Total US port regions",
+            "Mexico3": "Cross-border Mexico"
+          }
+        },
+        {
+          "op": "derive",
+          "col": "source_sheet",
+          "template": "{_src_sheet}"
+        },
+        {
+          "op": "scale",
+          "col": "cell_value",
+          "factor": 1,
+          "out": "value"
+        },
+        {
+          "op": "derive",
+          "col": "period_end",
+          "template": "2022-11-02",
+          "where": {
+            "for_the_week_ending": "11/2/2022p"
+          }
+        },
+        {
+          "op": "derive",
+          "col": "period_end",
+          "template": "2022-10-26",
+          "where": {
+            "for_the_week_ending": "10/26/2022r"
+          }
+        },
+        {
+          "op": "derive",
+          "col": "period_end",
+          "template": "2022-10-29",
+          "where": {
+            "week_ending": "2022-10-29"
+          }
+        },
+        {
+          "op": "derive",
+          "col": "period_end",
+          "template": "2022-10-22",
+          "where": {
+            "week_ending": "2022-10-22"
+          }
+        },
+        {
+          "op": "derive",
+          "col": "metric",
+          "template": "carload_ratio_percent",
+          "where": {
+            "for_the_week_ending": {
+              "regex": "(as %|as % of)"
+            }
+          }
+        },
+        {
+          "op": "derive",
+          "col": "metric",
+          "template": "rail_carloads",
+          "where": {
+            "for_the_week_ending": {
+              "not_regex": "(as %|as % of)"
+            }
+          }
+        },
+        {
+          "op": "derive",
+          "col": "unit",
+          "template": "percent",
+          "where": {
+            "for_the_week_ending": {
+              "regex": "as %"
+            }
+          }
+        },
+        {
+          "op": "derive",
+          "col": "unit",
+          "template": "carloads",
+          "where": {
+            "for_the_week_ending": {
+              "not_regex": "as %"
+            }
+          }
+        },
+        {
+          "op": "derive",
+          "col": "revision_status",
+          "template": "provisional",
+          "where": {
+            "for_the_week_ending": {
+              "regex": "p$"
+            }
+          }
+        },
+        {
+          "op": "derive",
+          "col": "revision_status",
+          "template": "revised",
+          "where": {
+            "for_the_week_ending": {
+              "regex": "r$"
+            }
+          }
+        },
+        {
+          "op": "derive",
+          "col": "revision_status",
+          "template": "reported",
+          "where": {
+            "for_the_week_ending": {
+              "not_regex": "[pr]$"
+            }
+          }
+        },
+        {
+          "op": "derive",
+          "col": "aggregation_level",
+          "template": "total",
+          "where": {
+            "dim2": "Total"
+          }
+        },
+        {
+          "op": "derive",
+          "col": "aggregation_level",
+          "template": "region",
+          "where": {
+            "dim2": {
+              "not_in": [
+                "Total"
+              ]
+            }
+          }
+        }
+      ],
+      "template": {
+        "filename": "result.csv",
+        "columns": {
+          "source_id": {
+            "col": "source_id",
+            "required": false
+          },
+          "report_row_label": {
+            "col": "report_row_label",
+            "required": false
+          },
+          "reporting_year": {
+            "col": "reporting_year",
+            "required": false
+          },
+          "period_basis": {
+            "col": "period_basis",
+            "required": false
+          },
+          "period_end": {
+            "col": "period_end",
+            "required": false
+          },
+          "port_region": {
+            "col": "port_region",
+            "required": false
+          },
+          "metric": {
+            "col": "metric",
+            "required": false
+          },
+          "unit": {
+            "col": "unit",
+            "required": false
+          },
+          "value": {
+            "col": "value",
+            "required": false
+          },
+          "revision_status": {
+            "col": "revision_status",
+            "required": false
+          },
+          "aggregation_level": {
+            "col": "aggregation_level",
+            "required": false
+          },
+          "source_sheet": {
+            "col": "source_sheet",
+            "required": false
+          },
+          "source_cell": {
+            "col": "source_cell",
+            "required": false
+          }
+        }
+      }
+    },
+    "target_samples": {
+      "source_id": {
+        "values": [
+          "transport_usda_rail_ports"
+        ],
+        "count": 1,
+        "partial": false
+      },
+      "report_row_label": {
+        "values": [
+          "11/2/2022p",
+          "2022-10-29T00:00:00",
+          "10/26/2022r",
+          "2022-10-22T00:00:00",
+          "2022 YTDr",
+          "2022 YTD",
+          "2021 YTDr",
+          "2021 YTD"
+        ],
+        "count": 16,
+        "partial": true
+      },
+      "reporting_year": {
+        "values": [
+          "2022",
+          "2021",
+          "2020"
+        ],
+        "count": 3,
+        "partial": false
+      },
+      "period_basis": {
+        "values": [
+          "week",
+          "year_to_date",
+          "comparison_ratio",
+          "year"
+        ],
+        "count": 4,
+        "partial": false
+      },
+      "period_end": {
+        "values": [
+          "2022-11-02",
+          "2022-10-29",
+          "2022-10-26",
+          "2022-10-22",
+          ""
+        ],
+        "count": 5,
+        "partial": false
+      },
+      "port_region": {
+        "values": [
+          "Mississippi Gulf",
+          "Texas Gulf",
+          "Pacific Northwest",
+          "Atlantic & East Gulf",
+          "Total US port regions",
+          "Cross-border Mexico"
+        ],
+        "count": 6,
+        "partial": false
+      },
+      "metric": {
+        "values": [
+          "rail_carloads",
+          "carload_ratio_percent"
+        ],
+        "count": 2,
+        "partial": false
+      },
+      "unit": {
+        "values": [
+          "carloads",
+          "percent"
+        ],
+        "count": 2,
+        "partial": false
+      },
+      "value": {
+        "values": [
+          "1959",
+          "574",
+          "7731",
+          "1155",
+          "11419",
+          "2094",
+          "2760",
+          "448"
+        ],
+        "count": 54,
+        "partial": true
+      },
+      "revision_status": {
+        "values": [
+          "provisional",
+          "reported",
+          "revised"
+        ],
+        "count": 3,
+        "partial": false
+      },
+      "aggregation_level": {
+        "values": [
+          "region",
+          "total"
+        ],
+        "count": 2,
+        "partial": false
+      },
+      "source_sheet": {
+        "values": [
+          "New Table 3"
+        ],
+        "count": 1,
+        "partial": false
+      },
+      "source_cell": {
+        "values": [
+          "B6",
+          "C6",
+          "D6",
+          "E6",
+          "F6",
+          "H6",
+          "B7",
+          "C7"
+        ],
+        "count": 54,
+        "partial": true
+      }
+    }
+  },
+  "correction": {
+    "answers": [
+      {
+        "question_id": "New Table 3:report_row_label",
+        "status": "answered",
+        "bindings": [
+          {
+            "kind": "template",
+            "target": "report_row_label",
+            "args": {
+              "template": "{for_the_week_ending}",
+              "where": {
+                "dim2": {
+                  "not_in": [
+                    "Mexico3"
+                  ]
+                }
+              },
+              "verbatim": [
+                "for_the_week_ending"
+              ]
+            },
+            "confidence": 0.95,
+            "evidence": [
+              "source headers and published row labels",
+              "expected target samples"
+            ]
+          },
+          {
+            "kind": "template",
+            "target": "report_row_label",
+            "args": {
+              "template": "{week_ending:%Y-%m-%dT%H:%M:%S}",
+              "where": {
+                "dim2": "Mexico3"
+              },
+              "verbatim": [
+                "week_ending"
+              ]
+            },
+            "confidence": 0.95,
+            "evidence": [
+              "source headers and published row labels",
+              "expected target samples"
+            ]
+          }
+        ]
+      },
+      {
+        "question_id": "New Table 3:reporting_year",
+        "status": "answered",
+        "bindings": [
+          {
+            "kind": "template",
+            "target": "reporting_year",
+            "args": {
+              "template": "2021",
+              "where": {
+                "for_the_week_ending": {
+                  "regex": "^(?:2021 YTD|Total 2021)"
+                }
+              }
+            },
+            "confidence": 0.95,
+            "evidence": [
+              "source headers and published row labels",
+              "expected target samples"
+            ]
+          },
+          {
+            "kind": "template",
+            "target": "reporting_year",
+            "args": {
+              "template": "2020",
+              "where": {
+                "for_the_week_ending": {
+                  "regex": "^Total 2020"
+                }
+              }
+            },
+            "confidence": 0.95,
+            "evidence": [
+              "source headers and published row labels",
+              "expected target samples"
+            ]
+          },
+          {
+            "kind": "template",
+            "target": "reporting_year",
+            "args": {
+              "template": "2022",
+              "where": {
+                "for_the_week_ending": {
+                  "not_regex": "^(?:2021 YTD|Total 2021|Total 2020)"
+                }
+              }
+            },
+            "confidence": 0.95,
+            "evidence": [
+              "source headers and published row labels",
+              "expected target samples"
+            ]
+          }
+        ]
+      },
+      {
+        "question_id": "New Table 3:period_end",
+        "status": "answered",
+        "bindings": [
+          {
+            "kind": "template",
+            "target": "period_end",
+            "args": {
+              "template": "2022-11-02",
+              "where": {
+                "dim2": {
+                  "not_in": [
+                    "Mexico3"
+                  ]
+                },
+                "for_the_week_ending": "11/2/2022p"
+              }
+            },
+            "confidence": 0.95,
+            "evidence": [
+              "source headers and published row labels",
+              "expected target samples"
+            ]
+          },
+          {
+            "kind": "template",
+            "target": "period_end",
+            "args": {
+              "template": "2022-10-26",
+              "where": {
+                "dim2": {
+                  "not_in": [
+                    "Mexico3"
+                  ]
+                },
+                "for_the_week_ending": "10/26/2022r"
+              }
+            },
+            "confidence": 0.95,
+            "evidence": [
+              "source headers and published row labels",
+              "expected target samples"
+            ]
+          },
+          {
+            "kind": "template",
+            "target": "period_end",
+            "args": {
+              "template": "2022-10-29",
+              "where": {
+                "dim2": "Mexico3",
+                "week_ending": "2022-10-29"
+              }
+            },
+            "confidence": 0.95,
+            "evidence": [
+              "source headers and published row labels",
+              "expected target samples"
+            ]
+          },
+          {
+            "kind": "template",
+            "target": "period_end",
+            "args": {
+              "template": "2022-10-22",
+              "where": {
+                "dim2": "Mexico3",
+                "week_ending": "2022-10-22"
+              }
+            },
+            "confidence": 0.95,
+            "evidence": [
+              "source headers and published row labels",
+              "expected target samples"
+            ]
+          }
+        ]
+      },
+      {
+        "question_id": "New Table 3:revision_status",
+        "status": "answered",
+        "bindings": [
+          {
+            "kind": "template",
+            "target": "revision_status",
+            "args": {
+              "template": "provisional",
+              "where": {
+                "report_row_label": {
+                  "regex": "p$"
+                }
+              }
+            },
+            "confidence": 0.95,
+            "evidence": [
+              "source headers and published row labels",
+              "expected target samples"
+            ]
+          },
+          {
+            "kind": "template",
+            "target": "revision_status",
+            "args": {
+              "template": "revised",
+              "where": {
+                "report_row_label": {
+                  "regex": "r$"
+                }
+              }
+            },
+            "confidence": 0.95,
+            "evidence": [
+              "source headers and published row labels",
+              "expected target samples"
+            ]
+          },
+          {
+            "kind": "template",
+            "target": "revision_status",
+            "args": {
+              "template": "reported",
+              "where": {
+                "report_row_label": {
+                  "not_regex": "[pr]$"
+                }
+              }
+            },
+            "confidence": 0.95,
+            "evidence": [
+              "source headers and published row labels",
+              "expected target samples"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
